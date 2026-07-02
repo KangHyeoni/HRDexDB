@@ -528,10 +528,11 @@
 
     .tabs {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 0;
-      margin-bottom: 20px;
-      overflow: visible;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      overflow-y: hidden;
       border-bottom: 1px solid var(--border);
       scrollbar-width: none;
     }
@@ -541,13 +542,14 @@
     }
 
     .tab {
-      flex: 0 0 auto;
-      padding: 10px 18px;
+      flex: 1 0 auto;
+      min-width: max-content;
+      padding: 8px 4px;
       border: 0;
       border-bottom: 2px solid transparent;
       background: none;
       color: var(--text-muted);
-      font-size: 0.95em;
+      font-size: 0.76rem;
       font-weight: 700;
       transition: color 0.2s, border-color 0.2s;
     }
@@ -575,6 +577,10 @@
       grid-template-columns: minmax(260px, 360px) minmax(420px, 1fr);
       align-items: start;
       gap: 16px;
+    }
+
+    .sequence-column {
+      min-width: 0;
     }
 
     .episode-grid {
@@ -622,8 +628,15 @@
         min-height: 0;
       }
 
+      #detail-view.active .sequence-column {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
       #detail-view.active .episode-grid {
-        height: 100%;
+        flex: 1 1 auto;
+        height: auto;
         min-height: 0;
         max-height: none;
         overflow-y: auto;
@@ -635,22 +648,22 @@
       #detail-view.active .viewer-panel {
         position: relative;
         top: auto;
-        align-self: stretch;
+        align-self: center;
         display: flex;
         flex-direction: column;
-        height: 100%;
-        min-height: 0;
-      }
-
-      #detail-view.active #viewer {
-        flex: 1 1 auto;
+        width: 100%;
         height: auto;
         min-height: 0;
       }
 
+      #detail-view.active #viewer {
+        flex: 0 0 auto;
+        height: min(68vh, 720px);
+        min-height: 0;
+      }
+
       #detail-view.active .viewer-panel.preview-mode {
-        align-self: stretch;
-        height: 100%;
+        align-self: center;
       }
 
       #detail-view.active .viewer-panel.preview-mode .viewer-preview {
@@ -827,6 +840,66 @@
       display: none;
     }
 
+    .glb-playback {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      left: 14px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 7px 10px;
+      border: 1px solid rgba(236, 231, 224, 0.92);
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(8px);
+    }
+
+    .glb-playback[hidden],
+    #viewer.preview-active .glb-playback {
+      display: none;
+    }
+
+    .glb-playback-button {
+      flex: 0 0 auto;
+      width: 32px;
+      min-height: 26px;
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 0.74em;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .glb-playback-button:hover {
+      border-color: var(--accent);
+      color: var(--accent-hover);
+      background: #fdeee9;
+    }
+
+    .glb-playback-range {
+      flex: 1 1 auto;
+      min-width: 0;
+      accent-color: var(--accent);
+    }
+
+    .glb-playback-time {
+      flex: 0 0 auto;
+      min-width: 82px;
+      color: var(--text-muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.72em;
+      font-weight: 700;
+      text-align: right;
+      white-space: nowrap;
+    }
+
     .viewer-preview {
       position: absolute;
       inset: 0;
@@ -980,14 +1053,16 @@
             </div>
           </div>
 
-          <div class="tabs" id="embodiment-tabs"></div>
-
-          <div class="sequence-toolbar">
-            <div class="episode-count" id="episode-count"></div>
-          </div>
-
           <div class="detail-layout">
-            <div class="episode-grid" id="episode-grid"></div>
+            <div class="sequence-column">
+              <div class="tabs" id="embodiment-tabs"></div>
+
+              <div class="sequence-toolbar">
+                <div class="episode-count" id="episode-count"></div>
+              </div>
+
+              <div class="episode-grid" id="episode-grid"></div>
+            </div>
             <aside class="viewer-panel">
               <div class="viewer-meta">
                 <div class="viewer-title" id="viewer-title">Select a sequence</div>
@@ -998,6 +1073,11 @@
               </div>
               <div id="viewer">
                 <button class="reset-view-button" id="reset-view-button" type="button" hidden>Reset view</button>
+                <div class="glb-playback" id="glb-playback" hidden>
+                  <button class="glb-playback-button" id="glb-playback-button" type="button" aria-label="Pause GLB playback">⏸</button>
+                  <input class="glb-playback-range" id="glb-playback-range" type="range" min="0" max="1000" step="1" value="0" aria-label="GLB playback position">
+                  <span class="glb-playback-time" id="glb-playback-time">0:00 / 0:00</span>
+                </div>
               </div>
             </aside>
           </div>
@@ -1098,6 +1178,8 @@
     let loadToken = 0;
     let previewWarmTimer = null;
     let previewWarmToken = 0;
+    let glbPlaybackPlaying = true;
+    let glbPlaybackScrubbing = false;
     const inflightGlbBlobs = new Map();
     const previewVideoShells = new Map();
 
@@ -1134,6 +1216,10 @@
       viewerTitle: document.getElementById("viewer-title"),
       viewerStatus: document.getElementById("viewer-status"),
       resetViewButton: document.getElementById("reset-view-button"),
+      glbPlayback: document.getElementById("glb-playback"),
+      glbPlaybackButton: document.getElementById("glb-playback-button"),
+      glbPlaybackRange: document.getElementById("glb-playback-range"),
+      glbPlaybackTime: document.getElementById("glb-playback-time"),
       loadGlbButton: document.getElementById("load-glb-button")
     };
 
@@ -1773,6 +1859,7 @@
         el.loadGlbButton.disabled = true;
         el.loadGlbButton.dataset.action = "hidden";
         el.resetViewButton.hidden = true;
+        setGlbPlaybackVisible(false);
         return;
       }
 
@@ -1784,21 +1871,25 @@
         el.loadGlbButton.textContent = "Open interactive 3D";
         el.loadGlbButton.dataset.action = "open";
         el.resetViewButton.hidden = true;
+        setGlbPlaybackVisible(false);
       } else if (state === "loading") {
         el.loadGlbButton.disabled = true;
         el.loadGlbButton.textContent = "Loading";
         el.loadGlbButton.dataset.action = "loading";
         el.resetViewButton.hidden = true;
+        setGlbPlaybackVisible(false);
       } else if (state === "loaded") {
         el.loadGlbButton.disabled = false;
         el.loadGlbButton.textContent = "Play preview";
         el.loadGlbButton.dataset.action = "preview";
         el.resetViewButton.hidden = false;
+        updateGlbPlaybackUi();
       } else {
         el.loadGlbButton.disabled = true;
         el.loadGlbButton.textContent = "Open interactive 3D";
         el.loadGlbButton.dataset.action = "idle";
         el.resetViewButton.hidden = true;
+        setGlbPlaybackVisible(false);
       }
     }
 
@@ -1912,6 +2003,9 @@
       animationClipDuration = 0;
       animationTrim = null;
       animationTrackData = [];
+      glbPlaybackPlaying = true;
+      glbPlaybackScrubbing = false;
+      updateGlbPlaybackUi();
     }
 
     async function openGlbCache() {
@@ -2089,9 +2183,62 @@
       return ((value % duration) + duration) % duration;
     }
 
+    function formatPlaybackTime(seconds) {
+      const safeSeconds = Math.max(0, Number.isFinite(seconds) ? seconds : 0);
+      const minutes = Math.floor(safeSeconds / 60);
+      const wholeSeconds = Math.floor(safeSeconds % 60);
+      return `${minutes}:${String(wholeSeconds).padStart(2, "0")}`;
+    }
+
     function sourceAnimationTime(trimmedTime) {
       const start = animationTrim?.start || 0;
       return start + wrapTime(trimmedTime, animationDuration);
+    }
+
+    function currentTrimmedAnimationTime() {
+      if (!mixer || !animationDuration) return 0;
+      const start = animationTrim?.start || 0;
+      return wrapTime(mixer.time - start, animationDuration);
+    }
+
+    function setGlbPlaybackVisible(visible) {
+      el.glbPlayback.hidden = !visible;
+    }
+
+    function updateGlbPlaybackUi() {
+      const hasPlayback = !!model && !!mixer && animationDuration > 0;
+      setGlbPlaybackVisible(hasPlayback);
+      if (!hasPlayback) {
+        el.glbPlaybackRange.value = "0";
+        el.glbPlaybackTime.textContent = "0:00 / 0:00";
+        return;
+      }
+
+      const currentTime = currentTrimmedAnimationTime();
+      const progress = animationDuration ? currentTime / animationDuration : 0;
+      if (!glbPlaybackScrubbing) {
+        el.glbPlaybackRange.value = String(Math.round(Math.max(0, Math.min(progress, 1)) * 1000));
+      }
+      el.glbPlaybackButton.textContent = glbPlaybackPlaying ? "⏸" : "▶";
+      el.glbPlaybackButton.setAttribute("aria-label", glbPlaybackPlaying ? "Pause GLB playback" : "Play GLB playback");
+      el.glbPlaybackTime.textContent = `${formatPlaybackTime(currentTime)} / ${formatPlaybackTime(animationDuration)}`;
+    }
+
+    function setGlbPlaybackPlaying(playing) {
+      glbPlaybackPlaying = playing;
+      if (mixer) mixer.timeScale = playing ? 1 : 0;
+      updateGlbPlaybackUi();
+    }
+
+    function seekGlbPlayback(value) {
+      if (!mixer || !animationDuration) return;
+      const progress = Math.max(0, Math.min(Number(value) / 1000, 1));
+      mixer.timeScale = 1;
+      mixer.setTime(sourceAnimationTime(progress * animationDuration));
+      mixer.timeScale = glbPlaybackPlaying && !glbPlaybackScrubbing ? 1 : 0;
+      controls?.update();
+      renderer?.render(scene, camera);
+      updateGlbPlaybackUi();
     }
 
     function trackTargetNodeName(trackName) {
@@ -2163,7 +2310,10 @@
         action.setLoop(THREE.LoopRepeat, Infinity);
         action.play();
       }
+      glbPlaybackPlaying = true;
+      mixer.timeScale = 1;
       setAnimationSourceFrame(loadedModel, sourceAnimationTime(0));
+      updateGlbPlaybackUi();
     }
 
     function syncAnimationToPreview() {
@@ -2328,6 +2478,7 @@
       if (mixer) {
         mixer.update(delta);
         enforceAnimationTrim();
+        updateGlbPlaybackUi();
       }
       controls.update();
       renderer.render(scene, camera);
@@ -2385,6 +2536,29 @@
     el.objectMenuSearch.addEventListener("input", event => {
       detailObjectQuery = event.target.value;
       renderObjectMenu();
+    });
+
+    el.glbPlayback.addEventListener("pointerdown", event => {
+      event.stopPropagation();
+    });
+    el.glbPlaybackButton.addEventListener("click", () => {
+      setGlbPlaybackPlaying(!glbPlaybackPlaying);
+    });
+    el.glbPlaybackRange.addEventListener("pointerdown", () => {
+      glbPlaybackScrubbing = true;
+      if (mixer) mixer.timeScale = 0;
+    });
+    el.glbPlaybackRange.addEventListener("input", event => {
+      seekGlbPlayback(event.target.value);
+    });
+    window.addEventListener("pointerup", () => {
+      if (!glbPlaybackScrubbing) return;
+      glbPlaybackScrubbing = false;
+      if (mixer) mixer.timeScale = glbPlaybackPlaying ? 1 : 0;
+      updateGlbPlaybackUi();
+    });
+    el.glbPlaybackRange.addEventListener("change", event => {
+      seekGlbPlayback(event.target.value);
     });
 
     el.galleryNav.addEventListener("click", openGallery);
