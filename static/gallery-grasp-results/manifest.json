@@ -1,10 +1,10 @@
 {
   "version": 1,
   "source": "HRDexDB/HRDexDB",
-  "generatedAt": "2026-06-25T13:19:02.770Z",
+  "generatedAt": "2026-07-05T11:27:20.688Z",
   "startedAt": "2026-06-25T13:18:06.528Z",
-  "totalTargets": 1036,
-  "resultCount": 1031,
+  "totalTargets": 1803,
+  "resultCount": 1798,
   "missing": [
     {
       "key": "inspire_f1/baseball/2",
@@ -4151,6 +4151,3074 @@
     "inspire_f1/yellow_wash_tub/4": {
       "graspSuccess": true,
       "humanPairedEpisode": 4
+    },
+    "inspire_dftp/apple/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/apple/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/apple/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/apple/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/apple/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/apple/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/attached_container/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/attached_container/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/attached_container/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/attached_container/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/attached_container/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/attached_container/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/attached_container/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/attached_container/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/9": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/11": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baby_beaker/12": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/balloon_whisk/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/balloon_whisk/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/balloon_whisk/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/balloon_whisk/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/balloon_whisk/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/balloon_whisk/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/balloon_whisk/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/balloon_whisk/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_basket/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_basket/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_basket/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_basket/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_basket/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_basket/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_basket/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_basket/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_box/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_box/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_box/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_box/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_box/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/bamboo_box/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/banana/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/banana/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/banana/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/banana/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/banana/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baseball/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baseball/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baseball/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baseball/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/baseball/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_holder_with_handle/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_holder_with_handle/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_holder_with_handle/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_holder_with_handle/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_holder_with_handle/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_kitchen_roll_holder/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_kitchen_roll_holder/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_kitchen_roll_holder/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_kitchen_roll_holder/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_kitchen_roll_holder/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_kitchen_roll_holder/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_kitchen_roll_holder/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_kitchen_roll_holder/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_kitchen_roll_holder/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/black_kitchen_roll_holder/11": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_alarm/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_alarm/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_alarm/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_alarm/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_alarm/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_alarm/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_vase/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_vase/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_vase/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_vase/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_vase/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_vase/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_vase/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/blue_vase/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/book/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/book/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/book/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/book/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/book/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/book/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/book/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/book/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/book/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/box_pink/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/box_pink/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/box_pink/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/box_pink/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/box_pink/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/box_pink/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brass_pot/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brass_pot/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brass_pot/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brass_pot/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brass_pot/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brass_pot/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brass_pot/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brass_pot/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brown_ramen/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brown_ramen/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brown_ramen/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brown_ramen/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brown_ramen/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brown_ramen/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/brown_ramen/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus/10": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/11": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/12": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/13": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/14": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/15": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus2/16": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/cactus3/11": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_cactus2/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/9": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/10": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/11": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/12": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/13": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/ceramic_elephant_jug/14": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/circular_frying_pan/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/circular_frying_pan/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/circular_frying_pan/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/circular_frying_pan/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/circular_frying_pan/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clock/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clock/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clock/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clock/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clock/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clock/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clock/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clothes_hanger/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clothes_hanger/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clothes_hanger/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clothes_hanger/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clothes_hanger/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clothes_hanger/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/clothes_hanger/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/coffee_tin/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/coffee_tin/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/coffee_tin/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/coffee_tin/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/coffee_tin/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/coffee_tin/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/coffee_tin/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/coffee_tin/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/coffee_tin/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/colander_green/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/colander_green/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/colander_green/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/colander_green/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/colander_green/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/donut/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/donut/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/donut/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/donut/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/donut/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_oak/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_oak/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_oak/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_oak/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_oak/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_oak/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_oak/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_oak/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_red/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_red/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_red/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_red/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frame_red/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/french_mustard/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/french_mustard/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/french_mustard/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/french_mustard/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/french_mustard/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/french_mustard/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_bowl/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_bowl/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_bowl/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_bowl/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_bowl/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_bowl/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_bowl/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_bowl/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_bowl/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_cup/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_cup/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_cup/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_cup/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_cup/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_cup/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_cup/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_cup/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_cup/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/frog_cup/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/fruit_cutter_base/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/fruit_cutter_base/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/fruit_cutter_base/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/fruit_cutter_base/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/fruit_cutter_base/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/fruit_cutter_base/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_attached_container/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_attached_container/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_attached_container/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_attached_container/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_attached_container/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_attached_container/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_attached_container/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_attached_container/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_attached_container/10": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/9": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/11": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/13": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/14": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/15": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/16": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/17": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/19": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/20": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/21": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/22": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/23": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_cactus_vase/24": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_glass/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_glass/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_glass/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_glass/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_glass/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_glass/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_glass/9": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_glass/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_glass/11": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_glass/12": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_soap_dispenser/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_soap_dispenser/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_soap_dispenser/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_soap_dispenser/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_soap_dispenser/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_soap_dispenser/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_tray/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_tray/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_tray/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_tray/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_tray/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_tray/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_tray/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/green_tray/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grey_pot/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grey_pot/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grey_pot/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grey_pot/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grey_pot/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grey_pot/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grey_pot/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grey_pot/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grid_desktop_organizer/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grid_desktop_organizer/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grid_desktop_organizer/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grid_desktop_organizer/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grid_desktop_organizer/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grid_desktop_organizer/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/grid_desktop_organizer/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/9": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/11": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/13": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/hammer/15": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/icecream_scoop/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/icecream_scoop/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/icecream_scoop/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/icecream_scoop/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/icecream_scoop/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/icecream_scoop/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/icecream_scoop/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/icecream_scoop/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/icecream_scoop/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/jja_ramen/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/jja_ramen/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/jja_ramen/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/jja_ramen/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/jja_ramen/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/knife_sharpener/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/knife_sharpener/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/knife_sharpener/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/knife_sharpener/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/knife_sharpener/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/knife_sharpener/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/large_peg/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/large_peg/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/large_peg/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/large_peg/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/large_peg/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon_squeezer/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon_squeezer/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon_squeezer/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon_squeezer/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon_squeezer/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon_squeezer/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon_squeezer/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon_squeezer/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon_squeezer/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lemon_squeezer/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lilac_food_container/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lilac_food_container/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lilac_food_container/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lilac_food_container/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lilac_food_container/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/9": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/lotion/10": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/meat_thermometer/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/meat_thermometer/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/meat_thermometer/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/meat_thermometer/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/meat_thermometer/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/meat_thermometer/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_measuring_flask/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_measuring_flask/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_measuring_flask/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_measuring_flask/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_measuring_flask/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_measuring_flask/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_measuring_flask/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_measuring_flask/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_measuring_flask/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_measuring_flask/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_big/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_big/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_big/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_big/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_big/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_big/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_big/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_big/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/10": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/11": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/12": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/metal_scoop_small/13": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/9": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/mug_holder/11": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/orange/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/orange/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/orange/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/orange/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/orange/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/orange/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/11": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/12": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/13": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/organizer_beige/14": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_blue_cup/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_blue_cup/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_blue_cup/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_blue_cup/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_blue_cup/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_blue_cup/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_blue_cup/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_light_green_bowl/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_light_green_bowl/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_light_green_bowl/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_light_green_bowl/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_light_green_bowl/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_light_green_bowl/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pastel_light_green_bowl/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepper_tuna/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepper_tuna/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepper_tuna/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepper_tuna/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepper_tuna/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepper_tuna/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pepsi/11": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pingpong/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pingpong/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pingpong/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pingpong/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pingpong/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pingpong/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pink_clock/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pink_clock/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pink_clock/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pink_clock/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pink_clock/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pink_clock/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pink_clock/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pink_clock/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pink_clock/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plant_pot/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plant_pot/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plant_pot/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plant_pot/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plant_pot/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plant_pot/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plant_pot/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plant_pot/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plastic_elephant_jug/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plastic_elephant_jug/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plastic_elephant_jug/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plastic_elephant_jug/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plastic_elephant_jug/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plastic_elephant_jug/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plastic_elephant_jug/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/plastic_elephant_jug/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/9": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/11": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/12": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/potato_masher/13": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles_small/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles_small/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles_small/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles_small/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles_small/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/pringles_small/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/rectangular_frying_pan/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/rectangular_frying_pan/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/rectangular_frying_pan/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/rectangular_frying_pan/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/rectangular_frying_pan/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/rectangular_frying_pan/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/rectangular_frying_pan/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/redcar/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/redcar/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/redcar/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/redcar/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/redcar/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/redcar/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/redcar/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/scotch_tape/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/scotch_tape/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/scotch_tape/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/scotch_tape/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/scotch_tape/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/screwdriver/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/screwdriver/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/screwdriver/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/screwdriver/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/screwdriver/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/screwdriver/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/screwdriver/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/servingbowl_small/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/servingbowl_small/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/servingbowl_small/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/servingbowl_small/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/servingbowl_small/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/servingbowl_small/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/servingbowl_small/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/servingbowl_small/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/servingbowl_small/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/smallbowl/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/smallbowl/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/smallbowl/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/smallbowl/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/smallbowl/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/smallbowl/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spam_can/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spam_can/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spam_can/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spam_can/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spam_can/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spam_can/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spam_can/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spam_can/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spicemill/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spicemill/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spicemill/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spicemill/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spicemill/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spicemill/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spicemill/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spicemill/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spicemill/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spray_bottle/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spray_bottle/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spray_bottle/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spray_bottle/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spray_bottle/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spray_bottle/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spray_bottle/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spray_bottle/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spray_bottle/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/spray_bottle/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/standing_frame/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/standing_frame/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/standing_frame/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/standing_frame/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/standing_frame/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tea_case/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tea_case/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tea_case/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tea_case/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tea_case/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tennis_ball/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tennis_ball/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tennis_ball/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tennis_ball/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tennis_ball/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/tennis_ball/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/toothbrush_holder/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/toothbrush_holder/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/toothbrush_holder/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/toothbrush_holder/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/toothbrush_holder/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/toothbrush_holder/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/toothbrush_holder/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/toothbrush_holder/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/toothbrush_holder/10": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/toothbrush_holder/11": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush2/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush2/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush2/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush2/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush2/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush2/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush2/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/washing_brush2/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wateringcan/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wateringcan/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wateringcan/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wateringcan/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wateringcan/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wateringcan/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wateringcan/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wateringcan/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wateringcan/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_candle_holder/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_candle_holder/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_candle_holder/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_candle_holder/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_candle_holder/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_candle_holder/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_candle_holder/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_candle_holder/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_hand_shower/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_hand_shower/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_hand_shower/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_hand_shower/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_hand_shower/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_hand_shower/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_pen_cup/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_pen_cup/1": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_pen_cup/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_pen_cup/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_pen_cup/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_pen_cup/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_pen_cup/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_pen_cup/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_soap_dish/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_soap_dish/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_soap_dish/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_soap_dish/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_soap_dish/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_soap_dish/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_soap_dish/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_soap_dish/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/white_wood_handle_watering_can/11": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wipe/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wipe/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wipe/2": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wipe/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wipe/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wipe/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wipe/6": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wipe/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wipe/8": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wipe/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_dish_rack/0": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_dish_rack/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_dish_rack/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_dish_rack/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_dish_rack/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_dish_rack/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_dish_rack/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_dish_rack/7": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_organizer/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_organizer/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_organizer/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_organizer/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_organizer/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_organizer/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/wood_organizer/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/4": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/5": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/6": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/7": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/8": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/9": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/10": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/11": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/12": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/13": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/14": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/work_lamp/15": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_funnel/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_funnel/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_funnel/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_funnel/3": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_funnel/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_wash_tub/0": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_wash_tub/1": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_wash_tub/2": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_wash_tub/3": {
+      "graspSuccess": false,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_wash_tub/4": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
+    },
+    "inspire_dftp/yellow_wash_tub/5": {
+      "graspSuccess": true,
+      "humanPairedEpisode": null
     }
   }
 }
