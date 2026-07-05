@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HRDexDB Objects</title>
+  <link rel="icon" type="image/png" href="static/image/hrdexdb_logo_square.png">
+  <link rel="apple-touch-icon" href="static/image/hrdexdb_logo_square.png">
   <link rel="preconnect" href="https://huggingface.co" crossorigin>
   <link rel="preconnect" href="https://cdn-lfs.huggingface.co" crossorigin>
   <link rel="preconnect" href="https://unpkg.com" crossorigin>
@@ -1018,6 +1020,7 @@
   <script>
     const CATALOG_URL = "https://huggingface.co/spaces/HRDexDB/HRDexDB-Visualizer/raw/main/assets/glb_catalog.json";
     const GLB_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-glb/resolve/main";
+    const GLB_TREE_API_BASE = "https://huggingface.co/api/datasets/HRDexDB/HRDexDB-glb/tree/main";
     const PREVIEW_VIDEO_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-preview-video/resolve/main";
     const PREVIEW_CAMERA_ID = "23263780";
     const PREVIEW_VIDEO_CACHE_LIMIT = 24;
@@ -1032,6 +1035,12 @@
     const ANIMATION_TRIMS = {};
     const GRASP_RESULTS = {};
     const INTERACTIVE_3D_VISIBILITY = {};
+    const ADDITIONAL_GLB_CATALOG_TREES = [
+      {
+        embodiment: "inspire_dftp",
+        url: `${GLB_TREE_API_BASE}/inspire_dftp?recursive=true&expand=false`
+      }
+    ];
     const ROBOT_SPACE_GRAY_COLOR = 0xa8adb4;
     const OBJECT_DEFAULT_BEIGE_COLOR = 0xd9c7aa;
     const CAMERA_PRESETS = {
@@ -1048,6 +1057,10 @@
         viewDirection: [0, 0.56, -1.37]
       },
       inspire_f1: {
+        focus: [0.05, -0.14, -0.07],
+        viewDirection: [0, 0.36, -0.8]
+      },
+      inspire_dftp: {
         focus: [0.05, -0.14, -0.07],
         viewDirection: [0, 0.36, -0.8]
       }
@@ -1104,15 +1117,18 @@
     const labels = {
       allegro_v5: "Allegro V5",
       human: "Human",
-      inspire_f1: "Inspire F1"
+      inspire_f1: "Inspire F1",
+      inspire_dftp: "Inspire DFTP"
     };
     const cardLabels = {
       allegro_v5: "allegro",
       human: "human",
-      inspire_f1: "inspire"
+      inspire_f1: "inspire",
+      inspire_dftp: "dftp"
     };
-    const embodimentOrder = ["human", "allegro_v5", "inspire_f1"];
-    const robotEmbodiments = new Set(["allegro_v5", "inspire_f1"]);
+    const embodimentOrder = ["human", "allegro_v5", "inspire_f1", "inspire_dftp"];
+    const robotEmbodiments = new Set(["allegro_v5", "inspire_f1", "inspire_dftp"]);
+    const previewVideoEmbodiments = new Set(["human", "allegro_v5", "inspire_f1"]);
 
     const el = {
       galleryView: document.getElementById("gallery-view"),
@@ -1141,14 +1157,16 @@
 
     async function init() {
       try {
-        const [response, animationTrimManifest, graspResultManifest, interactive3DVisibilityManifest] = await Promise.all([
+        const [response, additionalCatalogs, animationTrimManifest, graspResultManifest, interactive3DVisibilityManifest] = await Promise.all([
           fetch(CATALOG_URL),
+          loadAdditionalGlbCatalogs(),
           loadAnimationTrimManifest(),
           loadGraspResultManifest(),
           loadInteractive3DVisibilityManifest()
         ]);
         if (!response.ok) throw new Error(`Catalog request failed: ${response.status}`);
         catalog = await response.json();
+        mergeCatalogs(catalog, additionalCatalogs);
         applyAnimationTrimManifest(animationTrimManifest);
         applyGraspResultManifest(graspResultManifest);
         applyInteractive3DVisibilityManifest(interactive3DVisibilityManifest);
@@ -1166,6 +1184,60 @@
           </div>`;
         console.error(error);
       }
+    }
+
+    async function loadAdditionalGlbCatalogs() {
+      const catalogPromises = ADDITIONAL_GLB_CATALOG_TREES.map(async source => {
+        try {
+          const response = await fetch(source.url, { cache: "no-cache" });
+          if (!response.ok) throw new Error(`Additional catalog request failed: ${response.status}`);
+          return catalogFromTree(source.embodiment, await response.json());
+        } catch (error) {
+          console.warn(`Could not load ${source.embodiment} GLB catalog.`, error);
+          return null;
+        }
+      });
+      return Promise.all(catalogPromises);
+    }
+
+    function catalogFromTree(embodiment, treeItems) {
+      const objectsByEmbodiment = {};
+      for (const item of treeItems || []) {
+        if (item?.type !== "file") continue;
+        const parts = String(item.path || "").split("/");
+        if (parts.length !== 3 || parts[0] !== embodiment || !parts[2].endsWith(".glb")) continue;
+        const objectId = parts[1];
+        const episode = parts[2].replace(/\.glb$/, "");
+        if (!objectsByEmbodiment[objectId]) objectsByEmbodiment[objectId] = [];
+        objectsByEmbodiment[objectId].push(episode);
+      }
+      for (const episodes of Object.values(objectsByEmbodiment)) {
+        episodes.sort(compareEpisodeIds);
+      }
+      return { [embodiment]: objectsByEmbodiment };
+    }
+
+    function mergeCatalogs(target, catalogsToMerge) {
+      for (const source of catalogsToMerge || []) {
+        if (!source) continue;
+        for (const [embodiment, objectsByEmbodiment] of Object.entries(source)) {
+          if (!target[embodiment]) target[embodiment] = {};
+          for (const [objectId, episodes] of Object.entries(objectsByEmbodiment)) {
+            const mergedEpisodes = new Set([...(target[embodiment][objectId] || []), ...episodes]);
+            target[embodiment][objectId] = [...mergedEpisodes].sort(compareEpisodeIds);
+          }
+        }
+      }
+    }
+
+    function compareEpisodeIds(a, b) {
+      const aNumber = Number(a);
+      const bNumber = Number(b);
+      const aNumeric = Number.isInteger(aNumber);
+      const bNumeric = Number.isInteger(bNumber);
+      if (aNumeric && bNumeric) return aNumber - bNumber;
+      if (aNumeric !== bNumeric) return aNumeric ? -1 : 1;
+      return String(a).localeCompare(String(b));
     }
 
     async function loadAnimationTrimManifest() {
@@ -1487,6 +1559,7 @@
     }
 
     function previewFor(embodiment, objectId, episode) {
+      if (!previewVideoEmbodiments.has(embodiment)) return null;
       return {
         video: previewVideoUrl(embodiment, objectId, episode)
       };
@@ -1538,6 +1611,9 @@
 
     function episodePreviewHtml(embodiment, objectId, episode) {
       const preview = previewFor(embodiment, objectId, episode);
+      if (!preview) {
+        return `<span class="episode-num">#${episode}</span>`;
+      }
       const thumbnailSrc = previewThumbnailSrc(preview);
       return `
         <video src="${thumbnailSrc}" preload="metadata" muted playsinline onerror="this.parentElement.classList.add('thumb-missing'); this.remove()"></video>
@@ -1615,6 +1691,7 @@
     }
 
     function previewShellFor(preview) {
+      if (!preview?.video) return null;
       const layer = ensurePreviewLayer();
       const src = new URL(preview.video, window.location.href).href;
       const cachedShell = previewVideoShells.get(src);
@@ -1669,7 +1746,9 @@
     function warmPreviewVideo(embodiment, objectId, episode) {
       if (!embodiment || !objectId || episode == null) return;
       const preview = previewFor(embodiment, objectId, episode);
+      if (!preview) return;
       const shell = previewShellFor(preview);
+      if (!shell) return;
       if (shell === activePreviewShell) return;
       const video = previewPlayerFor(shell);
       const thumb = shell.querySelector(".viewer-video-thumb");
@@ -1694,6 +1773,7 @@
       previewWarmToken += 1;
       const token = previewWarmToken;
       if (previewWarmTimer) clearTimeout(previewWarmTimer);
+      if (!previewVideoEmbodiments.has(embodiment)) return;
 
       const episodes = warmEpisodeOrder(episodesFor(objectId, embodiment), activeEpisode);
       let index = 0;
@@ -1710,9 +1790,16 @@
     function showInstantPreview(embodiment, objectId, episode, options = {}) {
       const restart = options.restart !== false;
       const showActions = options.showActions !== false;
-      const layer = ensurePreviewLayer();
       const preview = previewFor(embodiment, objectId, episode);
+      if (!preview) {
+        hideInstantPreview();
+        el.viewerStatus.hidden = !showActions;
+        el.viewerStatus.textContent = showActions ? "Ready" : "";
+        return;
+      }
+      const layer = ensurePreviewLayer();
       const shell = previewShellFor(preview);
+      if (!shell) return;
       const video = previewPlayerFor(shell);
 
       if (activePreviewShell && activePreviewShell !== shell) {
