@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HRDexDB Episode Viewer</title>
+  <title>HRDexDB Sequence Viewer</title>
   <link rel="preconnect" href="https://huggingface.co" crossorigin>
   <link rel="preconnect" href="https://cdn-lfs.huggingface.co" crossorigin>
   <link rel="preconnect" href="https://unpkg.com" crossorigin>
@@ -322,7 +322,9 @@
 
     .screen-wrap video,
     .interactive-3d-viewer,
-    .interactive-3d-canvas {
+    .screen-placeholder {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
     }
@@ -334,46 +336,71 @@
     }
 
     .interactive-3d-viewer {
-      position: relative;
       display: none;
       background: #f7f8f4;
+      overflow: hidden;
+    }
+
+    .interactive-3d-canvas {
+      position: absolute;
+      inset: 0;
     }
 
     .interactive-3d-canvas canvas {
       display: block;
-      width: 100% !important;
-      height: 100% !important;
+      width: 100%;
+      height: 100%;
+    }
+
+    .interactive-3d-status {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 3;
+      max-width: min(460px, calc(100% - 24px));
+      padding: 8px 10px;
+      border: 1px solid rgba(216, 221, 210, .88);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .82);
+      color: var(--text-muted);
+      font-size: .78em;
+      font-weight: 800;
+      backdrop-filter: blur(8px);
     }
 
     .interactive-3d-controls {
       position: absolute;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
       z-index: 3;
       display: grid;
-      grid-template-columns: auto minmax(80px, 1fr) auto auto;
+      grid-template-columns: auto minmax(0, 1fr) auto auto;
       align-items: center;
-      gap: 8px;
-      padding: 8px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, .82);
-      box-shadow: 0 8px 22px rgba(10, 10, 10, .10);
+      gap: 10px;
+      padding: 9px 10px;
+      border: 1px solid rgba(216, 221, 210, .9);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, .86);
       backdrop-filter: blur(8px);
     }
 
     .interactive-3d-controls button,
     .interactive-3d-controls select {
-      min-height: 28px;
+      min-height: 32px;
       border: 1px solid var(--line);
       border-radius: 6px;
-      background: var(--surface);
+      background: #fff;
       color: var(--text);
       font-size: .78em;
-      font-weight: 800;
+      font-weight: 850;
     }
 
-    .interactive-3d-controls button { padding: 4px 10px; }
+    .interactive-3d-controls button {
+      min-width: 70px;
+      padding: 0 10px;
+    }
+
     .interactive-3d-controls select { padding: 4px 8px; }
 
     .interactive-3d-controls input[type="range"] {
@@ -382,53 +409,47 @@
     }
 
     .interactive-3d-readout {
+      min-width: 86px;
       color: var(--text-muted);
       font-size: .76em;
-      font-weight: 800;
-      min-width: 46px;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
       text-align: right;
     }
 
     .screen-placeholder {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 22px;
+      padding: 28px;
       background:
-        linear-gradient(135deg, rgba(22, 22, 20, .86), rgba(43, 39, 34, .72)),
+        linear-gradient(135deg, rgba(226, 96, 59, .16), rgba(20, 20, 20, .2)),
         #111;
-      color: rgba(255, 255, 255, .88);
+      color: rgba(255, 255, 255, .82);
       text-align: center;
     }
 
     .screen-placeholder.visible { display: flex; }
 
     .placeholder-box {
-      width: min(360px, 100%);
-      padding: 20px;
-      border: 1px solid rgba(255, 255, 255, .14);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, .06);
+      width: min(460px, 100%);
     }
 
     .placeholder-box h3 {
-      font-size: 1em;
-      line-height: 1.25;
+      margin-bottom: 8px;
+      color: #fff;
+      font-size: 1.02em;
     }
 
     .placeholder-box p {
-      margin-top: 6px;
-      color: rgba(255, 255, 255, .66);
-      font-size: .84em;
+      color: rgba(255, 255, 255, .72);
+      font-size: .9em;
       line-height: 1.45;
     }
 
     .playback-rail {
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-columns: 42px minmax(0, 1fr) 54px;
       align-items: center;
       gap: 8px;
       margin-top: 16px;
@@ -571,13 +592,17 @@
         var(--surface-2);
     }
 
-    .object-tile img { object-fit: contain; }
+    .object-tile img {
+      background: var(--bg);
+      object-fit: contain;
+    }
 
     .object-preview,
     .view-preview {
       display: flex;
       align-items: center;
       justify-content: center;
+      background: var(--bg);
       color: var(--text-muted);
       font-size: .82em;
       font-weight: 800;
@@ -596,6 +621,21 @@
       font-size: .9em;
       font-weight: 850;
       line-height: 1.25;
+    }
+
+    .pose-title-row {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pose-title-row .tile-title {
+      flex: 1 1 auto;
+    }
+
+    .pose-title-row .chip {
+      flex: 0 0 auto;
     }
 
     .tile-sub {
@@ -689,7 +729,7 @@
     <header class="gallery-head">
       <div>
         <div class="gallery-kicker">Dataset Gallery</div>
-        <h1 class="gallery-title">Episode Viewer</h1>
+        <h1 class="gallery-title">Sequence Viewer</h1>
       </div>
       <div class="summary-pills" id="summary-pills"></div>
     </header>
@@ -706,7 +746,7 @@
     </section>
 
     <section class="explorer-layout">
-      <section class="viewer-main" aria-label="Main episode panel">
+      <section class="viewer-main" aria-label="Main sequence panel">
         <div class="viewer-topbar">
           <div class="selected-title">
             <h2 id="selected-title">Loading...</h2>
@@ -754,7 +794,7 @@
             </div>
           </section>
 
-          <section class="media-panel three-d-panel" aria-label="Selected episode interactive 3D">
+          <section class="media-panel three-d-panel" aria-label="Selected sequence interactive 3D">
             <div class="media-panel-label">Interactive 3D</div>
             <div class="screen-placeholder" id="pending-layer">
               <div class="placeholder-box">
@@ -769,6 +809,7 @@
             </div>
             <div class="interactive-3d-viewer" id="interactive-3d-viewer">
               <div class="interactive-3d-canvas" id="interactive-3d-canvas"></div>
+              <div class="interactive-3d-status" id="interactive-3d-status">Interactive 3D</div>
               <div class="interactive-3d-controls">
                 <button id="interactive-3d-play" type="button">Pause</button>
                 <input id="interactive-3d-scrub" type="range" min="0" max="1000" value="0">
@@ -795,7 +836,7 @@
     const THUMB_BASE = "static/gallery-object-thumbs";
     const THUMB_FALLBACK_BASE = "https://willi19.github.io/object_processing/objects";
     const THUMB_VERSION = "object-processing-24";
-    const ANIMATION_TRIMS_URL = "static/gallery-animation-trims.json";
+    const EPISODE_THUMBNAILS_URL = "static/gallery-episode-thumbnails.json";
     const GRASP_RESULT_MANIFEST_URL = "static/gallery-grasp-results/manifest.json";
     const INTERACTIVE_3D_VISIBILITY_URL = "static/gallery-interactive-3d-visibility.json";
     const THREE_MODULE_URL = "https://unpkg.com/three@0.160.0/build/three.module.js";
@@ -835,7 +876,7 @@
 
     const state = {
       catalog: {},
-      animationTrims: {},
+      episodeThumbnails: {},
       graspResults: {},
       interactive3DVisibility: {},
       episodes: [],
@@ -865,7 +906,6 @@
       assetRoot: null,
       duration: 0,
       clipDuration: 0,
-      trim: null,
       playing: true,
       currentSrc: "",
       currentHand: "",
@@ -900,6 +940,7 @@
       "pending-copy",
       "interactive-3d-viewer",
       "interactive-3d-canvas",
+      "interactive-3d-status",
       "interactive-3d-play",
       "interactive-3d-scrub",
       "interactive-3d-readout",
@@ -912,16 +953,16 @@
 
     Promise.all([
       optionalJson(CATALOG_URL, null),
-      optionalJson(ANIMATION_TRIMS_URL, { trims: {} }),
+      optionalJson(EPISODE_THUMBNAILS_URL, { thumbnails: {} }),
       optionalJson(GRASP_RESULT_MANIFEST_URL, { results: {} }),
       optionalJson(INTERACTIVE_3D_VISIBILITY_URL, { interactive3D: {} })
-    ]).then(([catalog, trimManifest, resultManifest, visibilityManifest]) => {
-      state.animationTrims = trimManifest?.trims || {};
+    ]).then(([catalog, thumbnailManifest, resultManifest, visibilityManifest]) => {
+      state.episodeThumbnails = thumbnailManifest?.thumbnails || {};
       state.graspResults = resultManifest?.results || {};
       state.interactive3DVisibility = visibilityManifest?.interactive3D || {};
       state.catalog = hasCatalogData(catalog)
         ? catalog
-        : catalogFromManifestKeys(state.animationTrims, state.graspResults, state.interactive3DVisibility);
+        : catalogFromManifestKeys(state.episodeThumbnails, state.graspResults, state.interactive3DVisibility);
       state.episodes = flattenEpisodes();
       fillFilters();
       renderSummary();
@@ -1208,7 +1249,7 @@
       const humans = state.episodes.filter(ep => ep.hand === "human").length;
       const robots = state.episodes.filter(ep => robotEmbodiments.has(ep.hand)).length;
       els["summary-pills"].innerHTML = [
-        `<span class="chip accent">${state.episodes.length.toLocaleString()} episodes</span>`,
+        `<span class="chip accent">${state.episodes.length.toLocaleString()} sequences</span>`,
         `<span class="chip">${objects} objects</span>`,
         `<span class="chip info">${humans} human</span>`,
         `<span class="chip">${robots} robot</span>`
@@ -1286,7 +1327,7 @@
     function renderMainPanel() {
       const ep = currentEpisode();
       if (!ep) {
-        els["selected-title"].textContent = "No matching episode";
+        els["selected-title"].textContent = "No matching sequence";
         els["selected-subtitle"].textContent = "";
         clearMedia();
         return;
@@ -1385,7 +1426,7 @@
       const ep = currentEpisode();
       if (!ep) {
         els["pose-count"].textContent = "0 poses";
-        els["pose-strip"].innerHTML = '<div class="empty-inline">No episode selected.</div>';
+        els["pose-strip"].innerHTML = '<div class="empty-inline">No sequence selected.</div>';
         return;
       }
 
@@ -1399,8 +1440,8 @@
         return `<button class="pose-tile ${active ? "active" : ""}" data-key="${escapeHtml(item.key)}">
           <video src="${previewThumbnailUrl(item)}" muted loop playsinline preload="metadata"></video>
           <div class="tile-body">
-            <div class="tile-title">${escapeHtml(item.rankLabel)}</div>
-            <div class="status-line">
+            <div class="pose-title-row">
+              <div class="tile-title">${escapeHtml(item.rankLabel)}</div>
               <span class="chip ${item.outcome === "success" ? "ok" : item.outcome === "fail" ? "warn" : "info"}">${escapeHtml(item.outcomeLabel)}</span>
             </div>
           </div>
@@ -1419,9 +1460,11 @@
         btn.addEventListener("mouseenter", () => vid.play().catch(() => {}));
         btn.addEventListener("mouseleave", () => {
           vid.pause();
-          try { vid.currentTime = 0; } catch (error) { console.warn(error); }
+          const item = state.episodes.find(ep => ep.key === btn.dataset.key);
+          seekPoseThumbnailVideo(item, vid);
         });
       });
+      bindPoseThumbnailTimes();
     }
 
     function showVideo(src) {
@@ -1468,8 +1511,8 @@
     }
 
     function clearMedia() {
-      showVideoPending("No episode selected", "");
-      showModelPending("No episode selected", "");
+      showVideoPending("No sequence selected", "");
+      showModelPending("No sequence selected", "");
     }
 
     async function showInteractive3D(src, ep) {
@@ -1492,10 +1535,19 @@
       els["interactive-3d-viewer"].style.display = "none";
       viewer3d.playing = false;
       updateInteractivePlayButton();
+      setInteractive3DStatus();
       if (clear) clearInteractive3DModel();
     }
 
-    function setInteractive3DStatus() {
+    function setInteractive3DStatus(message = "", copy = "") {
+      const status = els["interactive-3d-status"];
+      if (!message) {
+        status.textContent = "";
+        status.style.display = "none";
+        return;
+      }
+      status.textContent = copy ? `${message} ${copy}` : message;
+      status.style.display = "";
     }
 
     async function ensureInteractive3D() {
@@ -1585,7 +1637,7 @@
         viewer3d.currentHand = ep.hand;
         viewer3d.playing = true;
         updateInteractivePlayButton();
-        setInteractive3DStatus("Interactive 3D");
+        setInteractive3DStatus();
         return;
       }
 
@@ -1603,7 +1655,7 @@
         loader.load(src, resolve, event => {
           if (event.lengthComputable && event.total > 0) {
             const pct = Math.max(0, Math.min(100, event.loaded / event.total * 100));
-            setInteractive3DStatus(`Loading animated GLB... ${pct.toFixed(0)}%`);
+            setInteractive3DStatus("Loading animated GLB...", `${pct.toFixed(0)}%`);
           }
         }, reject);
       });
@@ -1639,7 +1691,6 @@
       viewer3d.mixer = null;
       viewer3d.duration = 0;
       viewer3d.clipDuration = 0;
-      viewer3d.trim = null;
       viewer3d.currentSrc = "";
       els["interactive-3d-scrub"].value = "0";
       els["interactive-3d-readout"].textContent = "0.00s";
@@ -1659,16 +1710,12 @@
       if (!clips.length) {
         viewer3d.duration = 0;
         viewer3d.clipDuration = 0;
-        viewer3d.trim = null;
         return;
       }
 
       viewer3d.mixer = new THREE.AnimationMixer(viewer3d.model);
       viewer3d.clipDuration = Math.max(...clips.map(clip => clip.duration || 0));
-      viewer3d.trim = normalizeAnimationTrim(animationTrimFor(ep), viewer3d.clipDuration);
-      viewer3d.duration = viewer3d.trim
-        ? viewer3d.trim.end - viewer3d.trim.start
-        : viewer3d.clipDuration;
+      viewer3d.duration = viewer3d.clipDuration;
 
       clips.forEach(clip => {
         const action = viewer3d.mixer.clipAction(clip);
@@ -1680,13 +1727,6 @@
       els["interactive-3d-scrub"].max = String(Math.max(1, Math.round(viewer3d.duration * 1000)));
       viewer3d.playing = true;
       updateInteractivePlayButton();
-    }
-
-    function normalizeAnimationTrim(trim, clipDuration) {
-      if (!trim || !clipDuration) return null;
-      const start = Math.max(0, Math.min(trim.start || 0, clipDuration));
-      const end = Math.max(start, Math.min(trim.end || clipDuration, clipDuration));
-      return end - start > 0.001 ? { start, end } : null;
     }
 
     function resetInteractive3DView({ resetTime = false } = {}) {
@@ -1926,7 +1966,7 @@
     function setInteractive3DTime(timeSec, { render = true } = {}) {
       if (!viewer3d.mixer) return;
       const t = Math.max(0, Math.min(timeSec, viewer3d.duration || timeSec));
-      viewer3d.mixer.setTime(sourceAnimationTime(t));
+      viewer3d.mixer.setTime(t);
       viewer3d.model?.updateMatrixWorld(true);
       els["interactive-3d-scrub"].value = String(Math.round(t * 1000));
       els["interactive-3d-readout"].textContent = `${t.toFixed(2)}s`;
@@ -1946,8 +1986,7 @@
       if (!synced && viewer3d.mixer && viewer3d.playing && els["interactive-3d-viewer"].style.display !== "none") {
         const speed = playbackSpeed();
         viewer3d.mixer.update(delta * speed);
-        enforceAnimationTrim();
-        const t = currentTrimmedAnimationTime();
+        const t = currentAnimationTime();
         els["interactive-3d-scrub"].value = String(Math.round(t * 1000));
         els["interactive-3d-readout"].textContent = `${t.toFixed(2)}s`;
       }
@@ -1960,22 +1999,9 @@
       return ((value % duration) + duration) % duration;
     }
 
-    function sourceAnimationTime(trimmedTime) {
-      const start = viewer3d.trim?.start || 0;
-      return start + wrapTime(trimmedTime, viewer3d.duration);
-    }
-
-    function currentTrimmedAnimationTime() {
+    function currentAnimationTime() {
       if (!viewer3d.mixer || !viewer3d.duration) return 0;
-      const start = viewer3d.trim?.start || 0;
-      return wrapTime(viewer3d.mixer.time - start, viewer3d.duration);
-    }
-
-    function enforceAnimationTrim() {
-      if (!viewer3d.mixer || !viewer3d.trim || !viewer3d.duration) return;
-      if (viewer3d.mixer.time < viewer3d.trim.start || viewer3d.mixer.time >= viewer3d.trim.end) {
-        viewer3d.mixer.setTime(viewer3d.trim.start + wrapTime(viewer3d.mixer.time - viewer3d.trim.start, viewer3d.duration));
-      }
+      return wrapTime(viewer3d.mixer.time, viewer3d.duration);
     }
 
     function sequenceKey(hand, objId, episode, sep = "/") {
@@ -2005,7 +2031,62 @@
     }
 
     function previewThumbnailUrl(ep, camera = PREVIEW_CAMERA_ID) {
-      return `${previewVideoUrl(ep, camera)}#t=0.001`;
+      const time = episodeThumbnailInitialTime(ep);
+      return `${previewVideoUrl(ep, camera)}#t=${time.toFixed(3)}`;
+    }
+
+    function episodeThumbnailEntry(ep) {
+      return ep ? state.episodeThumbnails?.[ep.pathKey] || null : null;
+    }
+
+    function episodeThumbnailInitialTime(ep) {
+      const entry = episodeThumbnailEntry(ep);
+      if (typeof entry === "number") {
+        return Number.isFinite(entry) && entry > 0 ? entry : 0.001;
+      }
+      const time = Number(entry?.videoTime ?? entry?.sourceTime ?? entry?.time);
+      return Number.isFinite(time) && time > 0 ? time : 0.001;
+    }
+
+    function episodeThumbnailVideoTime(ep, video) {
+      const entry = episodeThumbnailEntry(ep);
+      if (typeof entry === "number") {
+        return Number.isFinite(entry) && entry > 0 ? entry : 0.001;
+      }
+      const glbTime = Number(entry?.time);
+      const glbDuration = Number(entry?.animationDuration ?? entry?.duration);
+      const videoDuration = Number(video?.duration);
+      if (Number.isFinite(glbTime) && Number.isFinite(glbDuration) && glbDuration > 0 &&
+          Number.isFinite(videoDuration) && videoDuration > 0) {
+        const ratio = Math.max(0, Math.min(1, glbTime / glbDuration));
+        return Math.max(0, Math.min(ratio * videoDuration, Math.max(0, videoDuration - 0.001)));
+      }
+
+      const direct = Number(entry?.videoTime ?? entry?.sourceTime);
+      if (Number.isFinite(direct) && direct > 0) return direct;
+      return episodeThumbnailInitialTime(ep);
+    }
+
+    function seekPoseThumbnailVideo(ep, video) {
+      if (!ep || !video) return;
+      const target = episodeThumbnailVideoTime(ep, video);
+      if (!Number.isFinite(target) || target <= 0) return;
+      try {
+        if (Math.abs((video.currentTime || 0) - target) > 0.05) video.currentTime = target;
+      } catch (error) {
+        console.warn(error);
+      }
+    }
+
+    function bindPoseThumbnailTimes() {
+      els["pose-strip"].querySelectorAll(".pose-tile").forEach(btn => {
+        const item = state.episodes.find(ep => ep.key === btn.dataset.key);
+        const video = btn.querySelector("video");
+        if (!item || !video) return;
+        const apply = () => seekPoseThumbnailVideo(item, video);
+        if ((video.readyState || 0) >= 1) apply();
+        else video.addEventListener("loadedmetadata", apply, { once: true });
+      });
     }
 
     function objectThumbUrl(objectId, base = THUMB_BASE) {
@@ -2027,10 +2108,6 @@
           img.replaceWith(fallback);
         });
       });
-    }
-
-    function animationTrimFor(ep) {
-      return state.animationTrims[ep.pathKey] || null;
     }
 
     function graspResultFor(hand, objId, episode) {
