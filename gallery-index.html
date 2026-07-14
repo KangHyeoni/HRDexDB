@@ -322,7 +322,7 @@
 
       <div class="landing-cards" aria-label="HRDexDB dataset statistics">
         <div class="landing-card">
-          <div class="card-count">98</div>
+          <div class="card-count" id="object-count" aria-live="polite">98</div>
           <h2>Objects</h2>
         </div>
         <div class="landing-card">
@@ -333,79 +333,34 @@
     </div>
   </header>
   <script>
-    const CATALOG_URL = "https://huggingface.co/spaces/HRDexDB/HRDexDB-Visualizer/raw/main/assets/glb_catalog.json";
-    const GLB_TREE_API_BASE = "https://huggingface.co/api/datasets/HRDexDB/HRDexDB-glb/tree/main";
+    const EPISODE_THUMBNAILS_URL = "static/gallery-episode-thumbnails.json";
 
     initSequenceCount();
 
     async function initSequenceCount() {
+      const objectCount = document.getElementById("object-count");
       const sequenceCount = document.getElementById("sequence-count");
-      if (!sequenceCount) return;
+      if (!objectCount || !sequenceCount) return;
 
       try {
-        const [baseResponse, discoveredCatalogs] = await Promise.all([
-          fetch(CATALOG_URL, { cache: "no-cache" }),
-          loadDiscoveredGlbCatalogs()
-        ]);
-        if (!baseResponse.ok) throw new Error(`Catalog request failed: ${baseResponse.status}`);
-
-        const catalog = await baseResponse.json();
-        mergeCatalogs(catalog, discoveredCatalogs);
-        sequenceCount.textContent = countSequences(catalog).toLocaleString("en-US");
+        const response = await fetch(EPISODE_THUMBNAILS_URL, { cache: "no-cache" });
+        if (!response.ok) throw new Error(`Thumbnail manifest request failed: ${response.status}`);
+        const manifest = await response.json();
+        const keys = Object.keys(manifest?.thumbnails || {});
+        objectCount.textContent = countObjects(keys).toLocaleString("en-US");
+        sequenceCount.textContent = keys.length.toLocaleString("en-US");
       } catch (error) {
-        console.warn("Could not update sequence count.", error);
+        console.warn("Could not update gallery stats.", error);
       }
     }
 
-    async function loadDiscoveredGlbCatalogs() {
-      const rootResponse = await fetch(`${GLB_TREE_API_BASE}?recursive=false&expand=false`, { cache: "no-cache" });
-      if (!rootResponse.ok) throw new Error(`GLB root request failed: ${rootResponse.status}`);
-
-      const rootItems = await rootResponse.json();
-      const embodiments = (rootItems || [])
-        .filter(item => item?.type === "directory" && item.path)
-        .map(item => item.path)
-        .sort();
-
-      const catalogPromises = embodiments.map(async embodiment => {
-        const response = await fetch(`${GLB_TREE_API_BASE}/${encodeURIComponent(embodiment)}?recursive=true&expand=false`, { cache: "no-cache" });
-        if (!response.ok) throw new Error(`GLB catalog request failed for ${embodiment}: ${response.status}`);
-        return catalogFromTree(embodiment, await response.json());
-      });
-
-      return Promise.all(catalogPromises);
-    }
-
-    function catalogFromTree(embodiment, treeItems) {
-      const objectsByEmbodiment = {};
-      for (const item of treeItems || []) {
-        if (item?.type !== "file") continue;
-        const parts = String(item.path || "").split("/");
-        if (parts.length !== 3 || parts[0] !== embodiment || !parts[2].endsWith(".glb")) continue;
-        const objectId = parts[1];
-        const episode = parts[2].replace(/\.glb$/, "");
-        if (!objectsByEmbodiment[objectId]) objectsByEmbodiment[objectId] = [];
-        objectsByEmbodiment[objectId].push(episode);
+    function countObjects(keys) {
+      const objects = new Set();
+      for (const key of keys) {
+        const [, objectId] = String(key).split("/");
+        if (objectId) objects.add(objectId);
       }
-      return { [embodiment]: objectsByEmbodiment };
-    }
-
-    function mergeCatalogs(target, catalogsToMerge) {
-      for (const source of catalogsToMerge || []) {
-        for (const [embodiment, objectsByEmbodiment] of Object.entries(source || {})) {
-          if (!target[embodiment]) target[embodiment] = {};
-          for (const [objectId, episodes] of Object.entries(objectsByEmbodiment || {})) {
-            const mergedEpisodes = new Set([...(target[embodiment][objectId] || []), ...episodes]);
-            target[embodiment][objectId] = [...mergedEpisodes];
-          }
-        }
-      }
-    }
-
-    function countSequences(catalog) {
-      return Object.values(catalog || {}).reduce((total, objectsByEmbodiment) => {
-        return total + Object.values(objectsByEmbodiment || {}).reduce((sum, episodes) => sum + episodes.length, 0);
-      }, 0);
+      return objects.size;
     }
   </script>
 </body>
