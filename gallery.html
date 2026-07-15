@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HRDexDB Objects</title>
+  <title>HRDexDB Sequence Viewer</title>
   <link rel="icon" type="image/png" href="static/image/hrdexdb_logo_square.png">
   <link rel="apple-touch-icon" href="static/image/hrdexdb_logo_square.png">
   <link rel="preconnect" href="https://huggingface.co" crossorigin>
@@ -12,6 +12,14 @@
   <link rel="dns-prefetch" href="//huggingface.co">
   <link rel="dns-prefetch" href="//cdn-lfs.huggingface.co">
   <link rel="dns-prefetch" href="//unpkg.com">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -19,15 +27,16 @@
       --bg: #faf8f5;
       --surface: #ffffff;
       --surface-2: #f1ece5;
-      --object-panel: #faf8f5;
-      --viewer-bg: #f4efe8;
-      --border: #ece7e0;
+      --line: #ece7e0;
+      --line-strong: #d9d0c5;
       --text: #2b2722;
       --text-muted: #8a8178;
       --accent: #e2603b;
       --accent-hover: #c94f30;
+      --accent-soft: #fdeee9;
       --green: #6fae58;
       --red: #d9584a;
+      --blue: #4f7fb8;
       --radius: 8px;
       --shadow-soft: 0 1px 2px rgba(40, 30, 20, 0.04);
       --shadow-lift: 0 14px 30px rgba(40, 30, 20, 0.10);
@@ -37,7 +46,7 @@
       min-height: 100vh;
       background: var(--bg);
       color: var(--text);
-      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
@@ -56,8 +65,9 @@
       gap: 24px;
       min-height: 53px;
       padding: 12px 24px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
     }
 
     .nav-logo {
@@ -84,15 +94,15 @@
     }
 
     .nav-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
       padding: 8px 13px;
-      border: 0;
       border-radius: 999px;
-      background: transparent;
       color: var(--text-muted);
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       line-height: 1;
-      text-decoration: none;
     }
 
     .nav-link:hover,
@@ -114,804 +124,565 @@
     }
 
     .container {
-      max-width: 1480px;
+      max-width: 1500px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 18px 24px 72px;
     }
 
-    #gallery-view {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .view { display: none; }
-    .view.active { display: block; }
-
-    .gallery-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 18px;
-      padding: 12px 0 26px;
-    }
-
-    .gallery-brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .gallery-brand h1 {
-      font-size: 26px;
-      font-weight: 700;
-      line-height: 1.2;
-    }
-
-    .gallery-hint {
-      color: var(--text-muted);
-      font-size: 15px;
-      font-weight: 500;
-      line-height: 1.2;
-      white-space: nowrap;
-    }
-
-    .count {
-      padding: 5px 12px;
-      border-radius: 999px;
-      background: #fdeee9;
-      color: var(--accent);
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.3;
-      white-space: nowrap;
-    }
-
-    .gallery-controls {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .search-wrap {
-      position: relative;
-    }
-
-    .search-wrap .kbd {
-      position: absolute;
-      top: 50%;
-      right: 14px;
-      padding: 1px 6px;
-      transform: translateY(-50%);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--text-muted);
-      font-size: 11px;
-      line-height: 1.4;
-      pointer-events: none;
-    }
-
-    .search-bar {
-      width: 100%;
-      min-height: 42px;
-      padding: 10px 16px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      outline: none;
-      background: var(--surface);
-      color: var(--text);
-      font-size: 1em;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .search-bar { margin-bottom: 16px; }
-    .gallery-header .search-bar {
-      width: 270px;
-      margin-bottom: 0;
-      padding-right: 40px;
-      border-radius: 999px;
-    }
-    .search-bar:focus {
-      border-color: var(--accent);
-      box-shadow: 0 2px 10px rgba(226, 96, 59, 0.16);
-    }
-    .search-bar::placeholder { color: var(--text-muted); }
-
-    .sort-select {
-      min-height: 42px;
-      padding: 11px 16px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      outline: none;
-      background: var(--surface);
-      color: var(--text);
-      box-shadow: var(--shadow-soft);
-      font: inherit;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .sort-select:focus {
-      border-color: var(--accent);
-    }
-
-    .stats-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 16px;
-      color: var(--text-muted);
-      font-size: 0.9em;
-    }
-
-    .grid {
+    .gallery-head {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 16px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 14px;
     }
 
-    #gallery-view .grid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 22px;
-      padding: 8px 0 72px;
-    }
-
-    .grid-item,
-    .episode-card,
-    .viewer-panel {
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: var(--shadow-soft);
-    }
-
-    .grid-item,
-    .episode-card {
-      width: 100%;
-      color: var(--text);
-      text-align: left;
-      transition: border-color 0.2s, transform 0.15s, box-shadow 0.22s ease;
-    }
-
-    .grid-item {
-      cursor: pointer;
-      border-radius: 18px;
-    }
-
-    .grid-item:hover,
-    .episode-card:hover,
-    .episode-card.active {
-      border-color: var(--accent);
-      box-shadow: var(--shadow-lift);
-    }
-
-    .grid-item:hover {
-      transform: translateY(-2px);
-    }
-
-    .episode-card.active {
-      position: relative;
-    }
-
-    #gallery-view .grid-item:hover {
-      transform: translateY(-4px);
-    }
-
-    .thumb-slot,
-    .episode-thumb {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .thumb-slot {
-      background: var(--object-panel);
-    }
-
-    #gallery-view .thumb-slot {
-      border-bottom: 0;
-    }
-
-    .episode-thumb {
-      background:
-        linear-gradient(135deg, rgba(226, 96, 59, 0.12), rgba(253, 238, 233, 0.82)),
-        radial-gradient(circle at 30% 20%, rgba(226, 96, 59, 0.14), transparent 34%),
-        var(--surface-2);
-    }
-
-    .thumb-slot {
-      aspect-ratio: 1;
-    }
-
-    .episode-thumb {
-      aspect-ratio: 16 / 9;
-    }
-
-    .episode-thumb img,
-    .episode-thumb video {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      background: var(--surface-2);
-    }
-
-    .episode-thumb::after {
-      position: absolute;
-      inset: 0;
-      content: "";
-      opacity: 0.55;
-      background-image:
-        linear-gradient(135deg, rgba(43, 39, 34, 0.04) 25%, transparent 25%, transparent 50%, rgba(43, 39, 34, 0.04) 50%, rgba(43, 39, 34, 0.04) 75%, transparent 75%, transparent);
-      background-size: 18px 18px;
-    }
-
-    .thumb-slot img {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      background: var(--object-panel);
-    }
-
-    .thumb-slot.thumb-missing img {
-      display: none;
-    }
-
-    .episode-num {
-      position: relative;
-      z-index: 1;
-      color: rgba(43, 39, 34, 0.78);
+    .gallery-kicker {
+      color: var(--accent-hover);
+      font-size: .78em;
       font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .gallery-title {
+      margin-top: 4px;
+      font-size: clamp(2rem, 4vw, 4rem);
+      line-height: 1;
       letter-spacing: 0;
     }
 
-    .episode-num { font-size: 1.35rem; }
-
-    .episode-thumb img + .episode-num,
-    .episode-thumb video + .episode-num {
-      display: none;
+    .summary-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
     }
 
-    .episode-thumb.thumb-missing .episode-num {
-      display: block;
-    }
-
-    .grid-item .label {
-      padding: 13px 16px 0;
-      overflow: hidden;
-      font-size: 15px;
-      font-weight: 600;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .hands-info {
-      padding: 0 16px 16px;
-      overflow: hidden;
-      color: var(--text-muted);
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 11px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .detail-shell {
-      display: grid;
-      grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
-      align-items: start;
-      gap: 24px;
-    }
-
-    .object-sidebar {
-      position: sticky;
-      top: 73px;
-      max-height: calc(100vh - 96px);
-      overflow: hidden;
-    }
-
-    .object-menu-search {
-      width: 100%;
-      min-height: 42px;
-      margin-bottom: 12px;
-      padding: 10px 16px;
-      border: 1px solid var(--border);
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 9px;
       border-radius: 999px;
-      outline: none;
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-size: .78em;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .chip.accent { background: var(--accent-soft); color: var(--accent-hover); }
+    .chip.ok { background: #edf6e9; color: #3d7934; }
+    .chip.warn { background: #fbe9e7; color: #b34035; }
+    .chip.info { background: #eaf1f8; color: #3c6c9f; }
+
+    .explorer-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .control-deck,
+    .viewer-main {
       background: var(--surface);
-      color: var(--text);
-      font-size: 0.9em;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
       box-shadow: var(--shadow-soft);
     }
 
-    .object-menu-search:focus {
-      border-color: var(--accent);
-    }
-
-    .object-menu-search::placeholder {
-      color: var(--text-muted);
-    }
-
-    .object-menu {
+    .control-deck {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-auto-rows: max-content;
-      align-content: start;
-      gap: 8px;
-      max-height: calc(100vh - 144px);
-      overflow-y: auto;
-      padding-right: 4px;
-      scrollbar-color: var(--border) transparent;
-    }
-
-    .object-menu .empty-state {
-      grid-column: 1 / -1;
-      padding: 24px 8px;
-    }
-
-    .object-menu-card {
-      width: 100%;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: var(--surface);
-      color: var(--text);
-      text-align: left;
-      transition: border-color 0.2s, transform 0.15s, box-shadow 0.22s ease;
-    }
-
-    .object-menu-card:hover,
-    .object-menu-card.active {
-      border-color: var(--accent);
-    }
-
-    .object-menu-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lift);
-    }
-
-    .object-menu-card .thumb-slot {
-      aspect-ratio: 1;
-      border-bottom: 0;
-    }
-
-    .object-menu-label {
-      padding: 8px 10px 0;
-      overflow: hidden;
-      font-size: 0.78em;
-      font-weight: 600;
-      line-height: 1.25;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .object-menu-hands {
-      padding: 0 10px 10px;
-      overflow: hidden;
-      color: var(--text-muted);
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.62em;
-      line-height: 1.3;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .detail-main {
-      min-width: 0;
-    }
-
-    .object-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-
-    .object-header h1 {
-      font-size: 1.8em;
-      line-height: 1.2;
-    }
-
-    .object-subtitle {
-      margin-top: 4px;
-      color: var(--text-muted);
-      font-size: 0.9em;
-    }
-
-    .tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0;
-      margin-bottom: 20px;
-      overflow: visible;
-      border-bottom: 1px solid var(--border);
-      scrollbar-width: none;
-    }
-
-    .tabs::-webkit-scrollbar {
-      display: none;
-    }
-
-    .tab {
-      flex: 0 0 auto;
-      padding: 10px 18px;
-      border: 0;
-      border-bottom: 2px solid transparent;
-      background: none;
-      color: var(--text-muted);
-      font-size: 0.95em;
-      font-weight: 700;
-      transition: color 0.2s, border-color 0.2s;
-    }
-
-    .tab:hover { color: var(--text); }
-    .tab.active {
-      border-bottom-color: var(--accent);
-      color: var(--text);
-    }
-
-    .sequence-toolbar {
-      display: none;
-      justify-content: flex-end;
-      margin-bottom: 16px;
-    }
-
-    .episode-count {
-      color: var(--text-muted);
-      font-size: 0.9em;
-      text-align: right;
-    }
-
-    .detail-layout {
-      display: grid;
-      grid-template-columns: minmax(260px, 360px) minmax(420px, 1fr);
+      grid-template-columns: minmax(160px, .8fr) minmax(180px, .9fr);
+      gap: 14px;
+      padding: 12px 14px;
       align-items: start;
-      gap: 16px;
+      margin-bottom: 12px;
     }
 
-    .episode-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-auto-rows: max-content;
-      gap: 12px;
+    .field > label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+      font-size: .72em;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
     }
 
-    @media (min-width: 901px) {
-      #detail-view.active {
-        height: calc(100vh - 104px);
-        overflow: hidden;
-      }
-
-      #detail-view.active .detail-shell {
-        align-items: stretch;
-        height: 100%;
-      }
-
-      #detail-view.active .object-sidebar {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        max-height: none;
-      }
-
-      #detail-view.active .object-menu {
-        flex: 1 1 auto;
-        min-height: 0;
-        max-height: none;
-      }
-
-      #detail-view.active .detail-main {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        min-height: 0;
-        overflow: hidden;
-      }
-
-      #detail-view.active .detail-layout {
-        flex: 1 1 auto;
-        align-items: stretch;
-        min-height: 0;
-      }
-
-      #detail-view.active .episode-grid {
-        height: 100%;
-        min-height: 0;
-        max-height: none;
-        overflow-y: auto;
-        align-content: start;
-        padding-right: 4px;
-        scrollbar-color: var(--border) transparent;
-      }
-
-      #detail-view.active .viewer-panel {
-        position: relative;
-        top: auto;
-        align-self: stretch;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        min-height: 0;
-      }
-
-      #detail-view.active #viewer {
-        flex: 1 1 auto;
-        height: auto;
-        min-height: 0;
-      }
-
-      #detail-view.active .viewer-panel.preview-mode {
-        align-self: stretch;
-        height: 100%;
-      }
-
-      #detail-view.active .viewer-panel.preview-mode .viewer-preview {
-        inset: 0 0 14px;
-        background: var(--viewer-bg);
-      }
-
-      #detail-view.active .viewer-panel.preview-mode .viewer-video-shell.active {
-        display: block;
-      }
-
-      #detail-view.active .viewer-panel.preview-mode .viewer-video-shell video {
-        object-fit: contain;
-        background: #000000;
-      }
-    }
-
-    .episode-footer {
+    .check-group {
       display: flex;
+      min-height: 38px;
       align-items: center;
-      justify-content: space-between;
-      padding: 8px 10px;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
-    .badge {
+    .check-chip {
       display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      gap: 6px;
       padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.75em;
-      font-weight: 700;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: .76em;
+      font-weight: 800;
       line-height: 1;
+      cursor: pointer;
+      user-select: none;
     }
 
-    .badge-rank {
-      padding: 0;
-      border-radius: 0;
-      background: transparent;
+    .check-chip:has(input:checked) {
+      border-color: rgba(226, 96, 59, .48);
+      background: rgba(226, 96, 59, .12);
       color: var(--text);
+    }
+
+    .check-chip:focus-within { border-color: var(--accent); }
+
+    .check-chip input {
+      width: 13px;
+      height: 13px;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .empty-check {
+      padding: 0 5px;
+      color: var(--text-muted);
+      font-size: .76em;
       font-weight: 800;
     }
 
-    .badge-result {
-      justify-content: center;
-      min-width: 64px;
-      color: #ffffff;
-      text-transform: lowercase;
-    }
+    .viewer-main { overflow: hidden; }
 
-    .badge-placeholder {
-      visibility: hidden;
-    }
-
-    .badge-success {
-      background: var(--green);
-    }
-
-    .badge-fail {
-      background: var(--red);
-    }
-
-    .viewer-panel {
-      position: sticky;
-      top: 73px;
-      min-width: 0;
-      min-height: 520px;
-    }
-
-    .viewer-meta {
+    .viewer-topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      height: 51px;
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
     }
 
-    .viewer-title {
-      min-width: 0;
-      overflow: hidden;
-      font-size: 0.92em;
-      font-weight: 600;
-      text-overflow: ellipsis;
+    .selected-title { min-width: 0; }
+
+    .selected-title h2 {
+      font-size: 1.08em;
+      line-height: 1.25;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .viewer-status {
-      overflow: hidden;
+    .selected-title .sub {
+      margin-top: 2px;
       color: var(--text-muted);
-      font-size: 0.78em;
-      text-align: right;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size: .82em;
     }
 
-    .viewer-actions {
-      flex: 0 0 auto;
-      display: flex;
-      align-items: center;
+    .screen-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 10px;
-      min-width: 0;
-    }
-
-    .load-glb-button {
-      flex: 0 0 auto;
-      width: 148px;
-      min-height: 30px;
-      padding: 5px 10px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      background: var(--surface-2);
-      color: var(--text);
-      font-size: 0.78em;
-      font-weight: 700;
-    }
-
-    .load-glb-button:hover:not(:disabled) {
-      border-color: var(--accent);
-      color: var(--accent-hover);
-      background: #fdeee9;
-    }
-
-    .load-glb-button:disabled {
-      cursor: default;
-      opacity: 0.62;
-    }
-
-    #viewer {
-      position: relative;
-      overflow: hidden;
-      height: min(68vh, 720px);
-      min-height: 474px;
-      background: var(--viewer-bg);
-    }
-
-    #viewer canvas {
-      display: block;
       width: 100%;
-      height: 100%;
-      outline: none;
-      cursor: grab;
-      touch-action: none;
+      aspect-ratio: 8 / 3;
+      padding: 10px;
+      background: #171613;
     }
 
-    #viewer.preview-active canvas {
-      visibility: hidden;
+    .media-panel {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid rgba(216, 221, 210, .34);
+      border-radius: var(--radius);
+      background: #080808;
     }
 
-    .reset-view-button {
+    .media-panel-label {
       position: absolute;
-      top: 12px;
-      left: 12px;
-      z-index: 3;
-      min-height: 30px;
-      padding: 5px 10px;
-      border: 1px solid rgba(236, 231, 224, 0.92);
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.84);
-      color: var(--text);
-      font-size: 0.78em;
-      font-weight: 700;
-      box-shadow: var(--shadow-soft);
+      top: 10px;
+      left: 10px;
+      z-index: 4;
+      padding: 5px 8px;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 6px;
+      background: rgba(12, 12, 12, .58);
+      color: rgba(255, 255, 255, .86);
+      font-size: .72em;
+      font-weight: 850;
+      letter-spacing: .04em;
+      text-transform: uppercase;
       backdrop-filter: blur(8px);
     }
 
-    .reset-view-button:hover {
-      border-color: var(--accent);
-      color: var(--accent-hover);
-      background: #fdeee9;
-    }
-
-    .reset-view-button[hidden],
-    #viewer.preview-active .reset-view-button {
-      display: none;
-    }
-
-    .viewer-preview {
+    .screen-wrap video,
+    .interactive-3d-viewer,
+    .screen-placeholder {
       position: absolute;
       inset: 0;
-      z-index: 2;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: var(--viewer-bg);
-    }
-
-    .viewer-preview.active {
-      display: flex;
-    }
-
-    .viewer-preview > img,
-    .viewer-video-shell {
       width: 100%;
       height: 100%;
     }
 
-    .viewer-preview > img,
-    .viewer-video-shell video {
+    .screen-wrap video {
+      display: block;
       object-fit: contain;
-      background: var(--viewer-bg);
+      background: #080808;
     }
 
-    .viewer-video-shell {
-      position: relative;
+    .interactive-3d-viewer {
       display: none;
-      align-items: center;
-      justify-content: center;
+      background: #f7f8f4;
+      overflow: hidden;
     }
 
-    .viewer-video-shell.active {
-      display: flex;
-    }
-
-    .viewer-video-shell video {
+    .interactive-3d-canvas {
       position: absolute;
       inset: 0;
+    }
+
+    .interactive-3d-canvas canvas {
+      display: block;
       width: 100%;
       height: 100%;
     }
 
-    .viewer-video-thumb {
-      z-index: 2;
-      pointer-events: none;
-      transition: opacity 0.16s ease;
-    }
-
-    .viewer-video-shell.ready .viewer-video-thumb {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .loading,
-    .empty-state {
-      padding: 48px 24px;
+    .interactive-3d-status {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 3;
+      max-width: min(460px, calc(100% - 24px));
+      padding: 8px 10px;
+      border: 1px solid rgba(216, 221, 210, .88);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .82);
       color: var(--text-muted);
+      font-size: .78em;
+      font-weight: 800;
+      backdrop-filter: blur(8px);
+    }
+
+    .interactive-3d-controls {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border: 1px solid rgba(216, 221, 210, .9);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, .86);
+      backdrop-filter: blur(8px);
+    }
+
+    .interactive-3d-controls button,
+    .interactive-3d-controls select {
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--text);
+      font-size: .78em;
+      font-weight: 850;
+    }
+
+    .interactive-3d-controls button {
+      min-width: 70px;
+      padding: 0 10px;
+    }
+
+    .interactive-3d-controls select { padding: 4px 8px; }
+
+    .interactive-3d-controls input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .interactive-3d-readout {
+      min-width: 86px;
+      color: var(--text-muted);
+      font-size: .76em;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .screen-placeholder {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background:
+        linear-gradient(135deg, rgba(226, 96, 59, .16), rgba(20, 20, 20, .2)),
+        #111;
+      color: rgba(255, 255, 255, .82);
       text-align: center;
     }
 
-    @media (max-width: 900px) {
-      .detail-shell,
-      .detail-layout {
+    .screen-placeholder.visible { display: flex; }
+
+    .placeholder-box {
+      width: min(460px, 100%);
+    }
+
+    .placeholder-box h3 {
+      margin-bottom: 8px;
+      color: #fff;
+      font-size: 1.02em;
+    }
+
+    .placeholder-box p {
+      color: rgba(255, 255, 255, .72);
+      font-size: .9em;
+      line-height: 1.45;
+    }
+
+    .playback-rail {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) 54px;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      color: rgba(255, 255, 255, .54);
+      font-size: .72em;
+    }
+
+    .playback-rail input { width: 100%; accent-color: rgba(255, 255, 255, .7); }
+
+    .selector-stack {
+      display: grid;
+      gap: 1px;
+      border-top: 1px solid var(--line);
+      background: var(--line);
+    }
+
+    .selector-row {
+      display: grid;
+      grid-template-rows: auto 0fr;
+      background: var(--surface);
+      transition: grid-template-rows .22s ease;
+    }
+
+    .selector-row.open { grid-template-rows: auto 1fr; }
+
+    .selector-row-header {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr) auto 24px;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 38px;
+      padding: 10px 14px;
+      border: 0;
+      background: var(--surface);
+      color: var(--text);
+      text-align: left;
+    }
+
+    .selector-row-header:hover { background: #fcfaf7; }
+
+    .selector-row-label {
+      color: var(--text);
+      font-size: .8em;
+      font-weight: 850;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+
+    .selector-row-value {
+      min-width: 0;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: .82em;
+      font-weight: 750;
+    }
+
+    .selector-row-count {
+      color: var(--text-muted);
+      font-size: .74em;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .selector-chevron {
+      justify-self: end;
+      color: var(--text-muted);
+      font-size: 1.2em;
+      font-weight: 800;
+      line-height: 1;
+      transform: rotate(90deg);
+      transition: transform .16s;
+    }
+
+    .selector-row.open .selector-chevron { transform: rotate(-90deg); }
+
+    .selector-rail {
+      min-height: 0;
+      overflow: hidden;
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(188px, 222px);
+      gap: 10px;
+      padding: 0 14px;
+      scrollbar-width: thin;
+      transition: padding .22s ease;
+    }
+
+    .selector-row.open .selector-rail {
+      min-height: 174px;
+      overflow-x: auto;
+      padding-top: 2px;
+      padding-bottom: 12px;
+    }
+
+    .object-tile,
+    .pose-tile,
+    .view-tile {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      text-align: left;
+      box-shadow: var(--shadow-soft);
+      transition: border-color .16s, box-shadow .16s, transform .16s;
+    }
+
+    .object-tile:hover,
+    .pose-tile:hover,
+    .view-tile:hover,
+    .object-tile.active,
+    .pose-tile.active,
+    .view-tile.active {
+      border-color: rgba(226, 96, 59, .65);
+      box-shadow: var(--shadow-lift);
+      transform: translateY(-1px);
+    }
+
+    .object-tile.active,
+    .pose-tile.active,
+    .view-tile.active {
+      outline: 2px solid rgba(226, 96, 59, .18);
+    }
+
+    .object-tile img,
+    .object-preview,
+    .pose-tile video,
+    .view-tile video,
+    .view-preview {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      display: block;
+      object-fit: cover;
+      background:
+        linear-gradient(135deg, rgba(226, 96, 59, .10), rgba(253, 238, 233, .78)),
+        var(--surface-2);
+    }
+
+    .object-tile img {
+      background: var(--bg);
+      object-fit: contain;
+    }
+
+    .object-preview,
+    .view-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--text-muted);
+      font-size: .82em;
+      font-weight: 800;
+    }
+
+    .tile-body {
+      min-width: 0;
+      padding: 9px 10px 10px;
+    }
+
+    .tile-title {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: .9em;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+
+    .pose-title-row {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pose-title-row .tile-title {
+      flex: 1 1 auto;
+    }
+
+    .pose-title-row .chip {
+      flex: 0 0 auto;
+    }
+
+    .tile-sub {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-top: 2px;
+      color: var(--text-muted);
+      font-size: .78em;
+      font-weight: 700;
+    }
+
+    .status-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .empty-inline {
+      align-self: center;
+      justify-self: start;
+      padding: 16px;
+      color: var(--text-muted);
+      font-size: .86em;
+      font-weight: 750;
+    }
+
+    @media (max-width: 980px) {
+      .gallery-head {
         grid-template-columns: 1fr;
+        align-items: start;
       }
 
-      .episode-count { text-align: left; }
-      .sequence-toolbar { justify-content: flex-start; }
-      .object-sidebar {
-        position: static;
-        max-height: 330px;
+      .summary-pills { justify-content: flex-start; }
+
+      .control-deck { grid-template-columns: 1fr; }
+
+      .screen-wrap {
+        grid-template-columns: 1fr;
+        aspect-ratio: auto;
       }
-      .object-menu {
-        max-height: 282px;
-        padding-right: 0;
-      }
-      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .viewer-panel {
-        position: static;
-        order: -1;
-      }
+
+      .media-panel { aspect-ratio: 16 / 10; }
     }
 
     @media (max-width: 640px) {
@@ -920,13 +691,24 @@
         padding: 12px 16px;
       }
 
-      .container { padding: 18px 14px; }
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .object-header { display: block; }
-      #viewer {
-        height: 62vh;
-        min-height: 360px;
+      .nav-links { gap: 2px; }
+      .nav-link { padding: 8px 9px; font-size: 13px; }
+      .container { padding: 16px 12px 56px; }
+
+      .selector-row-header {
+        grid-template-columns: 64px minmax(0, 1fr) auto 18px;
+        gap: 8px;
+        padding: 10px 12px;
       }
+
+      .selector-row-count { display: none; }
+      .selector-rail { grid-auto-columns: minmax(164px, 78vw); padding-left: 12px; padding-right: 12px; }
+
+      .interactive-3d-controls {
+        grid-template-columns: auto minmax(70px, 1fr) auto;
+      }
+
+      .interactive-3d-controls select { display: none; }
     }
   </style>
 </head>
@@ -941,81 +723,112 @@
       <a class="nav-link" href="./static/pdf/hrdexdb.pdf" target="_blank" rel="noreferrer">Paper</a>
       <a class="nav-link" href="https://github.com/snuvclab/HRDexDB" target="_blank" rel="noreferrer">Code</a>
       <a class="nav-link" href="https://huggingface.co/datasets/HRDexDB/HRDexDB" target="_blank" rel="noreferrer">Data</a>
-      <button class="nav-link cta" id="gallery-nav" type="button">Gallery</button>
+      <a class="nav-link cta active" href="gallery.html">Gallery</a>
     </div>
   </nav>
 
   <main class="container">
-    <section class="view active" id="gallery-view">
-      <header class="gallery-header">
-        <div class="gallery-brand">
-          <h1>Object Gallery</h1>
-          <span class="count" id="stats">Loading...</span>
-          <span class="gallery-hint">click for visualization</span>
-        </div>
-        <div class="gallery-controls">
-          <div class="search-wrap">
-            <input type="search" class="search-bar" id="search" placeholder="Search objects…" autocomplete="off">
-            <span class="kbd">/</span>
-          </div>
-          <select class="sort-select" id="sort">
-            <option value="az">Name A → Z</option>
-            <option value="za">Name Z → A</option>
-          </select>
-        </div>
-      </header>
-      <div class="grid" id="grid"></div>
-    </section>
+    <header class="gallery-head">
+      <div>
+        <div class="gallery-kicker">Dataset Gallery</div>
+        <h1 class="gallery-title">Sequence Viewer</h1>
+      </div>
+      <div class="summary-pills" id="summary-pills"></div>
+    </header>
 
-    <section class="view" id="detail-view">
-      <div class="detail-shell">
-        <aside class="object-sidebar">
-          <input type="search" class="object-menu-search" id="object-menu-search" placeholder="Search objects" autocomplete="off">
-          <div class="object-menu" id="object-menu"></div>
-        </aside>
-
-        <div class="detail-main">
-          <div class="object-header">
-            <div>
-              <h1 id="object-title"></h1>
-              <p class="object-subtitle" id="object-subtitle"></p>
-            </div>
-          </div>
-
-          <div class="tabs" id="embodiment-tabs"></div>
-
-          <div class="sequence-toolbar">
-            <div class="episode-count" id="episode-count"></div>
-          </div>
-
-          <div class="detail-layout">
-            <div class="episode-grid" id="episode-grid"></div>
-            <aside class="viewer-panel">
-              <div class="viewer-meta">
-                <div class="viewer-title" id="viewer-title">Select a sequence</div>
-                <div class="viewer-actions">
-                  <div class="viewer-status" id="viewer-status">Idle</div>
-                  <button class="load-glb-button" id="load-glb-button" type="button" disabled>Open interactive 3D</button>
-                </div>
-              </div>
-              <div id="viewer">
-                <button class="reset-view-button" id="reset-view-button" type="button" hidden>Reset view</button>
-              </div>
-            </aside>
-          </div>
-        </div>
+    <section class="control-deck" aria-label="Gallery controls">
+      <div class="field">
+        <label id="hand-filter-label">Embodiment</label>
+        <div class="check-group" id="hand-filter" role="group" aria-labelledby="hand-filter-label"></div>
+      </div>
+      <div class="field">
+        <label id="outcome-filter-label">Outcome</label>
+        <div class="check-group" id="outcome-filter" role="group" aria-labelledby="outcome-filter-label"></div>
       </div>
     </section>
-  </main>
 
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-      }
-    }
-  </script>
+    <section class="explorer-layout">
+      <section class="viewer-main" aria-label="Main sequence panel">
+        <div class="viewer-topbar">
+          <div class="selected-title">
+            <h2 id="selected-title">Loading...</h2>
+            <div class="sub" id="selected-subtitle"></div>
+          </div>
+        </div>
+
+        <div class="selector-stack" aria-label="Thumbnail selectors">
+          <section class="selector-row" id="object-selector" data-selector="object">
+            <button class="selector-row-header" id="object-header" type="button" aria-expanded="false" aria-controls="object-strip">
+              <span class="selector-row-label">Object</span>
+              <span class="selector-row-value" id="object-value">-</span>
+              <span class="selector-row-count" id="object-count"></span>
+              <span class="selector-chevron">&rsaquo;</span>
+            </button>
+            <div class="selector-rail object-strip" id="object-strip"></div>
+          </section>
+
+          <section class="selector-row" id="pose-selector" data-selector="pose">
+            <button class="selector-row-header" id="pose-header" type="button" aria-expanded="false" aria-controls="pose-strip">
+              <span class="selector-row-label">Pose</span>
+              <span class="selector-row-value" id="pose-value">-</span>
+              <span class="selector-row-count" id="pose-count"></span>
+              <span class="selector-chevron">&rsaquo;</span>
+            </button>
+            <div class="selector-rail pose-strip" id="pose-strip"></div>
+          </section>
+
+        </div>
+
+        <div class="screen-wrap">
+          <section class="media-panel video-panel" aria-label="Selected preview video">
+            <div class="media-panel-label">Video</div>
+            <video id="main-video" controls autoplay muted loop playsinline preload="metadata"></video>
+            <div class="screen-placeholder" id="video-pending-layer">
+              <div class="placeholder-box">
+                <h3 id="video-pending-title">Video pending</h3>
+                <p id="video-pending-copy"></p>
+                <div class="playback-rail">
+                  <span>0:00</span>
+                  <input type="range" min="0" max="100" value="0" disabled>
+                  <span>0:00</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="media-panel three-d-panel" aria-label="Selected sequence interactive 3D">
+            <div class="media-panel-label">Interactive 3D</div>
+            <div class="screen-placeholder" id="pending-layer">
+              <div class="placeholder-box">
+                <h3 id="pending-title">Asset pending</h3>
+                <p id="pending-copy"></p>
+                <div class="playback-rail">
+                  <span>0:00</span>
+                  <input type="range" min="0" max="100" value="0" disabled>
+                  <span>0:00</span>
+                </div>
+              </div>
+            </div>
+            <div class="interactive-3d-viewer" id="interactive-3d-viewer">
+              <div class="interactive-3d-canvas" id="interactive-3d-canvas"></div>
+              <div class="interactive-3d-status" id="interactive-3d-status">Interactive 3D</div>
+              <div class="interactive-3d-controls">
+                <button id="interactive-3d-play" type="button">Pause</button>
+                <input id="interactive-3d-scrub" type="range" min="0" max="1000" value="0">
+                <div class="interactive-3d-readout" id="interactive-3d-readout">0.00s</div>
+                <select id="interactive-3d-speed" aria-label="3D playback speed">
+                  <option value="0.5">0.5x</option>
+                  <option value="1" selected>1x</option>
+                  <option value="2">2x</option>
+                  <option value="4">4x</option>
+                </select>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </section>
+  </main>
 
   <script>
     const CATALOG_URL = "https://huggingface.co/spaces/HRDexDB/HRDexDB-Visualizer/raw/main/assets/glb_catalog.json";
@@ -1023,47 +836,31 @@
     const GLB_TREE_API_BASE = "https://huggingface.co/api/datasets/HRDexDB/HRDexDB-glb/tree/main";
     const PREVIEW_VIDEO_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-preview-video/resolve/main";
     const PREVIEW_CAMERA_ID = "23263780";
-    const PREVIEW_VIDEO_CACHE_LIMIT = 24;
-    const PREVIEW_WARM_COUNT = 6;
     const THUMB_BASE = "static/gallery-object-thumbs";
     const THUMB_FALLBACK_BASE = "https://willi19.github.io/object_processing/objects";
     const THUMB_VERSION = "object-processing-24";
-    const GLB_CACHE_NAME = "hrdexdb-original-glb-v1";
-    const ANIMATION_TRIMS_URL = "static/gallery-animation-trims.json";
+    const EPISODE_THUMBNAILS_URL = "static/gallery-episode-thumbnails.json";
     const GRASP_RESULT_MANIFEST_URL = "static/gallery-grasp-results/manifest.json";
     const INTERACTIVE_3D_VISIBILITY_URL = "static/gallery-interactive-3d-visibility.json";
-    const ANIMATION_TRIMS = {};
-    const GRASP_RESULTS = {};
-    const INTERACTIVE_3D_VISIBILITY = {};
+    const THREE_MODULE_URL = "https://unpkg.com/three@0.160.0/build/three.module.js";
+    const ORBIT_CONTROLS_URL = "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+    const GLTF_LOADER_URL = "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+    const MESHOPT_DECODER_URL = "https://unpkg.com/three@0.160.0/examples/jsm/libs/meshopt_decoder.module.js";
     const ADDITIONAL_GLB_CATALOG_TREES = [
       {
         embodiment: "inspire_dftp",
         url: `${GLB_TREE_API_BASE}/inspire_dftp?recursive=true&expand=false`
       }
     ];
+
     const ROBOT_SPACE_GRAY_COLOR = 0xa8adb4;
     const OBJECT_DEFAULT_BEIGE_COLOR = 0xd9c7aa;
     const CAMERA_PRESETS = {
-      default: {
-        focus: [-0.07, -0.10, -0.02],
-        viewDirection: [0, 0.36, -1.04]
-      },
-      human: {
-        focus: [0, 0.08, -0.17],
-        viewDirection: [0, 0.52, -1.51]
-      },
-      allegro_v5: {
-        focus: [0.04, -0.15, -0.01],
-        viewDirection: [0, 0.56, -1.37]
-      },
-      inspire_f1: {
-        focus: [0.05, -0.14, -0.07],
-        viewDirection: [0, 0.36, -0.8]
-      },
-      inspire_dftp: {
-        focus: [0.05, -0.14, -0.07],
-        viewDirection: [0, 0.36, -0.8]
-      }
+      default: { focus: [-0.07, -0.10, -0.02], viewDirection: [0, 0.36, -1.04] },
+      human: { focus: [0, 0.08, -0.17], viewDirection: [0, 0.52, -1.51] },
+      allegro_v5: { focus: [0.04, -0.15, -0.01], viewDirection: [0, 0.56, -1.37] },
+      inspire_f1: { focus: [0.05, -0.14, -0.07], viewDirection: [0, 0.36, -0.8] },
+      inspire_dftp: { focus: [0.05, -0.14, -0.07], viewDirection: [0, 0.36, -0.8] }
     };
     const CAMERA_DISTANCE_SCALE = 0.3;
     const CAMERA_FOV = 45;
@@ -1074,115 +871,134 @@
     const VIEW_ZOOM_GREEN_CACTUS_VASE_SCALE = 2;
     const DEFAULT_VIEW_ZOOM_SCALE = VIEW_ZOOM_MIN_SCALE;
 
-    let catalog = {};
-    let objects = [];
-    let filteredObjects = [];
-    let detailObjectQuery = "";
-    let objectMenuRenderKey = "";
-    let animationTrims = ANIMATION_TRIMS;
-    let graspResults = GRASP_RESULTS;
-    let interactive3DVisibility = INTERACTIVE_3D_VISIBILITY;
-    let currentObject = null;
-    let currentEmbodiment = null;
-    let currentEpisode = null;
-    let viewerZoomScale = DEFAULT_VIEW_ZOOM_SCALE;
-    let viewerAutoZoomScale = DEFAULT_VIEW_ZOOM_SCALE;
-    let viewerObjectCenterY = null;
-
-    let THREE;
-    let OrbitControls;
-    let GLTFLoader;
-    let MeshoptDecoder;
-    let threeRuntimePromise;
-    let scene;
-    let camera;
-    let renderer;
-    let controls;
-    let clock;
-    let mixer = null;
-    let model = null;
-    let previewLayer = null;
-    let activePreviewShell = null;
-    let animationDuration = 0;
-    let animationClipDuration = 0;
-    let animationTrim = null;
-    let animationTrackData = [];
-    let viewerReady = false;
-    let loadToken = 0;
-    let previewWarmTimer = null;
-    let previewWarmToken = 0;
-    const inflightGlbBlobs = new Map();
-    const previewVideoShells = new Map();
-
     const labels = {
-      allegro_v5: "Allegro V5",
       human: "Human",
+      allegro_v5: "Allegro V5",
       inspire_f1: "Inspire F1",
       inspire_dftp: "Inspire DFTP"
     };
-    const cardLabels = {
-      allegro_v5: "allegro",
-      human: "human",
-      inspire_f1: "inspire",
-      inspire_dftp: "dftp"
+    const shortLabels = {
+      human: "Human",
+      allegro_v5: "Allegro",
+      inspire_f1: "Inspire",
+      inspire_dftp: "DFTP"
     };
     const embodimentOrder = ["human", "allegro_v5", "inspire_f1", "inspire_dftp"];
     const robotEmbodiments = new Set(["allegro_v5", "inspire_f1", "inspire_dftp"]);
-    const previewVideoEmbodiments = new Set(["human", "allegro_v5", "inspire_f1", "inspire_dftp"]);
 
-    const el = {
-      galleryView: document.getElementById("gallery-view"),
-      detailView: document.getElementById("detail-view"),
-      galleryNav: document.getElementById("gallery-nav"),
-      search: document.getElementById("search"),
-      sort: document.getElementById("sort"),
-      stats: document.getElementById("stats"),
-      grid: document.getElementById("grid"),
-      objectTitle: document.getElementById("object-title"),
-      objectSubtitle: document.getElementById("object-subtitle"),
-      embodimentTabs: document.getElementById("embodiment-tabs"),
-      objectMenuSearch: document.getElementById("object-menu-search"),
-      objectMenu: document.getElementById("object-menu"),
-      episodeCount: document.getElementById("episode-count"),
-      episodeGrid: document.getElementById("episode-grid"),
-      viewerPanel: document.querySelector(".viewer-panel"),
-      viewer: document.getElementById("viewer"),
-      viewerTitle: document.getElementById("viewer-title"),
-      viewerStatus: document.getElementById("viewer-status"),
-      resetViewButton: document.getElementById("reset-view-button"),
-      loadGlbButton: document.getElementById("load-glb-button")
+    const state = {
+      catalog: {},
+      episodeThumbnails: {},
+      graspResults: {},
+      interactive3DVisibility: {},
+      episodes: [],
+      currentKey: null,
+      currentCamera: null,
+      mediaRequested: false,
+      openSelector: null,
+      autoScrollRail: null,
+      autoScrollFrame: null,
+      autoScrollVelocity: 0
     };
 
-    init();
+    const viewer3d = {
+      initialized: false,
+      loading: null,
+      THREE: null,
+      OrbitControls: null,
+      GLTFLoader: null,
+      MeshoptDecoder: null,
+      renderer: null,
+      scene: null,
+      camera: null,
+      controls: null,
+      mixer: null,
+      clock: null,
+      model: null,
+      assetRoot: null,
+      duration: 0,
+      clipDuration: 0,
+      playing: true,
+      currentSrc: "",
+      currentHand: "",
+      loadToken: 0,
+      frame: null,
+      resizeObserver: null,
+      syncEventsBound: false,
+      zoomScale: DEFAULT_VIEW_ZOOM_SCALE,
+      autoZoomScale: DEFAULT_VIEW_ZOOM_SCALE,
+      objectCenterY: null
+    };
 
-    async function init() {
+    const els = {};
+    [
+      "summary-pills",
+      "hand-filter",
+      "outcome-filter",
+      "object-selector",
+      "pose-selector",
+      "object-header",
+      "pose-header",
+      "object-value",
+      "pose-value",
+      "selected-title",
+      "selected-subtitle",
+      "main-video",
+      "video-pending-layer",
+      "video-pending-title",
+      "video-pending-copy",
+      "pending-layer",
+      "pending-title",
+      "pending-copy",
+      "interactive-3d-viewer",
+      "interactive-3d-canvas",
+      "interactive-3d-status",
+      "interactive-3d-play",
+      "interactive-3d-scrub",
+      "interactive-3d-readout",
+      "interactive-3d-speed",
+      "object-strip",
+      "object-count",
+      "pose-strip",
+      "pose-count",
+    ].forEach(id => { els[id] = document.getElementById(id); });
+
+    Promise.all([
+      optionalJson(CATALOG_URL, null),
+      loadAdditionalGlbCatalogs(),
+      optionalJson(EPISODE_THUMBNAILS_URL, { thumbnails: {} }),
+      optionalJson(GRASP_RESULT_MANIFEST_URL, { results: {} }),
+      optionalJson(INTERACTIVE_3D_VISIBILITY_URL, { interactive3D: {} })
+    ]).then(([catalog, additionalCatalogs, thumbnailManifest, resultManifest, visibilityManifest]) => {
+      state.episodeThumbnails = thumbnailManifest?.thumbnails || {};
+      state.graspResults = resultManifest?.results || {};
+      state.interactive3DVisibility = visibilityManifest?.interactive3D || {};
+      state.catalog = hasCatalogData(catalog)
+        ? catalog
+        : catalogFromManifestKeys(state.episodeThumbnails, state.graspResults, state.interactive3DVisibility);
+      mergeCatalogs(state.catalog, additionalCatalogs);
+      state.episodes = flattenEpisodes();
+      fillFilters();
+      renderSummary();
+      selectInitialEpisode();
+      applyInitialViewParams();
+      bindEvents();
+      renderAll();
+    }).catch(error => {
+      console.error(error);
+      els["selected-title"].textContent = "Gallery data failed to load";
+      els["selected-subtitle"].textContent = error.message || String(error);
+      clearMedia();
+    });
+
+    async function optionalJson(url, fallback) {
       try {
-        const [response, additionalCatalogs, animationTrimManifest, graspResultManifest, interactive3DVisibilityManifest] = await Promise.all([
-          fetch(CATALOG_URL),
-          loadAdditionalGlbCatalogs(),
-          loadAnimationTrimManifest(),
-          loadGraspResultManifest(),
-          loadInteractive3DVisibilityManifest()
-        ]);
-        if (!response.ok) throw new Error(`Catalog request failed: ${response.status}`);
-        catalog = await response.json();
-        mergeCatalogs(catalog, additionalCatalogs);
-        applyAnimationTrimManifest(animationTrimManifest);
-        applyGraspResultManifest(graspResultManifest);
-        applyInteractive3DVisibilityManifest(interactive3DVisibilityManifest);
-        objects = buildObjects(catalog);
-        applyGalleryFilters();
-        currentObject = objects[0]?.id || null;
-        renderGallery();
-        loadHashState();
+        const response = await fetch(url, { cache: "no-cache" });
+        if (!response.ok) return fallback;
+        return response.json();
       } catch (error) {
-        el.stats.textContent = "Could not load the catalog.";
-        el.grid.innerHTML = `
-          <div class="empty-state">
-            Could not load the HRDexDB GLB catalog.<br>
-            <a href="${CATALOG_URL}" target="_blank" rel="noreferrer">Open catalog source</a>
-          </div>`;
-        console.error(error);
+        console.warn(error);
+        return fallback;
       }
     }
 
@@ -1190,10 +1006,10 @@
       const catalogPromises = ADDITIONAL_GLB_CATALOG_TREES.map(async source => {
         try {
           const response = await fetch(source.url, { cache: "no-cache" });
-          if (!response.ok) throw new Error(`Additional catalog request failed: ${response.status}`);
+          if (!response.ok) throw new Error(`Catalog tree request failed (${response.status})`);
           return catalogFromTree(source.embodiment, await response.json());
         } catch (error) {
-          console.warn(`Could not load ${source.embodiment} GLB catalog.`, error);
+          console.warn(`Could not load ${source.embodiment} catalog tree`, error);
           return null;
         }
       });
@@ -1201,870 +1017,853 @@
     }
 
     function catalogFromTree(embodiment, treeItems) {
-      const objectsByEmbodiment = {};
-      for (const item of treeItems || []) {
-        if (item?.type !== "file") continue;
-        const parts = String(item.path || "").split("/");
-        if (parts.length !== 3 || parts[0] !== embodiment || !parts[2].endsWith(".glb")) continue;
+      const catalog = {};
+      (Array.isArray(treeItems) ? treeItems : []).forEach(item => {
+        if (item?.type !== "file" || typeof item.path !== "string") return;
+        const parts = item.path.split("/");
+        if (parts.length !== 3 || parts[0] !== embodiment || !parts[2].endsWith(".glb")) return;
         const objectId = parts[1];
-        const episode = parts[2].replace(/\.glb$/, "");
-        if (!objectsByEmbodiment[objectId]) objectsByEmbodiment[objectId] = [];
-        objectsByEmbodiment[objectId].push(episode);
-      }
-      for (const episodes of Object.values(objectsByEmbodiment)) {
-        episodes.sort(compareEpisodeIds);
-      }
-      return { [embodiment]: objectsByEmbodiment };
+        const episode = parts[2].replace(/\.glb$/i, "");
+        addCatalogKey(catalog, sequenceKey(embodiment, objectId, episode));
+      });
+      return catalog;
     }
 
     function mergeCatalogs(target, catalogsToMerge) {
-      for (const source of catalogsToMerge || []) {
-        if (!source) continue;
-        for (const [embodiment, objectsByEmbodiment] of Object.entries(source)) {
-          if (!target[embodiment]) target[embodiment] = {};
-          for (const [objectId, episodes] of Object.entries(objectsByEmbodiment)) {
-            const mergedEpisodes = new Set([...(target[embodiment][objectId] || []), ...episodes]);
-            target[embodiment][objectId] = [...mergedEpisodes].sort(compareEpisodeIds);
-          }
-        }
-      }
+      (catalogsToMerge || []).forEach(source => {
+        if (!source || typeof source !== "object") return;
+        Object.entries(source).forEach(([hand, objects]) => {
+          target[hand] ||= {};
+          Object.entries(objects || {}).forEach(([objectId, episodes]) => {
+            target[hand][objectId] ||= [];
+            target[hand][objectId] = [...new Set([
+              ...target[hand][objectId].map(String),
+              ...(Array.isArray(episodes) ? episodes : Object.keys(episodes || {})).map(String)
+            ])].sort(compareEpisodeIds);
+          });
+        });
+      });
     }
 
     function compareEpisodeIds(a, b) {
-      const aNumber = Number(a);
-      const bNumber = Number(b);
-      const aNumeric = Number.isInteger(aNumber);
-      const bNumeric = Number.isInteger(bNumber);
-      if (aNumeric && bNumeric) return aNumber - bNumber;
-      if (aNumeric !== bNumeric) return aNumeric ? -1 : 1;
+      const numA = Number(a);
+      const numB = Number(b);
+      if (Number.isFinite(numA) && Number.isFinite(numB) && numA !== numB) return numA - numB;
       return String(a).localeCompare(String(b));
     }
 
-    async function loadAnimationTrimManifest() {
-      try {
-        const response = await fetch(ANIMATION_TRIMS_URL, { cache: "no-cache" });
-        if (!response.ok) return null;
-        return response.json();
-      } catch (error) {
-        console.warn(error);
-        return null;
-      }
+    function hasCatalogData(catalog) {
+      return Boolean(catalog && typeof catalog === "object" && Object.keys(catalog).length);
     }
 
-    async function loadGraspResultManifest() {
-      try {
-        const response = await fetch(GRASP_RESULT_MANIFEST_URL, { cache: "no-cache" });
-        if (!response.ok) return null;
-        return response.json();
-      } catch (error) {
-        console.warn(error);
-        return null;
-      }
-    }
-
-    async function loadInteractive3DVisibilityManifest() {
-      try {
-        const response = await fetch(INTERACTIVE_3D_VISIBILITY_URL, { cache: "no-cache" });
-        if (!response.ok) return null;
-        return response.json();
-      } catch (error) {
-        console.warn(error);
-        return null;
-      }
-    }
-
-    function applyAnimationTrimManifest(manifest) {
-      animationTrims = { ...ANIMATION_TRIMS, ...(manifest?.trims || {}) };
-    }
-
-    function applyGraspResultManifest(manifest) {
-      graspResults = { ...GRASP_RESULTS, ...(manifest?.results || {}) };
-    }
-
-    function applyInteractive3DVisibilityManifest(manifest) {
-      interactive3DVisibility = { ...INTERACTIVE_3D_VISIBILITY, ...(manifest?.interactive3D || {}) };
-    }
-
-    function buildObjects(source) {
-      const objectIds = Array.from(
-        new Set(Object.values(source).flatMap(objectsByEmbodiment => Object.keys(objectsByEmbodiment)))
-      ).sort();
-
-      return objectIds.map(id => {
-        const embodiments = {};
-        let totalEpisodes = 0;
-        for (const [embodiment, objectsByEmbodiment] of Object.entries(source)) {
-          const episodes = objectsByEmbodiment[id] || [];
-          if (episodes.length) {
-            embodiments[embodiment] = episodes.length;
-            totalEpisodes += episodes.length;
-          }
-        }
-        return {
-          id,
-          name: titleize(id),
-          embodiments,
-          totalEpisodes
-        };
+    function catalogFromManifestKeys(...sources) {
+      const catalog = {};
+      sources.forEach(source => {
+        Object.keys(source || {}).forEach(key => addCatalogKey(catalog, key));
       });
-    }
-
-    function titleize(value) {
-      return value
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, letter => letter.toUpperCase());
-    }
-
-    function objectData(objectId) {
-      return objects.find(object => object.id === objectId) || null;
-    }
-
-    function orderedEmbodiments(keys) {
-      const rank = new Map(embodimentOrder.map((embodiment, index) => [embodiment, index]));
-      return [...keys].sort((a, b) => (rank.get(a) ?? 99) - (rank.get(b) ?? 99) || a.localeCompare(b));
-    }
-
-    function embodimentKeys(objectId) {
-      const object = objectData(objectId);
-      if (!object) return [];
-      return orderedEmbodiments(
-        Object.keys(object.embodiments).filter(embodiment => catalog[embodiment]?.[objectId]?.length)
-      );
-    }
-
-    function episodesFor(objectId, embodiment) {
-      return catalog[embodiment]?.[objectId] || [];
-    }
-
-    function updateStats(items) {
-      const query = el.search.value.trim();
-      el.stats.textContent = query ? `${items.length} / ${objects.length}` : `${objects.length} objects`;
-    }
-
-    function applyGalleryFilters() {
-      const query = el.search.value.trim().toLowerCase();
-      const direction = el.sort.value === "za" ? -1 : 1;
-      filteredObjects = objects
-        .filter(object => !query || `${object.id} ${object.name}`.toLowerCase().includes(query))
-        .sort((a, b) => direction * a.name.localeCompare(b.name));
-    }
-
-    function renderGallery() {
-      updateStats(filteredObjects);
-
-      if (!filteredObjects.length) {
-        el.grid.innerHTML = '<div class="empty-state">No objects found.</div>';
-        return;
-      }
-
-      el.grid.innerHTML = filteredObjects.map(object => {
-        return `
-          <button class="grid-item" type="button" data-object="${object.id}">
-            <div class="thumb-slot">
-              ${objectThumbHtml(object)}
-            </div>
-            <div class="label">${object.name}</div>
-            <div class="hands-info">${object.id}</div>
-          </button>`;
-      }).join("");
-
-      el.grid.querySelectorAll(".grid-item").forEach(card => {
-        card.addEventListener("click", () => openDetail(card.dataset.object));
-      });
-    }
-
-    function renderObjectMenu() {
-      if (el.objectMenuSearch.value !== detailObjectQuery) {
-        el.objectMenuSearch.value = detailObjectQuery;
-      }
-
-      const query = detailObjectQuery.trim().toLowerCase();
-      const renderKey = `query:${query}`;
-      if (objectMenuRenderKey === renderKey && el.objectMenu.children.length) {
-        syncObjectMenuActive();
-        return;
-      }
-
-      const menuObjects = query
-        ? objects.filter(object => `${object.id} ${object.name}`.toLowerCase().includes(query))
-        : objects;
-      objectMenuRenderKey = renderKey;
-
-      if (!menuObjects.length) {
-        el.objectMenu.innerHTML = '<div class="empty-state">No objects found.</div>';
-        return;
-      }
-
-      el.objectMenu.innerHTML = menuObjects.map(object => `
-          <button class="object-menu-card ${object.id === currentObject ? "active" : ""}" type="button" data-object="${object.id}">
-            <div class="thumb-slot">
-              ${objectMenuThumbHtml(object)}
-            </div>
-            <div class="object-menu-label">${object.name}</div>
-            <div class="object-menu-hands">${object.id}</div>
-          </button>
-      `).join("");
-
-      el.objectMenu.querySelectorAll(".object-menu-card").forEach(card => {
-        card.addEventListener("click", () => openDetail(card.dataset.object, currentEmbodiment));
-      });
-
-      syncObjectMenuActive();
-    }
-
-    function syncObjectMenuActive() {
-      el.objectMenu.querySelectorAll(".object-menu-card").forEach(card => {
-        card.classList.toggle("active", card.dataset.object === currentObject);
-      });
-
-      el.objectMenu.querySelector(".object-menu-card.active")?.scrollIntoView({
-        block: "nearest",
-        inline: "nearest"
-      });
-    }
-
-    function setActiveView(view) {
-      const isDetail = view === "detail";
-      el.galleryView.classList.toggle("active", !isDetail);
-      el.detailView.classList.toggle("active", isDetail);
-      el.galleryNav.classList.toggle("active", !isDetail);
-    }
-
-    function openGallery() {
-      setActiveView("gallery");
-      history.replaceState(null, "", "#gallery");
-    }
-
-    function openDetail(objectId, embodiment = null, episode = null) {
-      const object = objectData(objectId);
-      if (!object) return;
-
-      const objectChanged = currentObject !== objectId;
-      currentObject = objectId;
-      if (objectChanged) {
-        detailObjectQuery = "";
-        clearPreviewVideoCache();
-      }
-      const keys = embodimentKeys(objectId);
-      currentEmbodiment = keys.includes(embodiment) ? embodiment : keys[0] || null;
-
-      const episodes = episodesFor(currentObject, currentEmbodiment);
-      currentEpisode = episodes.includes(episode) ? episode : episodes[0] || null;
-
-      setActiveView("detail");
-      writeHash();
-      if (currentEpisode) showPreviewOnly(currentEmbodiment, currentObject, currentEpisode);
-      requestAnimationFrame(renderDetail);
-    }
-
-    function renderDetail() {
-      const object = objectData(currentObject);
-      if (!object) return;
-
-      const keys = embodimentKeys(object.id);
-      const episodes = episodesFor(object.id, currentEmbodiment);
-
-      el.objectTitle.textContent = object.name;
-      el.objectSubtitle.textContent = `${keys.length} embodiments, ${object.totalEpisodes} sequences`;
-      renderObjectMenu();
-
-      el.embodimentTabs.innerHTML = keys.map(embodiment => `
-        <button class="tab ${embodiment === currentEmbodiment ? "active" : ""}" type="button" data-embodiment="${embodiment}">
-          ${labels[embodiment] || titleize(embodiment)} (${object.embodiments[embodiment]})
-        </button>
-      `).join("");
-
-      el.embodimentTabs.querySelectorAll(".tab").forEach(tab => {
-        tab.addEventListener("click", () => openDetail(object.id, tab.dataset.embodiment));
-      });
-
-      el.episodeCount.textContent = `${episodes.length} sequences`;
-      el.episodeGrid.innerHTML = episodes.map((episode, index) => `
-        <button class="episode-card ${episode === currentEpisode ? "active" : ""}" type="button" data-episode="${episode}">
-          <div class="episode-thumb">${episodePreviewHtml(currentEmbodiment, object.id, episode)}</div>
-          <div class="episode-footer">
-            <span class="badge badge-rank">${episodeDisplayLabel(currentEmbodiment, object.id, episode, index)}</span>
-            ${episodeResultBadgeHtml(currentEmbodiment, object.id, episode)}
-          </div>
-        </button>
-      `).join("");
-
-      el.episodeGrid.querySelectorAll(".episode-card").forEach(card => {
-        card.addEventListener("pointerenter", () => {
-          warmPreviewVideo(currentEmbodiment, object.id, card.dataset.episode);
+      Object.values(catalog).forEach(objects => {
+        Object.keys(objects).forEach(objId => {
+          objects[objId] = [...new Set(objects[objId])].sort(compareEpisodeIds);
         });
-        card.addEventListener("click", () => {
-          currentEpisode = card.dataset.episode;
-          setActiveEpisodeCard(currentEpisode);
-          writeHash();
-          loadCurrentEpisode();
+      });
+      return catalog;
+    }
+
+    function addCatalogKey(catalog, key) {
+      const parts = String(key || "").split("/");
+      if (parts.length < 3) return;
+      const [hand, objId, episode] = parts;
+      if (!hand || !objId || episode == null || episode === "") return;
+      catalog[hand] ||= {};
+      catalog[hand][objId] ||= [];
+      catalog[hand][objId].push(String(episode));
+    }
+
+    function bindEvents() {
+      ["hand-filter", "outcome-filter"].forEach(id => {
+        els[id].addEventListener("change", renderAll);
+      });
+
+      ["object", "pose"].forEach(name => {
+        const row = els[`${name}-selector`];
+        const rail = els[`${name}-strip`];
+        const header = els[`${name}-header`];
+        attachRailAutoScroll(rail);
+
+        header.addEventListener("click", () => {
+          state.openSelector = state.openSelector === name ? null : name;
+          updateSelectorOpenState();
+        });
+        row.addEventListener("pointerenter", () => {
+          state.openSelector = name;
+          updateSelectorOpenState();
+        });
+        row.addEventListener("pointerleave", () => {
+          stopRailAutoScroll();
+          state.openSelector = null;
+          updateSelectorOpenState();
+        });
+        row.addEventListener("focusin", () => {
+          state.openSelector = name;
+          updateSelectorOpenState();
+        });
+        row.addEventListener("focusout", () => {
+          requestAnimationFrame(() => {
+            if (row.matches(":hover") || row.contains(document.activeElement)) return;
+            stopRailAutoScroll();
+            if (state.openSelector === name) {
+              state.openSelector = null;
+              updateSelectorOpenState();
+            }
+          });
         });
       });
     }
 
-    function setActiveEpisodeCard(episode) {
-      el.episodeGrid.querySelectorAll(".episode-card").forEach(card => {
-        card.classList.toggle("active", card.dataset.episode === episode);
+    function bindTileActivation(tile, onActivate) {
+      let pointerActivated = false;
+
+      tile.addEventListener("pointerdown", event => {
+        if (event.button !== 0) return;
+        pointerActivated = true;
+        event.preventDefault();
+        event.stopPropagation();
+        stopRailAutoScroll();
+        onActivate();
+      });
+
+      tile.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (pointerActivated) {
+          pointerActivated = false;
+          return;
+        }
+        stopRailAutoScroll();
+        onActivate();
       });
     }
 
-    function loadCurrentEpisode() {
-      if (!currentEpisode) return;
-      showPreviewOnly(currentEmbodiment, currentObject, currentEpisode);
+    function attachRailAutoScroll(rail) {
+      rail.addEventListener("pointermove", event => updateRailAutoScroll(rail, event));
+      rail.addEventListener("pointerleave", stopRailAutoScroll);
+      rail.addEventListener("pointercancel", stopRailAutoScroll);
+      rail.addEventListener("wheel", stopRailAutoScroll, { passive: true });
     }
 
-    function writeHash() {
-      history.replaceState(
-        null,
-        "",
-        `#object=${encodeURIComponent(currentObject || "")}&embodiment=${encodeURIComponent(currentEmbodiment || "")}&episode=${encodeURIComponent(currentEpisode || "")}`
+    function updateRailAutoScroll(rail, event) {
+      if (!rail || rail.scrollWidth <= rail.clientWidth) {
+        stopRailAutoScroll();
+        return;
+      }
+
+      const rect = rail.getBoundingClientRect();
+      const edgeWidth = Math.min(120, Math.max(56, rect.width * 0.18));
+      const x = event.clientX - rect.left;
+      let velocity = 0;
+
+      if (x < edgeWidth) {
+        velocity = -railAutoScrollVelocity(edgeWidth - x, edgeWidth);
+      } else if (x > rect.width - edgeWidth) {
+        velocity = railAutoScrollVelocity(x - (rect.width - edgeWidth), edgeWidth);
+      }
+
+      if (!velocity) {
+        stopRailAutoScroll();
+        return;
+      }
+
+      startRailAutoScroll(rail, velocity);
+    }
+
+    function railAutoScrollVelocity(distanceIntoEdge, edgeWidth) {
+      const ratio = Math.max(0, Math.min(1, distanceIntoEdge / edgeWidth));
+      return 5 + Math.round(ratio * 18);
+    }
+
+    function startRailAutoScroll(rail, velocity) {
+      state.autoScrollRail = rail;
+      state.autoScrollVelocity = velocity;
+      if (state.autoScrollFrame) return;
+
+      const step = () => {
+        const activeRail = state.autoScrollRail;
+        const activeVelocity = state.autoScrollVelocity;
+        if (!activeRail || !activeVelocity) {
+          state.autoScrollFrame = null;
+          return;
+        }
+
+        activeRail.scrollLeft += activeVelocity;
+        const maxScroll = Math.max(0, activeRail.scrollWidth - activeRail.clientWidth);
+        if ((activeRail.scrollLeft <= 0 && activeVelocity < 0) ||
+            (activeRail.scrollLeft >= maxScroll && activeVelocity > 0)) {
+          stopRailAutoScroll();
+          return;
+        }
+
+        state.autoScrollFrame = requestAnimationFrame(step);
+      };
+
+      state.autoScrollFrame = requestAnimationFrame(step);
+    }
+
+    function stopRailAutoScroll() {
+      state.autoScrollRail = null;
+      state.autoScrollVelocity = 0;
+      if (state.autoScrollFrame) {
+        cancelAnimationFrame(state.autoScrollFrame);
+        state.autoScrollFrame = null;
+      }
+    }
+
+    function flattenEpisodes() {
+      const episodes = [];
+      orderedEmbodiments(Object.keys(state.catalog)).forEach(hand => {
+        const objects = state.catalog[hand] || {};
+        Object.entries(objects).forEach(([objId, sequenceList]) => {
+          const sequences = Array.isArray(sequenceList) ? sequenceList : Object.keys(sequenceList || {});
+          sequences.forEach(rawEpisode => {
+            const episode = String(rawEpisode);
+            const result = graspResultFor(hand, objId, episode);
+            const outcome = outcomeFor(hand, result);
+            episodes.push({
+              key: sequenceKey(hand, objId, episode, "|"),
+              pathKey: sequenceKey(hand, objId, episode),
+              hand,
+              objId,
+              objName: titleize(objId),
+              episode,
+              rank: Number.isFinite(Number(episode)) ? Number(episode) : episode,
+              rankLabel: poseLabel(hand, objId, episode),
+              outcome,
+              outcomeLabel: outcomeLabel(outcome),
+              has3D: true,
+              cameras: [PREVIEW_CAMERA_ID],
+              result
+            });
+          });
+        });
+      });
+
+      return episodes.sort((a, b) =>
+        a.objName.localeCompare(b.objName) ||
+        embodimentRank(a.hand) - embodimentRank(b.hand) ||
+        Number(a.rank) - Number(b.rank) ||
+        String(a.episode).localeCompare(String(b.episode))
       );
     }
 
-    function loadHashState() {
-      const state = hashEpisodeState();
-      if (state?.objectId && objectData(state.objectId)) {
-        openDetail(state.objectId, state.embodiment, state.episode);
+    function applyInitialViewParams() {
+      const params = new URLSearchParams(location.search);
+      const hashParams = new URLSearchParams(location.hash.replace(/^#/, ""));
+      for (const [key, value] of hashParams.entries()) {
+        if (!params.has(key)) params.set(key, value);
+      }
+
+      const open = (params.get("selector") || params.get("open") || "").toLowerCase();
+      if (["object", "pose", "view"].includes(open)) state.openSelector = open;
+
+      const requestedObject = params.get("object");
+      const requestedHand = params.get("hand") || params.get("embodiment");
+      const requestedEpisode = params.get("episode") || params.get("pose") || params.get("rank");
+      const requestedCamera = params.get("camera") || params.get("view");
+      if (!requestedObject && !requestedHand && !requestedEpisode) return;
+
+      const target = state.episodes.find(ep =>
+        (!requestedObject || ep.objId === requestedObject) &&
+        (!requestedHand || ep.hand === requestedHand) &&
+        (!requestedEpisode || ep.episode === String(requestedEpisode))
+      );
+      if (target) {
+        state.currentKey = target.key;
+        state.currentCamera = requestedCamera && target.cameras.includes(requestedCamera)
+          ? requestedCamera
+          : target.cameras[0] || null;
+        state.mediaRequested = Boolean(state.currentCamera);
       }
     }
 
-    function hashEpisodeState() {
-      const params = new URLSearchParams(location.hash.replace(/^#/, ""));
-      const objectId = params.get("object");
-      const embodiment = params.get("embodiment");
-      const episode = params.get("episode");
-      if (!objectId || !embodiment || !episode) return null;
-      return { objectId, embodiment, episode };
+    function fillFilters() {
+      renderCheckboxGroup("hand-filter", "hand", orderedValues(state.episodes.map(ep => ep.hand), embodimentOrder), labelForHand);
+      renderCheckboxGroup("outcome-filter", "outcome", orderedValues(state.episodes.map(ep => ep.outcome), ["success", "fail", "unknown"]), outcomeLabel);
     }
 
-    function glbUrl(embodiment, objectId, episode) {
-      const path = [embodiment, objectId, `${episode}.glb`]
-        .map(part => encodeURIComponent(part))
-        .join("/");
-      return `${GLB_BASE}/${path}`;
+    function orderedValues(values, preferred = []) {
+      const set = new Set(values.filter(Boolean));
+      return [
+        ...preferred.filter(value => set.delete(value)),
+        ...[...set].sort((a, b) => titleize(a).localeCompare(titleize(b)))
+      ];
     }
 
-    function glbAssetFor(embodiment, objectId, episode) {
+    function renderCheckboxGroup(id, name, values, labeler = titleize) {
+      els[id].innerHTML = values.map(value =>
+        `<label class="check-chip">
+          <input type="checkbox" name="${escapeHtml(name)}" value="${escapeHtml(value)}" checked>
+          <span>${escapeHtml(labeler(value))}</span>
+        </label>`
+      ).join("") || '<span class="empty-check">No options</span>';
+    }
+
+    function renderSummary() {
+      const objects = new Set(state.episodes.map(ep => ep.objId)).size;
+      const humans = state.episodes.filter(ep => ep.hand === "human").length;
+      const robots = state.episodes.filter(ep => robotEmbodiments.has(ep.hand)).length;
+      els["summary-pills"].innerHTML = [
+        `<span class="chip accent">${state.episodes.length.toLocaleString()} sequences</span>`,
+        `<span class="chip">${objects} objects</span>`,
+        `<span class="chip info">${humans} human</span>`,
+        `<span class="chip">${robots} robot</span>`
+      ].join("");
+    }
+
+    function selectInitialEpisode() {
+      const first = defaultEpisodeFrom(state.episodes);
+      if (!first) return;
+      state.currentKey = first.key;
+      state.currentCamera = first.cameras[0] || null;
+      state.mediaRequested = Boolean(state.currentCamera);
+    }
+
+    function renderAll() {
+      ensureCurrentEpisodeSelection();
+      renderMainPanel();
+      renderSelectorRows();
+      writeStateUrl();
+    }
+
+    function filters() {
       return {
-        url: glbUrl(embodiment, objectId, episode),
-        originalUrl: glbUrl(embodiment, objectId, episode)
+        hands: checkedValues("hand-filter"),
+        outcomes: checkedValues("outcome-filter")
       };
     }
 
-    function previewVideoUrl(embodiment, objectId, episode) {
-      const path = [embodiment, objectId, episode, "vid", `${PREVIEW_CAMERA_ID}.mp4`]
-        .map(part => encodeURIComponent(part))
-        .join("/");
-      return `${PREVIEW_VIDEO_BASE}/${path}`;
+    function checkedValues(id) {
+      return new Set([...els[id].querySelectorAll('input[type="checkbox"]:checked')].map(input => input.value));
     }
 
-    function previewFor(embodiment, objectId, episode) {
-      if (!previewVideoEmbodiments.has(embodiment)) return null;
-      return {
-        video: previewVideoUrl(embodiment, objectId, episode)
-      };
+    function filteredEpisodes() {
+      const f = filters();
+      return state.episodes.filter(ep =>
+        f.hands.has(ep.hand) &&
+        f.outcomes.has(ep.outcome)
+      );
     }
 
-    function previewThumbnailSrc(preview) {
-      return `${preview.video}#t=0.001`;
-    }
-
-    function animationTrimFor(embodiment, objectId, episode) {
-      return animationTrims[`${embodiment}/${objectId}/${episode}`] || null;
-    }
-
-    function graspResultFor(embodiment, objectId, episode) {
-      return graspResults[`${embodiment}/${objectId}/${episode}`] || null;
-    }
-
-    function sequenceKeyFor(embodiment, objectId, episode) {
-      return `${embodiment}/${objectId}/${episode}`;
-    }
-
-    function showInteractive3DFor(embodiment, objectId, episode) {
-      return interactive3DVisibility[sequenceKeyFor(embodiment, objectId, episode)] !== false;
-    }
-
-    function episodeDisplayLabel(embodiment, objectId, episode, index = 0) {
-      const result = graspResultFor(embodiment, objectId, episode);
-      const displayEpisode = robotEmbodiments.has(embodiment) && result?.humanPairedEpisode != null
-        ? result.humanPairedEpisode
-        : episode;
-      return `#${String(displayEpisode).padStart(2, "0")}`;
-    }
-
-    function episodeTitleLabel(embodiment, objectId, episode) {
-      const result = graspResultFor(embodiment, objectId, episode);
-      return robotEmbodiments.has(embodiment) && result?.humanPairedEpisode != null
-        ? result.humanPairedEpisode
-        : episode;
-    }
-
-    function episodeResultBadgeHtml(embodiment, objectId, episode) {
-      const placeholder = `<span class="badge badge-result badge-success badge-placeholder" aria-hidden="true">success</span>`;
-      if (!robotEmbodiments.has(embodiment)) return placeholder;
-      const result = graspResultFor(embodiment, objectId, episode);
-      if (!result || typeof result.graspSuccess !== "boolean") return placeholder;
-      const state = result.graspSuccess ? "success" : "fail";
-      return `<span class="badge badge-result badge-${state}">${state}</span>`;
-    }
-
-    function episodePreviewHtml(embodiment, objectId, episode) {
-      const preview = previewFor(embodiment, objectId, episode);
-      if (!preview) {
-        return `<span class="episode-num">#${episode}</span>`;
-      }
-      const thumbnailSrc = previewThumbnailSrc(preview);
-      return `
-        <video src="${thumbnailSrc}" preload="metadata" muted playsinline onerror="this.parentElement.classList.add('thumb-missing'); this.remove()"></video>
-        <span class="episode-num">#${episode}</span>
-      `;
-    }
-
-    function objectMenuThumbHtml(object) {
-      return objectThumbHtml(object);
-    }
-
-    function objectThumbUrl(objectId, base = THUMB_BASE) {
-      return `${base}/${encodeURIComponent(objectId)}/thumb.png?v=${THUMB_VERSION}`;
-    }
-
-    function objectThumbHtml(object) {
-      const thumbSrc = objectThumbUrl(object.id);
-      const fallbackSrc = objectThumbUrl(object.id, THUMB_FALLBACK_BASE);
-      return `<img src="${thumbSrc}" data-fallback-src="${fallbackSrc}" alt="${object.name}" loading="lazy" onerror="handleObjectThumbError(this)">`;
-    }
-
-    function handleObjectThumbError(img) {
-      const fallbackSrc = img.dataset.fallbackSrc;
-      if (fallbackSrc) {
-        img.dataset.fallbackSrc = "";
-        img.src = fallbackSrc;
-        return;
-      }
-      img.parentElement.classList.add("thumb-missing");
-    }
-
-    function ensurePreviewLayer() {
-      if (!previewLayer) {
-        previewLayer = document.createElement("div");
-        previewLayer.className = "viewer-preview";
-        el.viewer.appendChild(previewLayer);
-      }
-      return previewLayer;
-    }
-
-    function trimPreviewVideoCache(activeSrc) {
-      if (previewVideoShells.size <= PREVIEW_VIDEO_CACHE_LIMIT) return;
-      for (const [src, shell] of previewVideoShells) {
-        if (src === activeSrc) continue;
-        previewPlayerFor(shell)?.pause();
-        shell.remove();
-        previewVideoShells.delete(src);
-        if (previewVideoShells.size <= PREVIEW_VIDEO_CACHE_LIMIT) return;
-      }
-    }
-
-    function clearPreviewVideoCache() {
-      previewWarmToken += 1;
-      if (previewWarmTimer) {
-        clearTimeout(previewWarmTimer);
-        previewWarmTimer = null;
-      }
-      for (const shell of previewVideoShells.values()) {
-        previewPlayerFor(shell)?.pause();
-        shell.remove();
-      }
-      previewVideoShells.clear();
-      activePreviewShell = null;
-    }
-
-    function previewPlayerFor(shell) {
-      return shell?.querySelector(".viewer-video-player") || null;
-    }
-
-    function setPreviewShellReady(shell) {
-      shell.classList.add("ready");
-      if (shell === activePreviewShell) {
-        schedulePreviewWarmup(currentEmbodiment, currentObject, currentEpisode);
-      }
-    }
-
-    function previewShellFor(preview) {
-      if (!preview?.video) return null;
-      const layer = ensurePreviewLayer();
-      const src = new URL(preview.video, window.location.href).href;
-      const cachedShell = previewVideoShells.get(src);
-
-      if (cachedShell) {
-        previewPlayerFor(cachedShell)?.removeAttribute("poster");
-        cachedShell.classList.toggle("ready", (previewPlayerFor(cachedShell)?.readyState || 0) >= 2);
-        previewVideoShells.delete(src);
-        previewVideoShells.set(src, cachedShell);
-        return cachedShell;
-      }
-
-      const shell = document.createElement("div");
-      shell.className = "viewer-video-shell";
-      shell.dataset.previewSrc = src;
-
-      const video = document.createElement("video");
-      video.className = "viewer-video-player";
-      video.controls = true;
-      video.preload = "auto";
-      video.loop = true;
-      video.muted = true;
-      video.playsInline = true;
-      video.setAttribute("muted", "");
-      video.setAttribute("playsinline", "");
-      video.setAttribute("webkit-playsinline", "");
-      video.fetchPriority = "high";
-      video.setAttribute("fetchpriority", "high");
-      video.src = preview.video;
-      video.addEventListener("loadeddata", () => setPreviewShellReady(shell));
-      video.addEventListener("playing", () => setPreviewShellReady(shell));
-
-      const thumb = document.createElement("video");
-      thumb.className = "viewer-video-thumb";
-      thumb.src = previewThumbnailSrc(preview);
-      thumb.preload = "metadata";
-      thumb.muted = true;
-      thumb.playsInline = true;
-      thumb.setAttribute("muted", "");
-      thumb.setAttribute("playsinline", "");
-      thumb.setAttribute("webkit-playsinline", "");
-      thumb.disablePictureInPicture = true;
-
-      shell.appendChild(video);
-      shell.appendChild(thumb);
-      layer.appendChild(shell);
-      previewVideoShells.set(src, shell);
-      trimPreviewVideoCache(src);
-      return shell;
-    }
-
-    function warmPreviewVideo(embodiment, objectId, episode) {
-      if (!embodiment || !objectId || episode == null) return;
-      const preview = previewFor(embodiment, objectId, episode);
-      if (!preview) return;
-      const shell = previewShellFor(preview);
-      if (!shell) return;
-      if (shell === activePreviewShell) return;
-      const video = previewPlayerFor(shell);
-      const thumb = shell.querySelector(".viewer-video-thumb");
-      if ((video?.readyState || 0) < 2) video?.load?.();
-      if ((thumb?.readyState || 0) < 1) thumb?.load?.();
-    }
-
-    function warmEpisodeOrder(episodes, activeEpisode) {
-      const activeIndex = Math.max(0, episodes.indexOf(activeEpisode));
-      const ordered = [];
-      for (let offset = 0; ordered.length < Math.min(PREVIEW_WARM_COUNT, episodes.length); offset += 1) {
-        const forward = activeIndex + offset;
-        const backward = activeIndex - offset;
-        if (forward < episodes.length) ordered.push(episodes[forward]);
-        if (offset && backward >= 0 && ordered.length < PREVIEW_WARM_COUNT) ordered.push(episodes[backward]);
-        if (forward >= episodes.length && backward < 0) break;
-      }
-      return ordered;
-    }
-
-    function schedulePreviewWarmup(embodiment, objectId, activeEpisode) {
-      previewWarmToken += 1;
-      const token = previewWarmToken;
-      if (previewWarmTimer) clearTimeout(previewWarmTimer);
-      if (!previewVideoEmbodiments.has(embodiment)) return;
-
-      const episodes = warmEpisodeOrder(episodesFor(objectId, embodiment), activeEpisode);
-      let index = 0;
-      const warmNext = () => {
-        if (token !== previewWarmToken || currentObject !== objectId || currentEmbodiment !== embodiment) return;
-        const episode = episodes[index];
-        if (episode != null) warmPreviewVideo(embodiment, objectId, episode);
-        index += 1;
-        if (index < episodes.length) previewWarmTimer = setTimeout(warmNext, 160);
-      };
-      previewWarmTimer = setTimeout(warmNext, 120);
-    }
-
-    function showInstantPreview(embodiment, objectId, episode, options = {}) {
-      const restart = options.restart !== false;
-      const showActions = options.showActions !== false;
-      const preview = previewFor(embodiment, objectId, episode);
-      if (!preview) {
-        hideInstantPreview();
-        el.viewerStatus.hidden = !showActions;
-        el.viewerStatus.textContent = showActions ? "Ready" : "";
-        return;
-      }
-      const layer = ensurePreviewLayer();
-      const shell = previewShellFor(preview);
-      if (!shell) return;
-      const video = previewPlayerFor(shell);
-
-      if (activePreviewShell && activePreviewShell !== shell) {
-        activePreviewShell.classList.remove("active");
-        previewPlayerFor(activePreviewShell)?.pause();
-      }
-
-      activePreviewShell = shell;
-      shell.classList.add("active");
-      layer.classList.add("active");
-      el.viewer.classList.add("preview-active");
-      el.viewerPanel.classList.add("preview-mode");
-      if (restart && Number.isFinite(video?.duration)) {
-        try {
-          video.currentTime = 0;
-        } catch (error) {
-          console.warn(error);
-        }
-      }
-      if ((video?.readyState || 0) < 2) video?.load?.();
-      const playPromise = video?.play?.();
-      if (playPromise) playPromise.catch(() => {});
-      if ((video?.readyState || 0) >= 2) {
-        schedulePreviewWarmup(embodiment, objectId, episode);
-      }
-      el.viewerStatus.hidden = !showActions;
-      el.viewerStatus.textContent = showActions ? "Preview playing" : "";
-    }
-
-    function pausePreviewVideo() {
-      previewPlayerFor(activePreviewShell)?.pause();
-    }
-
-    function hideInstantPreview() {
-      if (!previewLayer) return;
-      pausePreviewVideo();
-      previewLayer.classList.remove("active");
-      el.viewer.classList.remove("preview-active");
-      el.viewerPanel.classList.remove("preview-mode");
-    }
-
-    function currentPreviewAnimationOffset() {
-      const video = previewPlayerFor(activePreviewShell);
-      const time = Number.isFinite(video?.currentTime) ? video.currentTime : 0;
-      const duration = Number.isFinite(video?.duration) && video.duration > 0 ? video.duration : null;
-      return duration && animationDuration ? (time / duration) * animationDuration : time;
-    }
-
-    function nextFrame() {
-      return new Promise(resolve => requestAnimationFrame(resolve));
-    }
-
-    function setLoadGlbButtonState(state) {
-      if (state === "hidden") {
-        el.viewerStatus.hidden = true;
-        el.viewerStatus.textContent = "";
-        el.loadGlbButton.hidden = true;
-        el.loadGlbButton.disabled = true;
-        el.loadGlbButton.dataset.action = "hidden";
-        el.resetViewButton.hidden = true;
+    function ensureCurrentEpisodeSelection() {
+      const visible = filteredEpisodes();
+      if (!visible.length) {
+        state.currentKey = null;
+        state.currentCamera = null;
+        state.mediaRequested = false;
         return;
       }
 
-      el.viewerStatus.hidden = false;
-      el.loadGlbButton.hidden = false;
+      const current = visible.find(ep => ep.key === state.currentKey);
+      if (!current) {
+        const next = defaultEpisodeFrom(visible);
+        state.currentKey = next.key;
+        state.currentCamera = next.cameras[0] || null;
+        state.mediaRequested = Boolean(state.currentCamera);
+        return;
+      }
 
-      if (state === "ready") {
-        el.loadGlbButton.disabled = false;
-        el.loadGlbButton.textContent = "Open interactive 3D";
-        el.loadGlbButton.dataset.action = "open";
-        el.resetViewButton.hidden = true;
-      } else if (state === "loading") {
-        el.loadGlbButton.disabled = true;
-        el.loadGlbButton.textContent = "Loading";
-        el.loadGlbButton.dataset.action = "loading";
-        el.resetViewButton.hidden = true;
-      } else if (state === "loaded") {
-        el.loadGlbButton.disabled = false;
-        el.loadGlbButton.textContent = "Play preview";
-        el.loadGlbButton.dataset.action = "preview";
-        el.resetViewButton.hidden = false;
+      if (!state.currentCamera || !current.cameras.includes(state.currentCamera)) {
+        state.currentCamera = current.cameras[0] || null;
+      }
+      state.mediaRequested = Boolean(state.currentCamera);
+    }
+
+    function defaultEpisodeFrom(episodes) {
+      return episodes.find(ep => ep.outcome === "success") ||
+        episodes[0] ||
+        null;
+    }
+
+    function currentEpisode() {
+      return state.episodes.find(ep => ep.key === state.currentKey) || null;
+    }
+
+    function renderMainPanel() {
+      const ep = currentEpisode();
+      if (!ep) {
+        els["selected-title"].textContent = "No matching sequence";
+        els["selected-subtitle"].textContent = "";
+        clearMedia();
+        return;
+      }
+
+      els["selected-title"].textContent = `${ep.objName} - ${shortLabels[ep.hand] || labelForHand(ep.hand)} - ${graspTitleLabel(ep)}`;
+      els["selected-subtitle"].textContent = "";
+
+      if (state.mediaRequested && state.currentCamera) {
+        showVideo(videoUrl(ep, state.currentCamera));
       } else {
-        el.loadGlbButton.disabled = true;
-        el.loadGlbButton.textContent = "Open interactive 3D";
-        el.loadGlbButton.dataset.action = "idle";
-        el.resetViewButton.hidden = true;
+        showVideoPending("Video pending", "");
+      }
+
+      showModel(modelUrl(ep), ep);
+    }
+
+    function renderSelectorRows() {
+      updateSelectorHeaders();
+      updateSelectorOpenState();
+      renderObjectRow();
+      renderPoseRow();
+    }
+
+    function updateSelectorOpenState() {
+      ["object", "pose"].forEach(name => {
+        const open = state.openSelector === name;
+        els[`${name}-selector`].classList.toggle("open", open);
+        els[`${name}-header`].setAttribute("aria-expanded", String(open));
+      });
+    }
+
+    function updateSelectorHeaders() {
+      const ep = currentEpisode();
+      if (!ep) {
+        els["object-value"].textContent = "-";
+        els["pose-value"].textContent = "-";
+        return;
+      }
+      els["object-value"].textContent = ep.objName;
+      els["pose-value"].textContent = ep.rankLabel;
+    }
+
+    function renderObjectRow() {
+      const episodes = filteredEpisodes();
+      const byObject = new Map();
+      episodes.forEach(ep => {
+        const item = byObject.get(ep.objId) || {
+          id: ep.objId,
+          name: ep.objName,
+          episodes: 0,
+          human: 0,
+          robot: 0
+        };
+        item.episodes += 1;
+        if (ep.hand === "human") item.human += 1;
+        if (robotEmbodiments.has(ep.hand)) item.robot += 1;
+        byObject.set(ep.objId, item);
+      });
+
+      const items = [...byObject.values()].sort((a, b) => a.name.localeCompare(b.name));
+      els["object-count"].textContent = `${items.length} objects`;
+      els["object-strip"].innerHTML = items.map(item => {
+        const active = currentEpisode()?.objId === item.id;
+        return `<button class="object-tile ${active ? "active" : ""}" data-object="${escapeHtml(item.id)}">
+          <img src="${objectThumbUrl(item.id)}" data-fallback-src="${objectThumbUrl(item.id, THUMB_FALLBACK_BASE)}" alt="${escapeHtml(item.name)}" loading="eager">
+          <div class="tile-body">
+            <div class="tile-title">${escapeHtml(item.name)}</div>
+            <div class="status-line">
+              <span class="chip info">${item.human} human</span>
+              <span class="chip">${item.robot} robot</span>
+            </div>
+          </div>
+        </button>`;
+      }).join("") || '<div class="empty-inline">No matching objects.</div>';
+
+      els["object-strip"].querySelectorAll(".object-tile").forEach(btn => {
+        bindTileActivation(btn, () => {
+          const next = matchingObjectEpisode(btn.dataset.object) ||
+            state.episodes.find(ep => ep.objId === btn.dataset.object);
+          if (!next) return;
+          state.currentKey = next.key;
+          state.currentCamera = next.cameras[0] || null;
+          state.mediaRequested = true;
+          renderAll();
+        });
+      });
+      bindObjectThumbnailFallbacks();
+    }
+
+    function matchingObjectEpisode(objId) {
+      return filteredEpisodes().find(ep => ep.objId === objId);
+    }
+
+    function renderPoseRow() {
+      const ep = currentEpisode();
+      if (!ep) {
+        els["pose-count"].textContent = "0 poses";
+        els["pose-strip"].innerHTML = '<div class="empty-inline">No sequence selected.</div>';
+        return;
+      }
+
+      const poseItems = filteredEpisodes()
+        .filter(item => item.objId === ep.objId)
+        .slice(0, 72);
+
+      els["pose-count"].textContent = `${poseItems.length} pose candidates`;
+      els["pose-strip"].innerHTML = poseItems.map(item => {
+        const active = item.key === state.currentKey;
+        return `<button class="pose-tile ${active ? "active" : ""}" data-key="${escapeHtml(item.key)}">
+          <video src="${previewThumbnailUrl(item)}" muted loop playsinline preload="metadata"></video>
+          <div class="tile-body">
+            <div class="pose-title-row">
+              <div class="tile-title">${escapeHtml(item.rankLabel)}</div>
+              <span class="chip ${item.outcome === "success" ? "ok" : item.outcome === "fail" ? "warn" : "info"}">${escapeHtml(item.outcomeLabel)}</span>
+            </div>
+          </div>
+        </button>`;
+      }).join("") || '<div class="empty-inline">No matching pose candidates.</div>';
+
+      els["pose-strip"].querySelectorAll(".pose-tile").forEach(btn => {
+        bindTileActivation(btn, () => {
+          state.currentKey = btn.dataset.key;
+          const next = currentEpisode();
+          state.currentCamera = next?.cameras?.[0] || null;
+          state.mediaRequested = true;
+          renderAll();
+        });
+        const vid = btn.querySelector("video");
+        btn.addEventListener("mouseenter", () => vid.play().catch(() => {}));
+        btn.addEventListener("mouseleave", () => {
+          vid.pause();
+          const item = state.episodes.find(ep => ep.key === btn.dataset.key);
+          seekPoseThumbnailVideo(item, vid);
+        });
+      });
+      bindPoseThumbnailTimes();
+    }
+
+    function showVideo(src) {
+      bindSynchronizedPlaybackEvents();
+      els["video-pending-layer"].classList.remove("visible");
+      const video = els["main-video"];
+      video.style.display = "block";
+      video.muted = true;
+      video.autoplay = true;
+      video.playbackRate = playbackSpeed();
+      video.onerror = () => showVideoPending("Video unavailable", "");
+      const tryPlay = () => video.play().catch(() => {});
+      if (video.src !== new URL(src, window.location.href).href) {
+        video.src = src;
+        video.load();
+      }
+      syncInteractive3DToVideo({ force: true });
+      tryPlay();
+      video.addEventListener("canplay", tryPlay, { once: true });
+    }
+
+    function showModel(src, ep) {
+      els["pending-layer"].classList.remove("visible");
+      showInteractive3D(src, ep);
+    }
+
+    function showVideoPending(title, copy) {
+      const video = els["main-video"];
+      video.pause();
+      video.removeAttribute("src");
+      video.onerror = null;
+      video.load();
+      video.style.display = "none";
+      els["video-pending-title"].textContent = title;
+      els["video-pending-copy"].textContent = copy;
+      els["video-pending-layer"].classList.add("visible");
+    }
+
+    function showModelPending(title, copy) {
+      hideInteractive3D({ clear: true });
+      els["pending-title"].textContent = title;
+      els["pending-copy"].textContent = copy;
+      els["pending-layer"].classList.add("visible");
+    }
+
+    function clearMedia() {
+      showVideoPending("No sequence selected", "");
+      showModelPending("No sequence selected", "");
+    }
+
+    async function showInteractive3D(src, ep) {
+      const token = ++viewer3d.loadToken;
+      els["interactive-3d-viewer"].style.display = "block";
+      setInteractive3DStatus("Loading interactive 3D...");
+      try {
+        await ensureInteractive3D();
+        if (token !== viewer3d.loadToken) return;
+        await loadInteractive3DModel(src, ep, token);
+      } catch (error) {
+        if (token !== viewer3d.loadToken) return;
+        console.error(error);
+        setInteractive3DStatus(`Interactive 3D failed: ${error.message || error}`);
       }
     }
 
-    function showPreviewOnly(embodiment, objectId, episode) {
-      loadToken += 1;
-      const object = objectData(objectId);
-      el.viewerTitle.textContent = `${labels[embodiment] || titleize(embodiment)} / ${object?.name || objectId} / sequence ${episodeTitleLabel(embodiment, objectId, episode)}`;
-      resetViewerZoomAuto();
-      if (viewerReady) clearModel();
-      const showActions = showInteractive3DFor(embodiment, objectId, episode);
-      showInstantPreview(embodiment, objectId, episode, { showActions });
-      setLoadGlbButtonState(showActions ? "ready" : "hidden");
+    function hideInteractive3D({ clear = false } = {}) {
+      if (clear) viewer3d.loadToken += 1;
+      els["interactive-3d-viewer"].style.display = "none";
+      viewer3d.playing = false;
+      updateInteractivePlayButton();
+      setInteractive3DStatus();
+      if (clear) clearInteractive3DModel();
     }
 
-    async function ensureThreeRuntime() {
-      if (!threeRuntimePromise) {
-        threeRuntimePromise = Promise.all([
-          import("three"),
-          import("three/addons/controls/OrbitControls.js"),
-          import("three/addons/loaders/GLTFLoader.js"),
-          import("three/addons/libs/meshopt_decoder.module.js")
-        ]).then(([threeModule, controlsModule, loaderModule, meshoptModule]) => {
-          THREE = threeModule;
-          OrbitControls = controlsModule.OrbitControls;
-          GLTFLoader = loaderModule.GLTFLoader;
-          MeshoptDecoder = meshoptModule.MeshoptDecoder;
+    function setInteractive3DStatus(message = "", copy = "") {
+      const status = els["interactive-3d-status"];
+      if (!message) {
+        status.textContent = "";
+        status.style.display = "none";
+        return;
+      }
+      status.textContent = copy ? `${message} ${copy}` : message;
+      status.style.display = "";
+    }
+
+    async function ensureInteractive3D() {
+      if (viewer3d.initialized) {
+        resizeInteractive3D();
+        return;
+      }
+      if (viewer3d.loading) return viewer3d.loading;
+
+      viewer3d.loading = (async () => {
+        const [threeModule, controlsModule, loaderModule, meshoptModule] = await Promise.all([
+          import(THREE_MODULE_URL),
+          import(ORBIT_CONTROLS_URL),
+          import(GLTF_LOADER_URL),
+          import(MESHOPT_DECODER_URL)
+        ]);
+        viewer3d.THREE = threeModule;
+        viewer3d.OrbitControls = controlsModule.OrbitControls;
+        viewer3d.GLTFLoader = loaderModule.GLTFLoader;
+        viewer3d.MeshoptDecoder = meshoptModule.MeshoptDecoder;
+        viewer3d.clock = new viewer3d.THREE.Clock();
+
+        viewer3d.scene = new viewer3d.THREE.Scene();
+        viewer3d.scene.background = new viewer3d.THREE.Color(0xf7f8f4);
+        viewer3d.camera = new viewer3d.THREE.PerspectiveCamera(45, 1, 0.001, 1000);
+        viewer3d.assetRoot = new viewer3d.THREE.Group();
+        viewer3d.scene.add(viewer3d.assetRoot);
+
+        viewer3d.renderer = new viewer3d.THREE.WebGLRenderer({ antialias: true, alpha: false });
+        viewer3d.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        viewer3d.renderer.outputColorSpace = viewer3d.THREE.SRGBColorSpace;
+        viewer3d.renderer.toneMapping = viewer3d.THREE.ACESFilmicToneMapping;
+        viewer3d.renderer.toneMappingExposure = 0.95;
+        els["interactive-3d-canvas"].appendChild(viewer3d.renderer.domElement);
+
+        viewer3d.controls = new viewer3d.OrbitControls(viewer3d.camera, viewer3d.renderer.domElement);
+        viewer3d.controls.enableDamping = true;
+        viewer3d.controls.dampingFactor = 0.08;
+        viewer3d.controls.enablePan = true;
+        viewer3d.controls.enableRotate = true;
+        viewer3d.controls.enableZoom = true;
+        viewer3d.controls.screenSpacePanning = true;
+
+        viewer3d.scene.add(new viewer3d.THREE.HemisphereLight(0xffffff, 0x7b8492, 2.4));
+        const keyLight = new viewer3d.THREE.DirectionalLight(0xffffff, 2.2);
+        keyLight.position.set(3, 5, 4);
+        viewer3d.scene.add(keyLight);
+        const fillLight = new viewer3d.THREE.DirectionalLight(0xffffff, 0.7);
+        fillLight.position.set(-2, -3, 2);
+        viewer3d.scene.add(fillLight);
+
+        bindSynchronizedPlaybackEvents();
+        els["interactive-3d-play"].addEventListener("click", toggleSynchronizedPlayback);
+        els["interactive-3d-scrub"].addEventListener("input", () => {
+          const t = (Number(els["interactive-3d-scrub"].value) || 0) / 1000;
+          seekSynchronizedPlayback(t);
+        });
+        els["interactive-3d-speed"].addEventListener("change", () => {
+          const video = els["main-video"];
+          const speed = playbackSpeed();
+          if (video) video.playbackRate = speed;
+          viewer3d.clock.getDelta();
+          syncInteractive3DToVideo({ force: true });
+        });
+
+        viewer3d.resizeObserver = new ResizeObserver(resizeInteractive3D);
+        viewer3d.resizeObserver.observe(els["interactive-3d-viewer"]);
+        window.addEventListener("resize", resizeInteractive3D);
+        viewer3d.initialized = true;
+        resizeInteractive3D();
+        animateInteractive3D();
+      })();
+      return viewer3d.loading;
+    }
+
+    function resizeInteractive3D() {
+      if (!viewer3d.renderer || !viewer3d.camera) return;
+      const rect = els["interactive-3d-viewer"].getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      viewer3d.camera.aspect = rect.width / rect.height;
+      viewer3d.camera.updateProjectionMatrix();
+      viewer3d.renderer.setSize(rect.width, rect.height, false);
+    }
+
+    async function loadInteractive3DModel(src, ep, token) {
+      if (viewer3d.currentSrc === src && viewer3d.model) {
+        viewer3d.currentHand = ep.hand;
+        viewer3d.playing = true;
+        updateInteractivePlayButton();
+        setInteractive3DStatus();
+        return;
+      }
+
+      clearInteractive3DModel();
+      resetViewerZoomAuto();
+      viewer3d.currentSrc = src;
+      viewer3d.currentHand = ep.hand;
+      setInteractive3DStatus("Fetching animated GLB...");
+
+      const loader = new viewer3d.GLTFLoader();
+      loader.setCrossOrigin("anonymous");
+      if (viewer3d.MeshoptDecoder) loader.setMeshoptDecoder(viewer3d.MeshoptDecoder);
+
+      const glbBuffer = await fetchArrayBufferWithProgress(src, progress => {
+        setInteractive3DStatus("Loading animated GLB...", `${progress.toFixed(0)}%`);
+      });
+      const gltf = await new Promise((resolve, reject) => {
+        loader.parse(glbBuffer, src.replace(/[^/]*$/, ""), resolve, reject);
+      });
+
+      if (token !== viewer3d.loadToken || viewer3d.currentSrc !== src) {
+        disposeObject3D(gltf.scene);
+        return;
+      }
+
+      const loadedModel = gltf.scene;
+      applyViewerMaterialTone(loadedModel);
+      loadedModel.rotation.set(-Math.PI / 2, 0, 0);
+      loadedModel.updateMatrixWorld(true);
+      viewer3d.model = loadedModel;
+      viewer3d.assetRoot.add(viewer3d.model);
+      playAnimations(gltf, ep);
+      setInteractive3DTime(0, { render: false });
+      frameInteractiveModel(loadedModel, ep.hand, { updateAutoZoom: true });
+      syncInteractive3DToVideo({ force: true, render: false });
+      viewer3d.renderer.render(viewer3d.scene, viewer3d.camera);
+      setInteractive3DStatus();
+    }
+
+    async function fetchArrayBufferWithProgress(url, onProgress) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`GLB request failed (${response.status})`);
+
+      const total = Number(response.headers.get("content-length")) || 0;
+      if (!response.body || !total) {
+        const buffer = await response.arrayBuffer();
+        onProgress?.(100);
+        return buffer;
+      }
+
+      const reader = response.body.getReader();
+      const chunks = [];
+      let received = 0;
+      let lastPct = -1;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        received += value.byteLength;
+        const pct = Math.max(0, Math.min(100, received / total * 100));
+        const rounded = Math.floor(pct);
+        if (rounded !== lastPct) {
+          lastPct = rounded;
+          onProgress?.(pct);
+        }
+      }
+
+      const output = new Uint8Array(received);
+      let offset = 0;
+      chunks.forEach(chunk => {
+        output.set(chunk, offset);
+        offset += chunk.byteLength;
+      });
+      onProgress?.(100);
+      return output.buffer;
+    }
+
+    function clearInteractive3DModel() {
+      viewer3d.mixer?.stopAllAction?.();
+      if (viewer3d.assetRoot) {
+        [...viewer3d.assetRoot.children].forEach(child => {
+          viewer3d.assetRoot.remove(child);
+          disposeObject3D(child);
         });
       }
-      return threeRuntimePromise;
+      viewer3d.model = null;
+      viewer3d.mixer = null;
+      viewer3d.duration = 0;
+      viewer3d.clipDuration = 0;
+      viewer3d.currentSrc = "";
+      els["interactive-3d-scrub"].value = "0";
+      els["interactive-3d-readout"].textContent = "0.00s";
     }
 
-    async function initViewer() {
-      if (viewerReady) return;
-      await ensureThreeRuntime();
-      if (viewerReady) return;
-
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0xf4efe8);
-      clock = new THREE.Clock();
-
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.domElement.tabIndex = 0;
-      renderer.domElement.addEventListener("pointerdown", () => {
-        renderer.domElement.focus();
-        renderer.domElement.style.cursor = "grabbing";
+    function disposeObject3D(root) {
+      root?.traverse?.(node => {
+        node.geometry?.dispose?.();
+        const materials = Array.isArray(node.material) ? node.material : [node.material].filter(Boolean);
+        materials.forEach(material => material.dispose?.());
       });
-      window.addEventListener("pointerup", () => {
-        renderer.domElement.style.cursor = "grab";
-      });
-      renderer.domElement.addEventListener("contextmenu", event => event.preventDefault());
-      el.viewer.appendChild(renderer.domElement);
-
-      camera = new THREE.PerspectiveCamera(45, 1, 0.001, 1000);
-      camera.position.set(1.4, 0.9, 1.4);
-
-      controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.08;
-      controls.enablePan = true;
-      controls.enableRotate = true;
-      controls.enableZoom = true;
-      controls.screenSpacePanning = true;
-      controls.target.set(0, 0, 0);
-      controls.mouseButtons = {
-        LEFT: THREE.MOUSE.ROTATE,
-        MIDDLE: THREE.MOUSE.DOLLY,
-        RIGHT: THREE.MOUSE.PAN
-      };
-      controls.touches = {
-        ONE: THREE.TOUCH.ROTATE,
-        TWO: THREE.TOUCH.DOLLY_PAN
-      };
-
-      scene.add(new THREE.HemisphereLight(0xffffff, 0x7b8492, 2.4));
-      const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
-      keyLight.position.set(3, 5, 4);
-      scene.add(keyLight);
-
-      new ResizeObserver(resizeViewer).observe(el.viewer);
-      window.addEventListener("resize", resizeViewer);
-      resizeViewer();
-      viewerReady = true;
-      animate();
     }
 
-    function resizeViewer() {
-      if (!renderer || !camera) return;
-      const rect = el.viewer.getBoundingClientRect();
-      const width = Math.max(1, Math.floor(rect.width));
-      const height = Math.max(1, Math.floor(rect.height));
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height, false);
-    }
-
-    function clearModel() {
-      if (!model) return;
-      scene.remove(model);
-      model.traverse(node => {
-        if (node.geometry) node.geometry.dispose();
-        if (node.material) {
-          const materials = Array.isArray(node.material) ? node.material : [node.material];
-          materials.forEach(material => material.dispose?.());
-        }
-      });
-      model = null;
-      mixer = null;
-      animationDuration = 0;
-      animationClipDuration = 0;
-      animationTrim = null;
-      animationTrackData = [];
-    }
-
-    async function openGlbCache() {
-      if (!("caches" in window)) return null;
-      try {
-        return await caches.open(GLB_CACHE_NAME);
-      } catch (error) {
-        console.warn(error);
-        return null;
+    function playAnimations(gltf, ep) {
+      const THREE = viewer3d.THREE;
+      const clips = gltf.animations || [];
+      if (!clips.length) {
+        viewer3d.duration = 0;
+        viewer3d.clipDuration = 0;
+        return;
       }
+
+      viewer3d.mixer = new THREE.AnimationMixer(viewer3d.model);
+      viewer3d.clipDuration = Math.max(...clips.map(clip => clip.duration || 0));
+      viewer3d.duration = viewer3d.clipDuration;
+
+      clips.forEach(clip => {
+        const action = viewer3d.mixer.clipAction(clip);
+        action.reset();
+        action.setLoop(THREE.LoopRepeat, Infinity);
+        action.play();
+      });
+
+      els["interactive-3d-scrub"].max = String(Math.max(1, Math.round(viewer3d.duration * 1000)));
+      viewer3d.playing = true;
+      updateInteractivePlayButton();
     }
 
-    async function cachedGlbBlob(url) {
-      const cache = await openGlbCache();
-      if (!cache) return null;
-      const cached = await cache.match(url);
-      return cached ? cached.blob() : null;
+    function resetInteractive3DView({ resetTime = false } = {}) {
+      if (!viewer3d.model || !viewer3d.controls || !viewer3d.camera) return;
+      if (resetTime && viewer3d.mixer) setInteractive3DTime(0, { render: false });
+      frameInteractiveModel(viewer3d.model, viewer3d.currentHand || "default");
+      viewer3d.clock?.getDelta?.();
+      viewer3d.renderer?.render(viewer3d.scene, viewer3d.camera);
     }
 
-    async function storeGlbBlob(url, blob, headers = new Headers()) {
-      const cache = await openGlbCache();
-      if (!cache) return;
-      const responseHeaders = new Headers(headers);
-      if (!responseHeaders.has("content-type")) {
-        responseHeaders.set("content-type", blob.type || "model/gltf-binary");
-      }
-      await cache.put(
-        url,
-        new Response(blob.slice(0, blob.size, blob.type), {
-          status: 200,
-          statusText: "OK",
-          headers: responseHeaders
-        })
+    function frameInteractiveModel(object, embodiment, options = {}) {
+      const THREE = viewer3d.THREE;
+      const box = new THREE.Box3().setFromObject(object);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const objectCenter = objectMeshMeanCenter(object);
+      if (options.updateAutoZoom) setAutoZoomFromObjectCenter(objectCenter);
+
+      const maxDim = Math.max(size.x, size.y, size.z) || 1;
+      const preset = CAMERA_PRESETS[embodiment] || CAMERA_PRESETS.default;
+      viewer3d.camera.fov = CAMERA_FOV;
+      const distance = maxDim / (2 * Math.tan(THREE.MathUtils.degToRad(viewer3d.camera.fov) / 2));
+      const viewDirection = new THREE.Vector3(...preset.viewDirection).normalize();
+      const presetFocus = new THREE.Vector3(
+        maxDim * preset.focus[0],
+        maxDim * preset.focus[1],
+        maxDim * preset.focus[2]
       );
-    }
+      const focus = objectCenter ? objectCenter.clone().sub(center) : presetFocus;
 
-    async function downloadGlbBlob(url, priority = "high") {
-      const response = await fetch(url, { mode: "cors", priority });
-      if (!response.ok) throw new Error(`GLB request failed: ${response.status}`);
-      const headers = response.headers;
-      const blob = await response.blob();
-      storeGlbBlob(url, blob, headers).catch(error => console.warn(error));
-      return blob;
-    }
-
-    async function glbBlob(url, priority = "high") {
-      const cached = await cachedGlbBlob(url);
-      if (cached) return { blob: cached, source: "cache" };
-
-      if (!inflightGlbBlobs.has(url)) {
-        inflightGlbBlobs.set(
-          url,
-          downloadGlbBlob(url, priority).finally(() => {
-            inflightGlbBlobs.delete(url);
-          })
-        );
-      }
-
-      return {
-        blob: await inflightGlbBlobs.get(url),
-        source: "network"
-      };
-    }
-
-    function cameraPresetFor(embodiment) {
-      return CAMERA_PRESETS[embodiment] || CAMERA_PRESETS.default;
+      object.position.sub(center);
+      viewer3d.camera.up.set(0, 1, 0);
+      viewer3d.controls.target.copy(focus);
+      viewer3d.camera.near = Math.max(maxDim / 1000, 0.001);
+      viewer3d.camera.far = Math.max(maxDim * 100, 100);
+      viewer3d.camera.position.copy(focus).addScaledVector(viewDirection, distance * CAMERA_DISTANCE_SCALE * viewer3d.zoomScale);
+      viewer3d.camera.updateProjectionMatrix();
+      viewer3d.controls.update();
+      resizeInteractive3D();
     }
 
     function isObjectMeshNode(node) {
@@ -2079,6 +1878,7 @@
     }
 
     function objectMeshMeanCenter(object) {
+      const THREE = viewer3d.THREE;
       const center = new THREE.Vector3();
       const vertex = new THREE.Vector3();
       let count = 0;
@@ -2103,8 +1903,16 @@
       return count ? center.multiplyScalar(1 / count) : null;
     }
 
-    function clampNumber(value, min, max) {
-      return Math.max(min, Math.min(max, value));
+    function setAutoZoomFromObjectCenter(objectCenter) {
+      viewer3d.objectCenterY = Number.isFinite(objectCenter?.y) ? objectCenter.y : null;
+      viewer3d.autoZoomScale = zoomScaleForObjectCenterY(viewer3d.objectCenterY);
+      viewer3d.zoomScale = viewer3d.autoZoomScale;
+    }
+
+    function resetViewerZoomAuto() {
+      viewer3d.objectCenterY = null;
+      viewer3d.autoZoomScale = DEFAULT_VIEW_ZOOM_SCALE;
+      viewer3d.zoomScale = DEFAULT_VIEW_ZOOM_SCALE;
     }
 
     function zoomScaleForObjectCenterY(centerY) {
@@ -2112,186 +1920,7 @@
       const referenceSpan = VIEW_ZOOM_GREEN_CACTUS_VASE_CENTER_Y - VIEW_ZOOM_APPLE_CENTER_Y;
       const zoomSpan = VIEW_ZOOM_GREEN_CACTUS_VASE_SCALE - VIEW_ZOOM_MIN_SCALE;
       const scale = VIEW_ZOOM_MIN_SCALE + ((centerY - VIEW_ZOOM_APPLE_CENTER_Y) / referenceSpan) * zoomSpan;
-      return clampNumber(scale, VIEW_ZOOM_MIN_SCALE, VIEW_ZOOM_MAX_SCALE);
-    }
-
-    function setAutoZoomFromObjectCenter(objectCenter) {
-      viewerObjectCenterY = Number.isFinite(objectCenter?.y) ? objectCenter.y : null;
-      viewerAutoZoomScale = zoomScaleForObjectCenterY(viewerObjectCenterY);
-      viewerZoomScale = viewerAutoZoomScale;
-    }
-
-    function resetViewerZoomAuto() {
-      viewerObjectCenterY = null;
-      viewerAutoZoomScale = DEFAULT_VIEW_ZOOM_SCALE;
-      viewerZoomScale = DEFAULT_VIEW_ZOOM_SCALE;
-    }
-
-    function frameObject(object, embodiment, options = {}) {
-      const box = new THREE.Box3().setFromObject(object);
-      const size = box.getSize(new THREE.Vector3());
-      const center = box.getCenter(new THREE.Vector3());
-      const objectCenter = objectMeshMeanCenter(object);
-      if (options.updateAutoZoom) {
-        setAutoZoomFromObjectCenter(objectCenter);
-      }
-      const maxDim = Math.max(size.x, size.y, size.z) || 1;
-      const preset = cameraPresetFor(embodiment);
-      camera.fov = CAMERA_FOV;
-      const distance = maxDim / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
-      const viewDirection = new THREE.Vector3(...preset.viewDirection).normalize();
-      const presetFocus = new THREE.Vector3(
-        maxDim * preset.focus[0],
-        maxDim * preset.focus[1],
-        maxDim * preset.focus[2]
-      );
-      const focus = objectCenter ? objectCenter.clone().sub(center) : presetFocus;
-
-      object.position.sub(center);
-      camera.up.set(0, 1, 0);
-      controls.target.copy(focus);
-      camera.near = Math.max(maxDim / 1000, 0.001);
-      camera.far = Math.max(maxDim * 100, 100);
-      camera.position.copy(focus).addScaledVector(viewDirection, distance * CAMERA_DISTANCE_SCALE * viewerZoomScale);
-      camera.updateProjectionMatrix();
-      controls.update();
-      resizeViewer();
-    }
-
-    function resetViewerView() {
-      if (!model || !controls || !camera) return;
-      frameObject(model, currentEmbodiment);
-      renderer?.render(scene, camera);
-    }
-
-    function normalizeAnimationTrim(trim, clipDuration) {
-      if (!trim || !clipDuration) return null;
-      const start = Math.max(0, Math.min(trim.start || 0, clipDuration));
-      const end = Math.max(start, Math.min(trim.end || clipDuration, clipDuration));
-      return end - start > 0.001 ? { start, end } : null;
-    }
-
-    function wrapTime(value, duration) {
-      if (!duration) return value;
-      return ((value % duration) + duration) % duration;
-    }
-
-    function sourceAnimationTime(trimmedTime) {
-      const start = animationTrim?.start || 0;
-      return start + wrapTime(trimmedTime, animationDuration);
-    }
-
-    function trackTargetNodeName(trackName) {
-      const dotIndex = trackName.lastIndexOf(".");
-      return (dotIndex === -1 ? trackName : trackName.slice(0, dotIndex)).replace(/^\//, "");
-    }
-
-    function boundsForNode(node) {
-      if (!node) return null;
-      const box = new THREE.Box3().setFromObject(node);
-      if (box.isEmpty()) return null;
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-      return {
-        min: box.min.toArray(),
-        max: box.max.toArray(),
-        center: center.toArray(),
-        size: size.toArray()
-      };
-    }
-
-    function motionRoleForNode(nodeName) {
-      const lowerName = (nodeName || "").toLowerCase();
-      if (!lowerName || lowerName.includes("floor")) return "ignore";
-      if (lowerName.startsWith("object_") || lowerName.includes("object")) return "object";
-      if (lowerName.includes("human") || lowerName.includes("mano") || lowerName.includes("hand")) return "hand";
-      if (lowerName.includes("robot")) return "robot";
-      return "unknown";
-    }
-
-    function enforceAnimationTrim() {
-      if (!mixer || !animationTrim || !animationDuration) return;
-      if (mixer.time < animationTrim.start || mixer.time >= animationTrim.end) {
-        mixer.setTime(animationTrim.start + wrapTime(mixer.time - animationTrim.start, animationDuration));
-      }
-    }
-
-    function setAnimationSourceFrame(loadedModel, time) {
-      if (!mixer || !animationClipDuration) return;
-      mixer.setTime(Math.max(0, Math.min(time, animationClipDuration)));
-      loadedModel.updateMatrixWorld(true);
-    }
-
-    function playAnimations(gltf, loadedModel, trim = null) {
-      const clips = gltf.animations || [];
-      animationTrackData = clips.flatMap(clip => clip.tracks.map(track => ({
-        name: track.name,
-        nodeName: trackTargetNodeName(track.name),
-        role: motionRoleForNode(trackTargetNodeName(track.name)),
-        bounds: boundsForNode(loadedModel.getObjectByName(trackTargetNodeName(track.name))),
-        valueSize: track.getValueSize(),
-        times: Array.from(track.times),
-        values: Array.from(track.values)
-      })));
-      if (!clips.length) {
-        animationDuration = 0;
-        animationClipDuration = 0;
-        animationTrim = null;
-        return;
-      }
-
-      mixer = new THREE.AnimationMixer(loadedModel);
-      animationClipDuration = Math.max(...clips.map(clip => clip.duration || 0));
-      animationTrim = normalizeAnimationTrim(trim, animationClipDuration);
-      animationDuration = animationTrim ? animationTrim.end - animationTrim.start : animationClipDuration;
-      for (const clip of clips) {
-        const action = mixer.clipAction(clip);
-        action.reset();
-        action.setLoop(THREE.LoopRepeat, Infinity);
-        action.play();
-      }
-      setAnimationSourceFrame(loadedModel, sourceAnimationTime(0));
-    }
-
-    function syncAnimationToPreview() {
-      if (!mixer || !animationDuration) return;
-      mixer.setTime(sourceAnimationTime(currentPreviewAnimationOffset()));
-      clock?.getDelta();
-      controls?.update();
-      renderer?.render(scene, camera);
-    }
-
-    function setAnimationTime(time) {
-      if (!mixer || !renderer || !scene || !camera) return false;
-      mixer.timeScale = 1;
-      mixer.setTime(animationDuration ? sourceAnimationTime(time) : time);
-      mixer.timeScale = 0;
-      controls?.update();
-      renderer.render(scene, camera);
-      return true;
-    }
-
-    function setSourceAnimationTime(time) {
-      if (!mixer || !renderer || !scene || !camera) return false;
-      mixer.timeScale = 1;
-      mixer.setTime(Math.max(0, Math.min(time, animationClipDuration || time)));
-      mixer.timeScale = 0;
-      controls?.update();
-      renderer.render(scene, camera);
-      return true;
-    }
-
-    function createGltfLoader() {
-      const loader = new GLTFLoader();
-      if (MeshoptDecoder) loader.setMeshoptDecoder(MeshoptDecoder);
-      return loader;
-    }
-
-    function parseGltf(arrayBuffer, url) {
-      return new Promise((resolve, reject) => {
-        const resourcePath = url.slice(0, url.lastIndexOf("/") + 1);
-        createGltfLoader().parse(arrayBuffer, resourcePath, resolve, reject);
-      });
+      return Math.max(VIEW_ZOOM_MIN_SCALE, Math.min(VIEW_ZOOM_MAX_SCALE, scale));
     }
 
     function materialList(node) {
@@ -2311,6 +1940,7 @@
     }
 
     function applyViewerMaterialTone(loadedModel) {
+      const THREE = viewer3d.THREE;
       const robotSpaceGray = new THREE.Color(ROBOT_SPACE_GRAY_COLOR);
       const objectDefaultBeige = new THREE.Color(OBJECT_DEFAULT_BEIGE_COLOR);
       loadedModel.traverse(node => {
@@ -2337,166 +1967,315 @@
       });
     }
 
-    async function loadViewer(embodiment, objectId, episode) {
-      if (!showInteractive3DFor(embodiment, objectId, episode)) {
-        showPreviewOnly(embodiment, objectId, episode);
-        return;
+    function bindSynchronizedPlaybackEvents() {
+      if (viewer3d.syncEventsBound) return;
+      const video = els["main-video"];
+      if (!video) return;
+      viewer3d.syncEventsBound = true;
+
+      video.addEventListener("play", () => {
+        viewer3d.playing = true;
+        viewer3d.clock?.getDelta?.();
+        syncInteractive3DToVideo({ force: true });
+        updateInteractivePlayButton();
+      });
+      video.addEventListener("pause", () => {
+        viewer3d.playing = false;
+        syncInteractive3DToVideo({ force: true });
+        updateInteractivePlayButton();
+      });
+      video.addEventListener("ended", () => {
+        viewer3d.playing = false;
+        syncInteractive3DToVideo({ force: true });
+        updateInteractivePlayButton();
+      });
+      video.addEventListener("emptied", () => {
+        viewer3d.playing = false;
+        updateInteractivePlayButton();
+      });
+      ["loadedmetadata", "canplay", "seeking", "seeked", "timeupdate", "waiting", "stalled", "ratechange"].forEach(eventName => {
+        video.addEventListener(eventName, () => syncInteractive3DToVideo({ force: true }));
+      });
+    }
+
+    function playbackSpeed() {
+      return Number(els["interactive-3d-speed"].value) || 1;
+    }
+
+    function hasVideoSource(video = els["main-video"]) {
+      return Boolean(video?.getAttribute("src")) && getComputedStyle(video).display !== "none";
+    }
+
+    function shouldSyncInteractive3DToVideo() {
+      return Boolean(viewer3d.mixer && viewer3d.duration && hasVideoSource());
+    }
+
+    function videoSyncedTime(video = els["main-video"]) {
+      const raw = Number.isFinite(video?.currentTime) ? video.currentTime : 0;
+      const videoDuration = Number.isFinite(video?.duration) && video.duration > 0 ? video.duration : null;
+      if (videoDuration && viewer3d.duration) {
+        return Math.max(0, Math.min(viewer3d.duration, (raw / videoDuration) * viewer3d.duration));
       }
+      if (!viewer3d.duration) return Math.max(0, raw);
+      return wrapTime(raw, viewer3d.duration);
+    }
 
-      const token = ++loadToken;
-      const object = objectData(objectId);
-      el.viewerTitle.textContent = `${labels[embodiment] || titleize(embodiment)} / ${object?.name || objectId} / sequence ${episodeTitleLabel(embodiment, objectId, episode)}`;
-      resetViewerZoomAuto();
-      showInstantPreview(embodiment, objectId, episode, { restart: false });
-      setLoadGlbButtonState("loading");
+    function syncInteractive3DToVideo({ force = false, render = true } = {}) {
+      if (!shouldSyncInteractive3DToVideo()) return false;
+      const video = els["main-video"];
+      const target = videoSyncedTime(video);
+      const current = currentAnimationTime();
+      const videoAdvancing = !video.paused && !video.ended;
+      if (force || videoAdvancing || video.seeking || Math.abs(current - target) > 0.025) {
+        setInteractive3DTime(target, { render });
+      }
+      viewer3d.playing = videoAdvancing;
+      updateInteractivePlayButton();
+      return true;
+    }
 
-      const asset = glbAssetFor(embodiment, objectId, episode);
-      const glbPromise = glbBlob(asset.url, "low");
-
-      try {
-        await initViewer();
-      } catch (error) {
-        glbPromise.catch(() => {});
-        if (token === loadToken) {
-          el.viewerStatus.textContent = "Viewer failed to load";
-          setLoadGlbButtonState("ready");
+    function toggleSynchronizedPlayback() {
+      const video = els["main-video"];
+      if (hasVideoSource(video)) {
+        if (video.paused || video.ended) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
         }
-        console.error(error);
+        syncInteractive3DToVideo({ force: true });
         return;
       }
 
-      if (token !== loadToken) {
-        glbPromise.catch(() => {});
-        return;
-      }
-      clearModel();
-      el.viewerStatus.textContent = "Fetching GLB";
+      viewer3d.playing = !viewer3d.playing;
+      viewer3d.clock?.getDelta?.();
+      updateInteractivePlayButton();
+    }
 
+    function seekSynchronizedPlayback(timeSec) {
+      const video = els["main-video"];
+      if (hasVideoSource(video) && Number.isFinite(video.duration) && video.duration > 0 && viewer3d.duration) {
+        const ratio = Math.max(0, Math.min(1, timeSec / viewer3d.duration));
+        video.currentTime = Math.max(0, Math.min(ratio * video.duration, Math.max(0, video.duration - 0.001)));
+      }
+      setInteractive3DTime(timeSec);
+      syncInteractive3DToVideo({ force: true });
+    }
+
+    function setInteractive3DTime(timeSec, { render = true } = {}) {
+      if (!viewer3d.mixer) return;
+      const t = Math.max(0, Math.min(timeSec, viewer3d.duration || timeSec));
+      viewer3d.mixer.setTime(t);
+      viewer3d.model?.updateMatrixWorld(true);
+      els["interactive-3d-scrub"].value = String(Math.round(t * 1000));
+      els["interactive-3d-readout"].textContent = `${t.toFixed(2)}s`;
+      if (render) viewer3d.renderer?.render(viewer3d.scene, viewer3d.camera);
+    }
+
+    function updateInteractivePlayButton() {
+      const video = els["main-video"];
+      const playing = hasVideoSource(video) ? !video.paused && !video.ended : viewer3d.playing;
+      els["interactive-3d-play"].textContent = playing ? "Pause" : "Play";
+    }
+
+    function animateInteractive3D() {
+      viewer3d.frame = requestAnimationFrame(animateInteractive3D);
+      const delta = viewer3d.clock?.getDelta?.() || 0;
+      const synced = syncInteractive3DToVideo({ render: false });
+      if (!synced && viewer3d.mixer && viewer3d.playing && els["interactive-3d-viewer"].style.display !== "none") {
+        const speed = playbackSpeed();
+        viewer3d.mixer.update(delta * speed);
+        const t = currentAnimationTime();
+        els["interactive-3d-scrub"].value = String(Math.round(t * 1000));
+        els["interactive-3d-readout"].textContent = `${t.toFixed(2)}s`;
+      }
+      viewer3d.controls?.update();
+      viewer3d.renderer?.render(viewer3d.scene, viewer3d.camera);
+    }
+
+    function wrapTime(value, duration) {
+      if (!duration) return value;
+      return ((value % duration) + duration) % duration;
+    }
+
+    function currentAnimationTime() {
+      if (!viewer3d.mixer || !viewer3d.duration) return 0;
+      return wrapTime(viewer3d.mixer.time, viewer3d.duration);
+    }
+
+    function sequenceKey(hand, objId, episode, sep = "/") {
+      return [hand, objId, episode].join(sep);
+    }
+
+    function glbUrl(ep) {
+      const path = [ep.hand, ep.objId, `${ep.episode}.glb`]
+        .map(part => encodeURIComponent(part))
+        .join("/");
+      return `${GLB_BASE}/${path}`;
+    }
+
+    function modelUrl(ep) {
+      return glbUrl(ep);
+    }
+
+    function previewVideoUrl(ep, camera = PREVIEW_CAMERA_ID) {
+      const path = [ep.hand, ep.objId, ep.episode, "vid", `${camera}.mp4`]
+        .map(part => encodeURIComponent(part))
+        .join("/");
+      return `${PREVIEW_VIDEO_BASE}/${path}`;
+    }
+
+    function videoUrl(ep, camera = PREVIEW_CAMERA_ID) {
+      return previewVideoUrl(ep, camera);
+    }
+
+    function previewThumbnailUrl(ep, camera = PREVIEW_CAMERA_ID) {
+      const time = episodeThumbnailInitialTime(ep);
+      return `${previewVideoUrl(ep, camera)}#t=${time.toFixed(3)}`;
+    }
+
+    function episodeThumbnailEntry(ep) {
+      return ep ? state.episodeThumbnails?.[ep.pathKey] || null : null;
+    }
+
+    function episodeThumbnailInitialTime(ep) {
+      const entry = episodeThumbnailEntry(ep);
+      if (typeof entry === "number") {
+        return Number.isFinite(entry) && entry > 0 ? entry : 0.001;
+      }
+      const time = Number(entry?.videoTime ?? entry?.sourceTime ?? entry?.time);
+      return Number.isFinite(time) && time > 0 ? time : 0.001;
+    }
+
+    function episodeThumbnailVideoTime(ep, video) {
+      const entry = episodeThumbnailEntry(ep);
+      if (typeof entry === "number") {
+        return Number.isFinite(entry) && entry > 0 ? entry : 0.001;
+      }
+      const glbTime = Number(entry?.time);
+      const glbDuration = Number(entry?.animationDuration ?? entry?.duration);
+      const videoDuration = Number(video?.duration);
+      if (Number.isFinite(glbTime) && Number.isFinite(glbDuration) && glbDuration > 0 &&
+          Number.isFinite(videoDuration) && videoDuration > 0) {
+        const ratio = Math.max(0, Math.min(1, glbTime / glbDuration));
+        return Math.max(0, Math.min(ratio * videoDuration, Math.max(0, videoDuration - 0.001)));
+      }
+
+      const direct = Number(entry?.videoTime ?? entry?.sourceTime);
+      if (Number.isFinite(direct) && direct > 0) return direct;
+      return episodeThumbnailInitialTime(ep);
+    }
+
+    function seekPoseThumbnailVideo(ep, video) {
+      if (!ep || !video) return;
+      const target = episodeThumbnailVideoTime(ep, video);
+      if (!Number.isFinite(target) || target <= 0) return;
       try {
-        const { blob, source } = await glbPromise;
-        if (token !== loadToken) return;
-        el.viewerStatus.textContent = source === "cache" ? "Parsing cached GLB" : "Parsing GLB";
-        await nextFrame();
-        const arrayBuffer = await blob.arrayBuffer();
-        if (token !== loadToken) return;
-        el.viewerStatus.textContent = "Parsing GLB";
-        await nextFrame();
-        const gltf = await parseGltf(arrayBuffer, asset.originalUrl);
-        if (token !== loadToken) return;
-        const loadedModel = gltf.scene;
-        applyViewerMaterialTone(loadedModel);
-        loadedModel.rotation.set(-Math.PI / 2, 0, 0);
-        loadedModel.updateMatrixWorld(true);
-        scene.add(loadedModel);
-        model = loadedModel;
-        playAnimations(gltf, loadedModel, animationTrimFor(embodiment, objectId, episode));
-        setAnimationSourceFrame(loadedModel, 0);
-        frameObject(loadedModel, embodiment, { updateAutoZoom: true });
-        setAnimationSourceFrame(loadedModel, sourceAnimationTime(0));
-        syncAnimationToPreview();
-        renderer.render(scene, camera);
-        requestAnimationFrame(() => {
-          if (token === loadToken) hideInstantPreview();
+        if (Math.abs((video.currentTime || 0) - target) > 0.05) video.currentTime = target;
+      } catch (error) {
+        console.warn(error);
+      }
+    }
+
+    function bindPoseThumbnailTimes() {
+      els["pose-strip"].querySelectorAll(".pose-tile").forEach(btn => {
+        const item = state.episodes.find(ep => ep.key === btn.dataset.key);
+        const video = btn.querySelector("video");
+        if (!item || !video) return;
+        const apply = () => seekPoseThumbnailVideo(item, video);
+        if ((video.readyState || 0) >= 1) apply();
+        else video.addEventListener("loadedmetadata", apply, { once: true });
+      });
+    }
+
+    function objectThumbUrl(objectId, base = THUMB_BASE) {
+      return `${base}/${encodeURIComponent(objectId)}/thumb.png?v=${THUMB_VERSION}`;
+    }
+
+    function bindObjectThumbnailFallbacks() {
+      els["object-strip"].querySelectorAll("img[data-fallback-src]").forEach(img => {
+        img.addEventListener("error", () => {
+          const fallbackSrc = img.dataset.fallbackSrc;
+          if (fallbackSrc) {
+            img.dataset.fallbackSrc = "";
+            img.src = fallbackSrc;
+            return;
+          }
+          const fallback = document.createElement("div");
+          fallback.className = "object-preview";
+          fallback.textContent = "No thumbnail";
+          img.replaceWith(fallback);
         });
-        el.viewerStatus.textContent = "Interactive 3D";
-        setLoadGlbButtonState("loaded");
-      } catch (error) {
-        if (token === loadToken) {
-          el.viewerStatus.textContent = "Load failed";
-          setLoadGlbButtonState("ready");
-        }
-        console.error(error);
-      }
+      });
     }
 
-    function animate() {
-      requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      if (mixer) {
-        mixer.update(delta);
-        enforceAnimationTrim();
-      }
-      controls.update();
-      renderer.render(scene, camera);
+    function graspResultFor(hand, objId, episode) {
+      return state.graspResults[sequenceKey(hand, objId, episode)] || null;
     }
 
-    window.__hrdexdbPreviewCapture = {
-      setTime: setAnimationTime,
-      setSourceTime: setSourceAnimationTime,
-      tracks() {
-        return animationTrackData;
-      },
-      state() {
-        return {
-          loaded: !!model,
-          duration: animationDuration,
-          clipDuration: animationClipDuration,
-          time: mixer?.time || 0,
-          trim: animationTrim,
-          viewerReady,
-          viewerObjectCenterY,
-          viewerAutoZoomScale,
-          viewerZoomScale
-        };
-      },
-      viewerBox() {
-        const rect = el.viewer.getBoundingClientRect();
-        return {
-          x: Math.round(rect.x),
-          y: Math.round(rect.y),
-          width: Math.round(rect.width),
-          height: Math.round(rect.height)
-        };
-      }
-    };
-
-    el.search.addEventListener("input", () => {
-      applyGalleryFilters();
-      renderGallery();
-    });
-    el.sort.addEventListener("change", () => {
-      applyGalleryFilters();
-      renderGallery();
-    });
-    document.addEventListener("keydown", event => {
-      if (event.key === "/" && document.activeElement !== el.search && !["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
-        event.preventDefault();
-        el.search.focus();
-      } else if (event.key === "Escape" && document.activeElement === el.search) {
-        el.search.value = "";
-        applyGalleryFilters();
-        renderGallery();
-        el.search.blur();
-      }
-    });
-    el.objectMenuSearch.addEventListener("input", event => {
-      detailObjectQuery = event.target.value;
-      renderObjectMenu();
-    });
-
-    el.galleryNav.addEventListener("click", openGallery);
-    el.loadGlbButton.addEventListener("click", () => {
-      if (!currentObject || !currentEmbodiment || !currentEpisode) return;
-      if (el.loadGlbButton.dataset.action === "preview") {
-        showPreviewOnly(currentEmbodiment, currentObject, currentEpisode);
-      } else {
-        loadViewer(currentEmbodiment, currentObject, currentEpisode);
-      }
-    });
-    el.resetViewButton.addEventListener("click", resetViewerView);
-
-    function markViewerGlobalError(error) {
-      if (el.loadGlbButton.dataset.action !== "loading") return;
-      el.viewerStatus.textContent = "Viewer error";
-      if (error) console.warn(error);
+    function poseLabel(hand, objId, episode) {
+      const result = graspResultFor(hand, objId, episode);
+      const displayEpisode = robotEmbodiments.has(hand) && result?.humanPairedEpisode != null
+        ? result.humanPairedEpisode
+        : episode;
+      return `${shortLabels[hand] || labelForHand(hand)} #${String(displayEpisode).padStart(2, "0")}`;
     }
 
-    window.addEventListener("error", event => {
-      markViewerGlobalError(event.error || event.message);
-    });
-    window.addEventListener("unhandledrejection", event => {
-      markViewerGlobalError(event.reason);
-    });
+    function graspTitleLabel(ep) {
+      const numericEpisode = Number(ep.episode);
+      const displayIndex = Number.isFinite(numericEpisode) ? numericEpisode + 1 : ep.episode;
+      return `Grasp #${displayIndex}`;
+    }
+
+    function outcomeFor(hand, result) {
+      if (hand === "human") return "success";
+      if (!result || typeof result.graspSuccess !== "boolean") return "unknown";
+      return result.graspSuccess ? "success" : "fail";
+    }
+
+    function outcomeLabel(value) {
+      if (value === "success") return "Success";
+      if (value === "fail") return "Fail";
+      return "Unknown";
+    }
+
+    function labelForHand(value) {
+      return labels[value] || titleize(value);
+    }
+
+    function orderedEmbodiments(keys) {
+      return [...keys].sort((a, b) => embodimentRank(a) - embodimentRank(b) || a.localeCompare(b));
+    }
+
+    function embodimentRank(value) {
+      const index = embodimentOrder.indexOf(value);
+      return index === -1 ? 99 : index;
+    }
+
+    function writeStateUrl() {
+      const ep = currentEpisode();
+      if (!ep || !history.replaceState) return;
+      const params = new URLSearchParams();
+      params.set("object", ep.objId);
+      params.set("embodiment", ep.hand);
+      params.set("episode", ep.episode);
+      params.set("view", state.currentCamera || PREVIEW_CAMERA_ID);
+      history.replaceState(null, "", `#${params.toString()}`);
+    }
+
+    function titleize(value) {
+      return String(value || "")
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
   </script>
 </body>
 </html>
