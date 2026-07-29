@@ -2299,7 +2299,7 @@
 
     function episodeDownloadCommand(ep, mode = state.downloadMode) {
       if (!ep) return "";
-      const scriptUrl = "https://kanghyeoni.github.io/HRDexDB/static/download_episode.py";
+      const scriptUrl = new URL("static/download_episode.py", location.href).href;
       const args = [
         "--hand", shellQuote(ep.hand),
         "--object", shellQuote(ep.objId),
