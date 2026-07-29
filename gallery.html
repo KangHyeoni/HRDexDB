@@ -269,7 +269,10 @@
       border-bottom: 1px solid var(--line);
     }
 
-    .selected-title { min-width: 0; }
+    .selected-title {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
 
     .selected-title h2 {
       font-size: 1.08em;
@@ -283,6 +286,138 @@
       margin-top: 2px;
       color: var(--text-muted);
       font-size: .82em;
+    }
+
+    .download-menu {
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .download-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: .82em;
+      font-weight: 850;
+      line-height: 1;
+      transition: background .16s, border-color .16s, opacity .16s;
+    }
+
+    .download-trigger:hover:not(:disabled),
+    .download-menu.is-open .download-trigger {
+      border-color: var(--accent-hover);
+      background: var(--accent-hover);
+    }
+
+    .download-trigger:disabled {
+      cursor: default;
+      opacity: .48;
+    }
+
+    .download-trigger-mark {
+      font-size: .9em;
+      transform: translateY(-1px);
+    }
+
+    .download-popover {
+      position: absolute;
+      z-index: 30;
+      top: calc(100% + 8px);
+      right: 0;
+      width: min(560px, calc(100vw - 40px));
+      padding: 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .download-tabs {
+      display: inline-flex;
+      margin-bottom: 10px;
+      padding: 3px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: var(--surface-2);
+    }
+
+    .download-tab {
+      min-height: 28px;
+      padding: 0 11px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: .78em;
+      font-weight: 850;
+      transition: background .16s, color .16s, box-shadow .16s;
+    }
+
+    .download-tab[aria-pressed="true"] {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .download-command {
+      display: flex;
+      min-height: 36px;
+      align-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--surface-2);
+    }
+
+    .download-command input {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 36px;
+      padding: 0 10px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: .74em;
+      font-weight: 750;
+    }
+
+    .copy-download-command {
+      flex: 0 0 auto;
+      height: 36px;
+      padding: 0 11px;
+      border: 0;
+      border-left: 1px solid var(--line-strong);
+      background: var(--surface);
+      color: var(--accent-hover);
+      font-size: .8em;
+      font-weight: 850;
+      white-space: nowrap;
+      transition: background .16s, color .16s;
+    }
+
+    .copy-download-command:hover {
+      background: var(--accent-soft);
+      color: var(--accent-hover);
+    }
+
+    .copy-download-command:disabled {
+      cursor: default;
+      opacity: .48;
+    }
+
+    .download-description {
+      margin-top: 7px;
+      color: var(--text-muted);
+      font-size: .75em;
+      font-weight: 650;
     }
 
     .screen-wrap {
@@ -709,6 +844,10 @@
       }
 
       .interactive-3d-controls select { display: none; }
+      .viewer-topbar { align-items: stretch; flex-direction: column; }
+      .download-menu { width: 100%; }
+      .download-trigger { width: 100%; justify-content: center; }
+      .download-popover { position: static; width: 100%; margin-top: 8px; }
     }
   </style>
 </head>
@@ -753,6 +892,22 @@
           <div class="selected-title">
             <h2 id="selected-title">Loading...</h2>
             <div class="sub" id="selected-subtitle"></div>
+          </div>
+          <div class="download-menu" id="download-menu" aria-disabled="true">
+            <button class="download-trigger" id="download-trigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="download-popover" disabled>
+              Download <span class="download-trigger-mark" aria-hidden="true">v</span>
+            </button>
+            <div class="download-popover" id="download-popover" role="dialog" aria-label="Download episode" hidden>
+              <div class="download-tabs" role="group" aria-label="Download contents">
+                <button class="download-tab" id="download-tab-full" type="button" aria-pressed="true" data-download-mode="full">Full</button>
+                <button class="download-tab" id="download-tab-without-video" type="button" aria-pressed="false" data-download-mode="without-video">w/o Video</button>
+              </div>
+              <div class="download-command">
+                <input id="download-command" type="text" value="" readonly aria-label="Terminal download command">
+                <button class="copy-download-command" id="copy-download-command" type="button">Copy</button>
+              </div>
+              <p class="download-description" id="download-description"></p>
+            </div>
           </div>
         </div>
 
@@ -895,6 +1050,8 @@
       currentKey: null,
       currentCamera: null,
       mediaRequested: false,
+      downloadMenuOpen: false,
+      downloadMode: "full",
       openSelector: null,
       autoScrollRail: null,
       autoScrollFrame: null,
@@ -943,6 +1100,14 @@
       "pose-value",
       "selected-title",
       "selected-subtitle",
+      "download-menu",
+      "download-trigger",
+      "download-popover",
+      "download-tab-full",
+      "download-tab-without-video",
+      "download-command",
+      "copy-download-command",
+      "download-description",
       "main-video",
       "video-pending-layer",
       "video-pending-title",
@@ -1082,6 +1247,26 @@
     function bindEvents() {
       ["hand-filter", "outcome-filter"].forEach(id => {
         els[id].addEventListener("change", renderAll);
+      });
+
+      els["download-trigger"].addEventListener("click", toggleDownloadMenu);
+      ["download-tab-full", "download-tab-without-video"].forEach(id => {
+        els[id].addEventListener("click", () => {
+          state.downloadMode = els[id].dataset.downloadMode;
+          updateDownloadCommand(currentEpisode());
+        });
+      });
+      els["copy-download-command"].addEventListener("click", copyDownloadCommand);
+      document.addEventListener("pointerdown", event => {
+        if (state.downloadMenuOpen && !els["download-menu"].contains(event.target)) {
+          setDownloadMenuOpen(false);
+        }
+      });
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && state.downloadMenuOpen) {
+          setDownloadMenuOpen(false);
+          els["download-trigger"].focus();
+        }
       });
 
       ["object", "pose"].forEach(name => {
@@ -1391,12 +1576,14 @@
       if (!ep) {
         els["selected-title"].textContent = "No matching sequence";
         els["selected-subtitle"].textContent = "";
+        updateDownloadCommand(null);
         clearMedia();
         return;
       }
 
       els["selected-title"].textContent = `${ep.objName} - ${shortLabels[ep.hand] || labelForHand(ep.hand)} - ${graspTitleLabel(ep)}`;
       els["selected-subtitle"].textContent = "";
+      updateDownloadCommand(ep);
 
       if (state.mediaRequested && state.currentCamera) {
         showVideo(videoUrl(ep, state.currentCamera));
@@ -2104,6 +2291,75 @@
 
     function sequenceKey(hand, objId, episode, sep = "/") {
       return [hand, objId, episode].join(sep);
+    }
+
+    function shellQuote(value) {
+      return `'${String(value).replace(/'/g, "'\\''")}'`;
+    }
+
+    function episodeDownloadCommand(ep, mode = state.downloadMode) {
+      if (!ep) return "";
+      const scriptUrl = "https://kanghyeoni.github.io/HRDexDB/static/download_episode.py";
+      const args = [
+        "--hand", shellQuote(ep.hand),
+        "--object", shellQuote(ep.objId),
+        "--episode", shellQuote(ep.episode)
+      ];
+      if (mode === "full") args.push("--full");
+      return `curl -fsSL ${scriptUrl} | python3 - ${args.join(" ")}`;
+    }
+
+    function updateDownloadCommand(ep) {
+      const menu = els["download-menu"];
+      const trigger = els["download-trigger"];
+      const input = els["download-command"];
+      const button = els["copy-download-command"];
+      const description = els["download-description"];
+      if (!menu || !trigger || !input || !button || !description) return;
+      const command = episodeDownloadCommand(ep);
+      input.value = command;
+      menu.setAttribute("aria-disabled", ep ? "false" : "true");
+      trigger.disabled = !ep;
+      input.title = ep ? command : "No sequence selected";
+      button.disabled = !ep;
+      description.textContent = state.downloadMode === "without-video"
+        ? "Parallel download without vid/."
+        : "All files for this episode, including videos.";
+      ["full", "without-video"].forEach(mode => {
+        const tab = els[`download-tab-${mode === "full" ? "full" : "without-video"}`];
+        tab.setAttribute("aria-pressed", String(mode === state.downloadMode));
+      });
+      button.textContent = "Copy";
+      if (!ep) setDownloadMenuOpen(false);
+    }
+
+    function toggleDownloadMenu() {
+      if (!currentEpisode()) return;
+      setDownloadMenuOpen(!state.downloadMenuOpen);
+    }
+
+    function setDownloadMenuOpen(isOpen) {
+      state.downloadMenuOpen = isOpen;
+      els["download-menu"].classList.toggle("is-open", isOpen);
+      els["download-trigger"].setAttribute("aria-expanded", String(isOpen));
+      els["download-popover"].hidden = !isOpen;
+    }
+
+    async function copyDownloadCommand() {
+      const input = els["download-command"];
+      const button = els["copy-download-command"];
+      if (!input?.value) return;
+      try {
+        await navigator.clipboard.writeText(input.value);
+        button.textContent = "Copied";
+      } catch (error) {
+        input.select();
+        document.execCommand?.("copy");
+        button.textContent = "Copied";
+      }
+      window.setTimeout(() => {
+        if (button) button.textContent = "Copy";
+      }, 1200);
     }
 
     function glbUrl(ep) {
