@@ -1209,6 +1209,8 @@
       datasetCameraIntrinsics: {},
       datasetCameraC2R: {},
       datasetCameraLoads: {},
+      robotFloorReference: null,
+      robotFloorReferenceLoad: null,
       robotViewAlignments: {},
       robotViewAlignmentLoads: {},
       mediaRequested: false,
@@ -1850,6 +1852,13 @@
       const cacheKey = ep.pathKey;
       if (state.datasetCameraLoads[cacheKey]) return state.datasetCameraLoads[cacheKey];
 
+      if (ep.hand === "human") {
+        loadRobotFloorReference().then(() => {
+          const current = currentEpisode();
+          if (current?.pathKey === cacheKey) updateDatasetFloorGrid(viewer3d.model);
+        }).catch(error => console.warn("Could not load robot floor reference", error));
+      }
+
       const loadJson = (url, label) => fetch(url).then(response => {
         if (!response.ok) throw new Error(`${label} request failed (${response.status})`);
         return response.json();
@@ -1886,6 +1895,32 @@
           writeStateUrl();
         });
       return state.datasetCameraLoads[cacheKey];
+    }
+
+    function loadRobotFloorReference() {
+      if (state.robotFloorReference) return Promise.resolve(state.robotFloorReference);
+      if (state.robotFloorReferenceLoad) return state.robotFloorReferenceLoad;
+      const reference = state.episodes.find(ep => robotEmbodiments.has(ep.hand));
+      if (!reference) return Promise.reject(new Error("No robot episode is available for the floor reference"));
+
+      const loadJson = (url, label) => fetch(url).then(response => {
+        if (!response.ok) throw new Error(`${label} request failed (${response.status})`);
+        return response.json();
+      });
+      state.robotFloorReferenceLoad = Promise.all([
+        loadJson(datasetExtrinsicsUrl(reference), "Robot camera extrinsics"),
+        fetchNpyMatrix(datasetC2RUrl(reference), "Robot C2R")
+      ]).then(([extrinsics, c2r]) => {
+        const rows = extrinsics?.[PREVIEW_CAMERA_ID];
+        if (!isDatasetExtrinsic(rows)) {
+          throw new Error(`Robot reference has no camera ${PREVIEW_CAMERA_ID}`);
+        }
+        state.robotFloorReference = { worldToCamera: rows.flat(), c2r };
+        return state.robotFloorReference;
+      }).finally(() => {
+        state.robotFloorReferenceLoad = null;
+      });
+      return state.robotFloorReferenceLoad;
     }
 
     function renderSelectorRows() {
@@ -2478,13 +2513,18 @@
       const ep = currentEpisode();
       const humanC2RValues = ep?.hand === "human" ? state.datasetCameraC2R[ep.pathKey] : null;
       const hasHumanC2R = Array.isArray(humanC2RValues) && humanC2RValues.length === 16 && humanC2RValues.every(Number.isFinite);
-      if (ep?.hand === "human" && !hasHumanC2R) {
+      const humanRows = ep?.hand === "human" ? state.datasetCameraExtrinsics[ep.pathKey]?.[PREVIEW_CAMERA_ID] : null;
+      const robotReference = state.robotFloorReference;
+      if (ep?.hand === "human" && (!hasHumanC2R || !isDatasetExtrinsic(humanRows) || !robotReference)) {
         grid.visible = false;
         return;
       }
       // GridHelper starts as an XZ plane. Rotate it into the shared dataset XY plane at z = 0.
       const humanFloorTransform = hasHumanC2R
         ? matrixFromValues(humanC2RValues).invert()
+          .multiply(new THREE.Matrix4().set(...humanRows.flat(), 0, 0, 0, 1).invert())
+          .multiply(new THREE.Matrix4().set(...robotReference.worldToCamera))
+          .multiply(matrixFromValues(robotReference.c2r))
         : new THREE.Matrix4();
       const floorWorld = (coordinateFix?.matrixWorld || model.matrixWorld).clone()
         .multiply(humanFloorTransform)
