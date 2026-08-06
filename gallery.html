@@ -545,14 +545,35 @@
       backdrop-filter: blur(8px);
     }
 
-    .camera-view-select {
+    .camera-view-menu {
       position: absolute;
       z-index: 4;
       top: 10px;
       right: 10px;
-      min-height: 30px;
       max-width: calc(100% - 136px);
-      padding: 0 28px 0 9px;
+    }
+
+    .camera-view-menu[hidden] { display: none; }
+
+    .camera-view-menu::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      top: 50%;
+      right: 10px;
+      width: 6px;
+      height: 6px;
+      border-right: 2px solid rgba(255, 255, 255, .82);
+      border-bottom: 2px solid rgba(255, 255, 255, .82);
+      transform: translateY(-65%) rotate(45deg);
+    }
+
+    .camera-view-select {
+      display: block;
+      width: fit-content;
+      max-width: 100%;
+      min-height: 30px;
+      padding: 0 24px 0 9px;
       border: 1px solid rgba(255, 255, 255, .28);
       border-radius: 6px;
       background: rgba(12, 12, 12, .58);
@@ -560,6 +581,7 @@
       font-size: .74em;
       font-weight: 850;
       line-height: 1;
+      appearance: none;
       backdrop-filter: blur(8px);
     }
 
@@ -1081,7 +1103,9 @@
 
           <section class="media-panel three-d-panel" aria-label="Selected sequence interactive 3D">
             <div class="media-panel-label">Interactive 3D</div>
-            <select class="camera-view-select" id="camera-view-select" aria-label="3D camera view" disabled></select>
+            <div class="camera-view-menu" id="camera-view-menu" hidden>
+              <select class="camera-view-select" id="camera-view-select" aria-label="3D camera view" disabled></select>
+            </div>
             <div class="screen-placeholder" id="pending-layer">
               <div class="placeholder-box">
                 <h3 id="pending-title">Asset pending</h3>
@@ -1183,6 +1207,7 @@
       requestedViewCamera: null,
       datasetCameraExtrinsics: {},
       datasetCameraIntrinsics: {},
+      datasetCameraC2R: {},
       datasetCameraLoads: {},
       robotViewAlignments: {},
       robotViewAlignmentLoads: {},
@@ -1266,6 +1291,7 @@
       "interactive-3d-scrub",
       "interactive-3d-readout",
       "interactive-3d-speed",
+      "camera-view-menu",
       "camera-view-select",
       "object-strip",
       "object-count",
@@ -1736,6 +1762,7 @@
         els["selected-title"].textContent = "No matching sequence";
         els["selected-subtitle"].textContent = "";
         updateDownloadCommand(null);
+        updateCameraViewSelect(null);
         clearMedia();
         return;
       }
@@ -1756,16 +1783,18 @@
 
     function updateCameraViewSelect(ep) {
       const select = els["camera-view-select"];
+      const menu = els["camera-view-menu"];
+      menu.hidden = true;
       if (!ep) {
         select.disabled = true;
-        select.innerHTML = '<option>View unavailable</option>';
+        select.innerHTML = "";
         return;
       }
 
       const cacheKey = ep.pathKey;
       if (!Object.prototype.hasOwnProperty.call(state.datasetCameraExtrinsics, cacheKey)) {
         select.disabled = true;
-        select.innerHTML = '<option>Loading views...</option>';
+        select.innerHTML = "";
         loadDatasetCameraViews(ep);
         return;
       }
@@ -1774,7 +1803,7 @@
       const cameras = Object.keys(extrinsics || {}).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
       if (!cameras.length) {
         select.disabled = true;
-        select.innerHTML = '<option>View unavailable</option>';
+        select.innerHTML = "";
         return;
       }
 
@@ -1788,6 +1817,11 @@
         `<option value="${escapeHtml(camera)}">View ${escapeHtml(camera)}</option>`
       ).join("");
       select.value = state.currentViewCamera;
+      menu.hidden = !isInteractive3DReady(ep);
+    }
+
+    function isInteractive3DReady(ep) {
+      return Boolean(ep && viewer3d.model && viewer3d.currentSrc === modelUrl(ep));
     }
 
     function datasetExtrinsicsUrl(ep) {
@@ -1796,6 +1830,13 @@
 
     function datasetIntrinsicsUrl(ep) {
       return datasetCameraParamUrl(ep, "intrinsics.json");
+    }
+
+    function datasetC2RUrl(ep) {
+      const path = [ep.hand, ep.objId, ep.episode, "C2R.npy"]
+        .map(part => encodeURIComponent(part))
+        .join("/");
+      return `${DATASET_BASE}/${path}`;
     }
 
     function datasetCameraParamUrl(ep, filename) {
@@ -1818,16 +1859,22 @@
         loadJson(datasetIntrinsicsUrl(ep), "Camera intrinsics").catch(error => {
           console.warn("Could not load dataset camera intrinsics", error);
           return null;
+        }),
+        fetchNpyMatrix(datasetC2RUrl(ep), "C2R").catch(error => {
+          console.warn("Could not load C2R", error);
+          return null;
         })
       ])
-        .then(([extrinsics, intrinsics]) => {
+        .then(([extrinsics, intrinsics, c2r]) => {
           state.datasetCameraExtrinsics[cacheKey] = extrinsics && typeof extrinsics === "object" ? extrinsics : null;
           state.datasetCameraIntrinsics[cacheKey] = intrinsics && typeof intrinsics === "object" ? intrinsics : null;
+          state.datasetCameraC2R[cacheKey] = c2r;
         })
         .catch(error => {
           console.warn("Could not load dataset camera metadata", error);
           state.datasetCameraExtrinsics[cacheKey] = null;
           state.datasetCameraIntrinsics[cacheKey] = null;
+          state.datasetCameraC2R[cacheKey] = null;
         })
         .finally(() => {
           delete state.datasetCameraLoads[cacheKey];
@@ -1835,6 +1882,7 @@
           if (!current || current.pathKey !== cacheKey) return;
           updateCameraViewSelect(current);
           applyDatasetCameraView(current, state.currentViewCamera);
+          updateDatasetFloorGrid(viewer3d.model);
           writeStateUrl();
         });
       return state.datasetCameraLoads[cacheKey];
@@ -2013,6 +2061,7 @@
     async function showInteractive3D(src, ep) {
       const token = ++viewer3d.loadToken;
       els["interactive-3d-viewer"].style.display = "block";
+      els["camera-view-menu"].hidden = true;
       setInteractive3DStatus("Loading interactive 3D...");
       try {
         await ensureInteractive3D();
@@ -2181,6 +2230,7 @@
         viewer3d.playing = true;
         updateInteractivePlayButton();
         setInteractive3DStatus();
+        updateCameraViewSelect(ep);
         return;
       }
 
@@ -2223,6 +2273,7 @@
       syncInteractive3DToVideo({ force: true, render: false });
       viewer3d.renderer.render(viewer3d.scene, viewer3d.camera);
       setInteractive3DStatus();
+      updateCameraViewSelect(ep);
     }
 
     async function fetchArrayBufferWithProgress(url, onProgress) {
@@ -2276,6 +2327,7 @@
       viewer3d.duration = 0;
       viewer3d.clipDuration = 0;
       viewer3d.currentSrc = "";
+      els["camera-view-menu"].hidden = true;
       els["interactive-3d-scrub"].value = "0";
       els["interactive-3d-readout"].textContent = "0.00s";
     }
@@ -2370,7 +2422,13 @@
       const cvToThreeCamera = new THREE.Matrix4().makeRotationX(Math.PI);
       viewer3d.model.updateMatrixWorld(true);
       const coordinateFix = findDatasetCoordinateRoot(viewer3d.model);
+      const c2r = robotEmbodiments.has(ep.hand)
+        ? matrixFromValues(state.datasetCameraC2R[ep.pathKey])
+        : new THREE.Matrix4();
+      // C2R maps robot coordinates into the dataset/world frame. Convert the
+      // dataset camera pose back into robot coordinates before placing it in GLB space.
       const cameraWorld = (coordinateFix?.matrixWorld || viewer3d.model.matrixWorld).clone()
+        .multiply(c2r.invert())
         .multiply(cameraToWorld)
         .multiply(cvToThreeCamera);
       const cameraScale = new THREE.Vector3();
@@ -2415,19 +2473,66 @@
       const grid = viewer3d.grid;
       const THREE = viewer3d.THREE;
       if (!grid || !THREE || !model) return;
-      if (currentEpisode()?.hand === "human") {
+      model.updateMatrixWorld(true);
+      const coordinateFix = findDatasetCoordinateRoot(model);
+      const ep = currentEpisode();
+      const humanC2RValues = ep?.hand === "human" ? state.datasetCameraC2R[ep.pathKey] : null;
+      const hasHumanC2R = Array.isArray(humanC2RValues) && humanC2RValues.length === 16 && humanC2RValues.every(Number.isFinite);
+      if (ep?.hand === "human" && !hasHumanC2R) {
         grid.visible = false;
         return;
       }
-      model.updateMatrixWorld(true);
-      const coordinateFix = findDatasetCoordinateRoot(model);
-      // GridHelper starts as an XZ plane. Rotate it into the dataset's XY plane at z = 0.
+      // GridHelper starts as an XZ plane. Rotate it into the shared dataset XY plane at z = 0.
+      const humanFloorTransform = hasHumanC2R
+        ? matrixFromValues(humanC2RValues).invert()
+        : new THREE.Matrix4();
       const floorWorld = (coordinateFix?.matrixWorld || model.matrixWorld).clone()
+        .multiply(humanFloorTransform)
         .multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
       const gridScale = new THREE.Vector3();
       floorWorld.decompose(grid.position, grid.quaternion, gridScale);
       grid.scale.copy(gridScale).multiplyScalar(1.5);
       grid.visible = true;
+    }
+
+    async function fetchNpyMatrix(url, label) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`${label} request failed (${response.status})`);
+      const buffer = await response.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      if (String.fromCharCode(...bytes.slice(0, 6)) !== "\u0093NUMPY") {
+        throw new Error(`${label} is not a NumPy array`);
+      }
+      const majorVersion = bytes[6];
+      const headerLengthBytes = majorVersion === 1 ? 2 : 4;
+      const headerLengthView = new DataView(buffer, 8, headerLengthBytes);
+      const headerLength = majorVersion === 1
+        ? headerLengthView.getUint16(0, true)
+        : headerLengthView.getUint32(0, true);
+      const dataOffset = 8 + headerLengthBytes + headerLength;
+      const header = new TextDecoder("latin1").decode(bytes.slice(8 + headerLengthBytes, dataOffset));
+      const descriptor = header.match(/'descr':\s*'([^']+)'/)?.[1];
+      const shape = header.match(/'shape':\s*\(([^)]*)\)/)?.[1]
+        .split(",").map(value => Number(value.trim())).filter(Number.isFinite);
+      if (!descriptor || shape?.length !== 2 || shape[0] !== 4 || shape[1] !== 4) {
+        throw new Error(`${label} must be a 4x4 NumPy array`);
+      }
+      const littleEndian = !descriptor.startsWith(">");
+      const isFloat64 = /f8$/.test(descriptor);
+      const isFloat32 = /f4$/.test(descriptor);
+      if (!isFloat64 && !isFloat32) throw new Error(`${label} has unsupported dtype ${descriptor}`);
+      const view = new DataView(buffer, dataOffset);
+      const bytesPerValue = isFloat64 ? 8 : 4;
+      return Array.from({ length: 16 }, (_, index) => isFloat64
+        ? view.getFloat64(index * bytesPerValue, littleEndian)
+        : view.getFloat32(index * bytesPerValue, littleEndian));
+    }
+
+    function matrixFromValues(values) {
+      const THREE = viewer3d.THREE;
+      return Array.isArray(values) && values.length === 16 && values.every(Number.isFinite)
+        ? new THREE.Matrix4().set(...values)
+        : new THREE.Matrix4();
     }
 
     function isDatasetExtrinsic(rows) {
