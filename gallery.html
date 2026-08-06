@@ -545,6 +545,26 @@
       backdrop-filter: blur(8px);
     }
 
+    .camera-view-select {
+      position: absolute;
+      z-index: 4;
+      top: 10px;
+      right: 10px;
+      min-height: 30px;
+      max-width: calc(100% - 136px);
+      padding: 0 28px 0 9px;
+      border: 1px solid rgba(255, 255, 255, .28);
+      border-radius: 6px;
+      background: rgba(12, 12, 12, .58);
+      color: rgba(255, 255, 255, .92);
+      font-size: .74em;
+      font-weight: 850;
+      line-height: 1;
+      backdrop-filter: blur(8px);
+    }
+
+    .camera-view-select:disabled { opacity: .5; }
+
     .screen-wrap video,
     .interactive-3d-viewer,
     .screen-placeholder {
@@ -1061,6 +1081,7 @@
 
           <section class="media-panel three-d-panel" aria-label="Selected sequence interactive 3D">
             <div class="media-panel-label">Interactive 3D</div>
+            <select class="camera-view-select" id="camera-view-select" aria-label="3D camera view" disabled></select>
             <div class="screen-placeholder" id="pending-layer">
               <div class="placeholder-box">
                 <h3 id="pending-title">Asset pending</h3>
@@ -1097,6 +1118,7 @@
     const CATALOG_URL = "https://huggingface.co/spaces/HRDexDB/HRDexDB-Visualizer/raw/main/assets/glb_catalog.json";
     const GLB_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-glb/resolve/main";
     const GLB_TREE_API_BASE = "https://huggingface.co/api/datasets/HRDexDB/HRDexDB-glb/tree/main";
+    const DATASET_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB/resolve/main";
     const PREVIEW_VIDEO_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-preview-video/resolve/main";
     const PREVIEW_CAMERA_ID = "23263780";
     const THUMB_BASE = "static/gallery-object-thumbs";
@@ -1109,6 +1131,7 @@
     const ORBIT_CONTROLS_URL = "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
     const GLTF_LOADER_URL = "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
     const MESHOPT_DECODER_URL = "https://unpkg.com/three@0.160.0/examples/jsm/libs/meshopt_decoder.module.js";
+    const VISER_CITY_ENVIRONMENT_URL = "https://raw.githubusercontent.com/nerfstudio-project/viser/main/src/viser/client/src/assets/potsdamer_platz_1k.jpg";
     const ADDITIONAL_GLB_CATALOG_TREES = [
       {
         embodiment: "inspire_dftp",
@@ -1116,8 +1139,6 @@
       }
     ];
 
-    const ROBOT_SPACE_GRAY_COLOR = 0xa8adb4;
-    const OBJECT_DEFAULT_BEIGE_COLOR = 0xd9c7aa;
     const CAMERA_PRESETS = {
       default: { focus: [-0.07, -0.10, -0.02], viewDirection: [0, 0.36, -1.04] },
       human: { focus: [0, 0.08, -0.17], viewDirection: [0, 0.52, -1.51] },
@@ -1157,6 +1178,13 @@
       episodes: [],
       currentKey: null,
       currentCamera: null,
+      currentViewCamera: null,
+      requestedViewCamera: null,
+      datasetCameraExtrinsics: {},
+      datasetCameraIntrinsics: {},
+      datasetCameraLoads: {},
+      robotViewAlignments: {},
+      robotViewAlignmentLoads: {},
       mediaRequested: false,
       downloadMenuOpen: false,
       versionMenuOpen: false,
@@ -1191,6 +1219,8 @@
       frame: null,
       resizeObserver: null,
       syncEventsBound: false,
+      grid: null,
+      cameraCalibration: null,
       zoomScale: DEFAULT_VIEW_ZOOM_SCALE,
       autoZoomScale: DEFAULT_VIEW_ZOOM_SCALE,
       objectCenterY: null
@@ -1235,6 +1265,7 @@
       "interactive-3d-scrub",
       "interactive-3d-readout",
       "interactive-3d-speed",
+      "camera-view-select",
       "object-strip",
       "object-count",
       "pose-strip",
@@ -1371,6 +1402,14 @@
         });
       });
       els["copy-download-command"].addEventListener("click", copyDownloadCommand);
+      els["camera-view-select"].addEventListener("change", () => {
+        const ep = currentEpisode();
+        const camera = els["camera-view-select"].value;
+        if (!ep || !camera) return;
+        state.currentViewCamera = camera;
+        applyDatasetCameraView(ep, camera);
+        writeStateUrl();
+      });
       document.addEventListener("pointerdown", event => {
         if ((state.downloadMenuOpen || state.versionMenuOpen) && !els["viewer-actions"].contains(event.target)) {
           setDownloadMenuOpen(false);
@@ -1569,7 +1608,8 @@
       const requestedObject = params.get("object");
       const requestedHand = params.get("hand") || params.get("embodiment");
       const requestedEpisode = params.get("episode") || params.get("pose") || params.get("rank");
-      const requestedCamera = params.get("camera") || params.get("view");
+      const requestedCamera = params.get("camera");
+      state.requestedViewCamera = params.get("view");
       if (!requestedObject && !requestedHand && !requestedEpisode) return;
 
       const target = state.episodes.find(ep =>
@@ -1701,6 +1741,7 @@
       els["selected-title"].textContent = `${ep.objName} - ${shortLabels[ep.hand] || labelForHand(ep.hand)} - ${graspTitleLabel(ep)}`;
       els["selected-subtitle"].textContent = "";
       updateDownloadCommand(ep);
+      updateCameraViewSelect(ep);
 
       if (state.mediaRequested && state.currentCamera) {
         showVideo(videoUrl(ep, state.currentCamera));
@@ -1709,6 +1750,92 @@
       }
 
       showModel(modelUrl(ep), ep);
+    }
+
+    function updateCameraViewSelect(ep) {
+      const select = els["camera-view-select"];
+      if (!ep) {
+        select.disabled = true;
+        select.innerHTML = '<option>View unavailable</option>';
+        return;
+      }
+
+      const cacheKey = ep.pathKey;
+      if (!Object.prototype.hasOwnProperty.call(state.datasetCameraExtrinsics, cacheKey)) {
+        select.disabled = true;
+        select.innerHTML = '<option>Loading views...</option>';
+        loadDatasetCameraViews(ep);
+        return;
+      }
+
+      const extrinsics = state.datasetCameraExtrinsics[cacheKey];
+      const cameras = Object.keys(extrinsics || {}).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      if (!cameras.length) {
+        select.disabled = true;
+        select.innerHTML = '<option>View unavailable</option>';
+        return;
+      }
+
+      const preferred = state.currentViewCamera === null ? state.requestedViewCamera : state.currentViewCamera;
+      state.currentViewCamera = cameras.includes(preferred)
+        ? preferred
+        : (cameras.includes(PREVIEW_CAMERA_ID) ? PREVIEW_CAMERA_ID : cameras[0]);
+      state.requestedViewCamera = null;
+      select.disabled = false;
+      select.innerHTML = cameras.map(camera =>
+        `<option value="${escapeHtml(camera)}">View ${escapeHtml(camera)}</option>`
+      ).join("");
+      select.value = state.currentViewCamera;
+    }
+
+    function datasetExtrinsicsUrl(ep) {
+      return datasetCameraParamUrl(ep, "extrinsics.json");
+    }
+
+    function datasetIntrinsicsUrl(ep) {
+      return datasetCameraParamUrl(ep, "intrinsics.json");
+    }
+
+    function datasetCameraParamUrl(ep, filename) {
+      const path = [ep.hand, ep.objId, ep.episode, "cam_param", filename]
+        .map(part => encodeURIComponent(part))
+        .join("/");
+      return `${DATASET_BASE}/${path}`;
+    }
+
+    async function loadDatasetCameraViews(ep) {
+      const cacheKey = ep.pathKey;
+      if (state.datasetCameraLoads[cacheKey]) return state.datasetCameraLoads[cacheKey];
+
+      const loadJson = (url, label) => fetch(url).then(response => {
+        if (!response.ok) throw new Error(`${label} request failed (${response.status})`);
+        return response.json();
+      });
+      state.datasetCameraLoads[cacheKey] = Promise.all([
+        loadJson(datasetExtrinsicsUrl(ep), "Camera extrinsics"),
+        loadJson(datasetIntrinsicsUrl(ep), "Camera intrinsics").catch(error => {
+          console.warn("Could not load dataset camera intrinsics", error);
+          return null;
+        })
+      ])
+        .then(([extrinsics, intrinsics]) => {
+          state.datasetCameraExtrinsics[cacheKey] = extrinsics && typeof extrinsics === "object" ? extrinsics : null;
+          state.datasetCameraIntrinsics[cacheKey] = intrinsics && typeof intrinsics === "object" ? intrinsics : null;
+        })
+        .catch(error => {
+          console.warn("Could not load dataset camera metadata", error);
+          state.datasetCameraExtrinsics[cacheKey] = null;
+          state.datasetCameraIntrinsics[cacheKey] = null;
+        })
+        .finally(() => {
+          delete state.datasetCameraLoads[cacheKey];
+          const current = currentEpisode();
+          if (!current || current.pathKey !== cacheKey) return;
+          updateCameraViewSelect(current);
+          applyDatasetCameraView(current, state.currentViewCamera);
+          writeStateUrl();
+        });
+      return state.datasetCameraLoads[cacheKey];
     }
 
     function renderSelectorRows() {
@@ -1947,6 +2074,8 @@
         viewer3d.renderer.outputColorSpace = viewer3d.THREE.SRGBColorSpace;
         viewer3d.renderer.toneMapping = viewer3d.THREE.ACESFilmicToneMapping;
         viewer3d.renderer.toneMappingExposure = 0.95;
+        viewer3d.renderer.shadowMap.enabled = true;
+        viewer3d.renderer.shadowMap.type = viewer3d.THREE.PCFSoftShadowMap;
         els["interactive-3d-canvas"].appendChild(viewer3d.renderer.domElement);
 
         viewer3d.controls = new viewer3d.OrbitControls(viewer3d.camera, viewer3d.renderer.domElement);
@@ -1957,13 +2086,24 @@
         viewer3d.controls.enableZoom = true;
         viewer3d.controls.screenSpacePanning = true;
 
-        viewer3d.scene.add(new viewer3d.THREE.HemisphereLight(0xffffff, 0x7b8492, 2.4));
-        const keyLight = new viewer3d.THREE.DirectionalLight(0xffffff, 2.2);
-        keyLight.position.set(3, 5, 4);
+        const keyLight = new viewer3d.THREE.DirectionalLight(0xffffff, 3);
+        keyLight.position.set(-0.2, 1, -0.2);
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.set(1024, 1024);
+        keyLight.shadow.bias = -0.00001;
+        keyLight.shadow.camera.near = 0.0001;
+        keyLight.shadow.camera.far = 2000;
         viewer3d.scene.add(keyLight);
-        const fillLight = new viewer3d.THREE.DirectionalLight(0xffffff, 0.7);
-        fillLight.position.set(-2, -3, 2);
+        viewer3d.scene.add(keyLight.target);
+        const fillLight = new viewer3d.THREE.DirectionalLight(0xffffff, 0.4);
+        fillLight.position.set(0, -1, 0);
         viewer3d.scene.add(fillLight);
+        viewer3d.grid = new viewer3d.THREE.GridHelper(2, 20, 0x7a8795, 0xb2bac2);
+        viewer3d.grid.material.transparent = true;
+        viewer3d.grid.material.opacity = 0.58;
+        viewer3d.grid.visible = false;
+        viewer3d.scene.add(viewer3d.grid);
+        loadViserDefaultEnvironment();
 
         bindSynchronizedPlaybackEvents();
         els["interactive-3d-play"].addEventListener("click", toggleSynchronizedPlayback);
@@ -1994,13 +2134,48 @@
       const rect = els["interactive-3d-viewer"].getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       viewer3d.camera.aspect = rect.width / rect.height;
-      viewer3d.camera.updateProjectionMatrix();
       viewer3d.renderer.setSize(rect.width, rect.height, false);
+      updateInteractiveCameraProjection();
+    }
+
+    function updateInteractiveCameraProjection() {
+      const camera = viewer3d.camera;
+      const calibration = viewer3d.cameraCalibration;
+      if (!camera) return;
+      if (!calibration) {
+        camera.updateProjectionMatrix();
+        return;
+      }
+
+      const { fx, fy, cx, cy, width, height } = calibration;
+      camera.aspect = width / height;
+      const near = camera.near;
+      const left = -near * cx / fx;
+      const right = near * (width - cx) / fx;
+      const top = near * cy / fy;
+      const bottom = -near * (height - cy) / fy;
+      camera.projectionMatrix.makePerspective(left, right, top, bottom, near, camera.far);
+      camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+    }
+
+    function loadViserDefaultEnvironment() {
+      const THREE = viewer3d.THREE;
+      const textureLoader = new THREE.TextureLoader();
+      textureLoader.setCrossOrigin("anonymous");
+      textureLoader.load(VISER_CITY_ENVIRONMENT_URL, texture => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        viewer3d.scene.environment = texture;
+        viewer3d.scene.environmentIntensity = 1;
+      }, undefined, error => {
+        console.warn("Could not load viser default environment", error);
+      });
     }
 
     async function loadInteractive3DModel(src, ep, token) {
       if (viewer3d.currentSrc === src && viewer3d.model) {
         viewer3d.currentHand = ep.hand;
+        applyDatasetCameraView(ep, state.currentViewCamera);
         viewer3d.playing = true;
         updateInteractivePlayButton();
         setInteractive3DStatus();
@@ -2030,7 +2205,11 @@
       }
 
       const loadedModel = gltf.scene;
-      applyViewerMaterialTone(loadedModel);
+      loadedModel.traverse(node => {
+        if (!node.isMesh) return;
+        node.castShadow = true;
+        node.receiveShadow = true;
+      });
       loadedModel.rotation.set(-Math.PI / 2, 0, 0);
       loadedModel.updateMatrixWorld(true);
       viewer3d.model = loadedModel;
@@ -2038,6 +2217,7 @@
       playAnimations(gltf, ep);
       setInteractive3DTime(0, { render: false });
       frameInteractiveModel(loadedModel, ep.hand, { updateAutoZoom: true });
+      applyDatasetCameraView(ep, state.currentViewCamera);
       syncInteractive3DToVideo({ force: true, render: false });
       viewer3d.renderer.render(viewer3d.scene, viewer3d.camera);
       setInteractive3DStatus();
@@ -2135,6 +2315,7 @@
       if (!viewer3d.model || !viewer3d.controls || !viewer3d.camera) return;
       if (resetTime && viewer3d.mixer) setInteractive3DTime(0, { render: false });
       frameInteractiveModel(viewer3d.model, viewer3d.currentHand || "default");
+      applyDatasetCameraView(currentEpisode(), state.currentViewCamera);
       viewer3d.clock?.getDelta?.();
       viewer3d.renderer?.render(viewer3d.scene, viewer3d.camera);
     }
@@ -2149,6 +2330,7 @@
 
       const maxDim = Math.max(size.x, size.y, size.z) || 1;
       const preset = CAMERA_PRESETS[embodiment] || CAMERA_PRESETS.default;
+      viewer3d.cameraCalibration = null;
       viewer3d.camera.fov = CAMERA_FOV;
       const distance = maxDim / (2 * Math.tan(THREE.MathUtils.degToRad(viewer3d.camera.fov) / 2));
       const viewDirection = new THREE.Vector3(...preset.viewDirection).normalize();
@@ -2160,14 +2342,96 @@
       const focus = objectCenter ? objectCenter.clone().sub(center) : presetFocus;
 
       object.position.sub(center);
+      object.updateMatrixWorld(true);
+      updateDatasetFloorGrid(object);
       viewer3d.camera.up.set(0, 1, 0);
       viewer3d.controls.target.copy(focus);
       viewer3d.camera.near = Math.max(maxDim / 1000, 0.001);
       viewer3d.camera.far = Math.max(maxDim * 100, 100);
       viewer3d.camera.position.copy(focus).addScaledVector(viewDirection, distance * CAMERA_DISTANCE_SCALE * viewer3d.zoomScale);
-      viewer3d.camera.updateProjectionMatrix();
+      updateInteractiveCameraProjection();
       viewer3d.controls.update();
       resizeInteractive3D();
+    }
+
+    function applyDatasetCameraView(ep, cameraId) {
+      const THREE = viewer3d.THREE;
+      const rows = ep && cameraId ? state.datasetCameraExtrinsics[ep.pathKey]?.[cameraId] : null;
+      if (!THREE || !viewer3d.model || !viewer3d.camera || !viewer3d.controls || !isDatasetExtrinsic(rows)) {
+        return false;
+      }
+
+      const values = rows.flat();
+      const worldToCamera = new THREE.Matrix4().set(...values, 0, 0, 0, 1);
+      const cameraToWorld = worldToCamera.invert();
+      // Dataset cameras use x-right, y-down, z-forward; Three.js uses x-right, y-up, z-back.
+      const cvToThreeCamera = new THREE.Matrix4().makeRotationX(Math.PI);
+      viewer3d.model.updateMatrixWorld(true);
+      const coordinateFix = findDatasetCoordinateRoot(viewer3d.model);
+      const cameraWorld = (coordinateFix?.matrixWorld || viewer3d.model.matrixWorld).clone()
+        .multiply(cameraToWorld)
+        .multiply(cvToThreeCamera);
+      const cameraScale = new THREE.Vector3();
+      cameraWorld.decompose(viewer3d.camera.position, viewer3d.camera.quaternion, cameraScale);
+
+      setDatasetCameraCalibration(state.datasetCameraIntrinsics[ep.pathKey]?.[cameraId]);
+      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(viewer3d.camera.quaternion);
+      viewer3d.camera.up.set(0, 1, 0).applyQuaternion(viewer3d.camera.quaternion).normalize();
+      viewer3d.controls.target.copy(viewer3d.camera.position).add(forward);
+      updateInteractiveCameraProjection();
+      viewer3d.controls.update();
+      viewer3d.renderer?.render(viewer3d.scene, viewer3d.camera);
+      return true;
+    }
+
+    function findDatasetCoordinateRoot(model) {
+      let coordinateRoot = null;
+      model.traverse(node => {
+        if (!coordinateRoot && /^coordinate_fix_/i.test(node.name || "")) coordinateRoot = node;
+      });
+      return coordinateRoot;
+    }
+
+    function setDatasetCameraCalibration(cameraEntry) {
+      const matrix = cameraEntry?.original_intrinsics;
+      const width = Number(cameraEntry?.width);
+      const height = Number(cameraEntry?.height);
+      const fx = Number(matrix?.[0]?.[0]);
+      const fy = Number(matrix?.[1]?.[1]);
+      const cx = Number(matrix?.[0]?.[2]);
+      const cy = Number(matrix?.[1]?.[2]);
+      if (![width, height, fx, fy, cx, cy].every(Number.isFinite) || width <= 0 || height <= 0 || fx <= 0 || fy <= 0) {
+        viewer3d.cameraCalibration = null;
+        return;
+      }
+
+      viewer3d.cameraCalibration = { fx, fy, cx, cy, width, height };
+      viewer3d.camera.fov = viewer3d.THREE.MathUtils.radToDeg(2 * Math.atan(height / (2 * fy)));
+    }
+
+    function updateDatasetFloorGrid(model) {
+      const grid = viewer3d.grid;
+      const THREE = viewer3d.THREE;
+      if (!grid || !THREE || !model) return;
+      if (currentEpisode()?.hand === "human") {
+        grid.visible = false;
+        return;
+      }
+      model.updateMatrixWorld(true);
+      const coordinateFix = findDatasetCoordinateRoot(model);
+      // GridHelper starts as an XZ plane. Rotate it into the dataset's XY plane at z = 0.
+      const floorWorld = (coordinateFix?.matrixWorld || model.matrixWorld).clone()
+        .multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+      const gridScale = new THREE.Vector3();
+      floorWorld.decompose(grid.position, grid.quaternion, gridScale);
+      grid.scale.copy(gridScale).multiplyScalar(1.5);
+      grid.visible = true;
+    }
+
+    function isDatasetExtrinsic(rows) {
+      return Array.isArray(rows) && rows.length === 3 && rows.every(row =>
+        Array.isArray(row) && row.length === 4 && row.every(Number.isFinite)
+      );
     }
 
     function isObjectMeshNode(node) {
@@ -2225,50 +2489,6 @@
       const zoomSpan = VIEW_ZOOM_GREEN_CACTUS_VASE_SCALE - VIEW_ZOOM_MIN_SCALE;
       const scale = VIEW_ZOOM_MIN_SCALE + ((centerY - VIEW_ZOOM_APPLE_CENTER_Y) / referenceSpan) * zoomSpan;
       return Math.max(VIEW_ZOOM_MIN_SCALE, Math.min(VIEW_ZOOM_MAX_SCALE, scale));
-    }
-
-    function materialList(node) {
-      if (!node.material) return [];
-      return Array.isArray(node.material) ? node.material : [node.material];
-    }
-
-    function isDefaultObjectMaterial(material) {
-      if (!material?.color) return false;
-      const materialName = (material.name || "").toLowerCase();
-      const looksDefault = materialName.includes("default") || materialName.includes("object");
-      return looksDefault
-        && !material.vertexColors
-        && material.color.r > 0.94
-        && material.color.g > 0.94
-        && material.color.b > 0.94;
-    }
-
-    function applyViewerMaterialTone(loadedModel) {
-      const THREE = viewer3d.THREE;
-      const robotSpaceGray = new THREE.Color(ROBOT_SPACE_GRAY_COLOR);
-      const objectDefaultBeige = new THREE.Color(OBJECT_DEFAULT_BEIGE_COLOR);
-      loadedModel.traverse(node => {
-        if (!node.isMesh) return;
-        const nodeName = (node.name || "").toLowerCase();
-        const isRobotMesh = nodeName.includes("robot");
-        const isObjectMesh = isObjectMeshNode(node);
-
-        materialList(node).forEach(material => {
-          if (isRobotMesh && material?.color) {
-            material.color.copy(robotSpaceGray);
-            if ("metalness" in material) material.metalness = Math.max(material.metalness || 0, 0.08);
-            if ("roughness" in material) material.roughness = Math.min(material.roughness ?? 0.78, 0.72);
-            material.needsUpdate = true;
-            return;
-          }
-
-          if (isObjectMesh && isDefaultObjectMaterial(material)) {
-            material.color.copy(objectDefaultBeige);
-            if ("roughness" in material) material.roughness = Math.min(material.roughness ?? 0.78, 0.74);
-            material.needsUpdate = true;
-          }
-        });
-      });
     }
 
     function bindSynchronizedPlaybackEvents() {
@@ -2644,7 +2864,7 @@
       params.set("object", ep.objId);
       params.set("embodiment", ep.hand);
       params.set("episode", ep.episode);
-      params.set("view", state.currentCamera || PREVIEW_CAMERA_ID);
+      params.set("view", state.currentViewCamera || PREVIEW_CAMERA_ID);
       history.replaceState(null, "", `#${params.toString()}`);
     }
 
