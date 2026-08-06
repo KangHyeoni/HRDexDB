@@ -1145,6 +1145,11 @@
     const DATASET_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB/resolve/main";
     const PREVIEW_VIDEO_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-preview-video/resolve/main";
     const PREVIEW_CAMERA_ID = "23263780";
+    const HUMAN_FLOOR = {
+      position: [0, 0, 0.718],
+      rotationDegXYZ: [-14.4, -10.7, -8.1]
+    };
+    const HUMAN_FLOOR_SAMPLE_COUNT = 5;
     const THUMB_BASE = "static/gallery-object-thumbs";
     const THUMB_FALLBACK_BASE = "https://willi19.github.io/object_processing/objects";
     const THUMB_VERSION = "object-processing-24";
@@ -1209,8 +1214,6 @@
       datasetCameraIntrinsics: {},
       datasetCameraC2R: {},
       datasetCameraLoads: {},
-      robotFloorReference: null,
-      robotFloorReferenceLoad: null,
       robotViewAlignments: {},
       robotViewAlignmentLoads: {},
       mediaRequested: false,
@@ -1251,7 +1254,8 @@
       cameraCalibration: null,
       zoomScale: DEFAULT_VIEW_ZOOM_SCALE,
       autoZoomScale: DEFAULT_VIEW_ZOOM_SCALE,
-      objectCenterY: null
+      objectCenterY: null,
+      humanFloorZ: null
     };
 
     const els = {};
@@ -1852,13 +1856,6 @@
       const cacheKey = ep.pathKey;
       if (state.datasetCameraLoads[cacheKey]) return state.datasetCameraLoads[cacheKey];
 
-      if (ep.hand === "human") {
-        loadRobotFloorReference().then(() => {
-          const current = currentEpisode();
-          if (current?.pathKey === cacheKey) updateDatasetFloorGrid(viewer3d.model);
-        }).catch(error => console.warn("Could not load robot floor reference", error));
-      }
-
       const loadJson = (url, label) => fetch(url).then(response => {
         if (!response.ok) throw new Error(`${label} request failed (${response.status})`);
         return response.json();
@@ -1895,32 +1892,6 @@
           writeStateUrl();
         });
       return state.datasetCameraLoads[cacheKey];
-    }
-
-    function loadRobotFloorReference() {
-      if (state.robotFloorReference) return Promise.resolve(state.robotFloorReference);
-      if (state.robotFloorReferenceLoad) return state.robotFloorReferenceLoad;
-      const reference = state.episodes.find(ep => robotEmbodiments.has(ep.hand));
-      if (!reference) return Promise.reject(new Error("No robot episode is available for the floor reference"));
-
-      const loadJson = (url, label) => fetch(url).then(response => {
-        if (!response.ok) throw new Error(`${label} request failed (${response.status})`);
-        return response.json();
-      });
-      state.robotFloorReferenceLoad = Promise.all([
-        loadJson(datasetExtrinsicsUrl(reference), "Robot camera extrinsics"),
-        fetchNpyMatrix(datasetC2RUrl(reference), "Robot C2R")
-      ]).then(([extrinsics, c2r]) => {
-        const rows = extrinsics?.[PREVIEW_CAMERA_ID];
-        if (!isDatasetExtrinsic(rows)) {
-          throw new Error(`Robot reference has no camera ${PREVIEW_CAMERA_ID}`);
-        }
-        state.robotFloorReference = { worldToCamera: rows.flat(), c2r };
-        return state.robotFloorReference;
-      }).finally(() => {
-        state.robotFloorReferenceLoad = null;
-      });
-      return state.robotFloorReferenceLoad;
     }
 
     function renderSelectorRows() {
@@ -2303,6 +2274,9 @@
       viewer3d.assetRoot.add(viewer3d.model);
       playAnimations(gltf, ep);
       setInteractive3DTime(0, { render: false });
+      viewer3d.humanFloorZ = ep.hand === "human"
+        ? sampleHumanFloorZ(loadedModel)
+        : null;
       frameInteractiveModel(loadedModel, ep.hand, { updateAutoZoom: true });
       applyDatasetCameraView(ep, state.currentViewCamera);
       syncInteractive3DToVideo({ force: true, render: false });
@@ -2362,6 +2336,7 @@
       viewer3d.duration = 0;
       viewer3d.clipDuration = 0;
       viewer3d.currentSrc = "";
+      viewer3d.humanFloorZ = null;
       els["camera-view-menu"].hidden = true;
       els["interactive-3d-scrub"].value = "0";
       els["interactive-3d-readout"].textContent = "0.00s";
@@ -2511,20 +2486,18 @@
       model.updateMatrixWorld(true);
       const coordinateFix = findDatasetCoordinateRoot(model);
       const ep = currentEpisode();
-      const humanC2RValues = ep?.hand === "human" ? state.datasetCameraC2R[ep.pathKey] : null;
-      const hasHumanC2R = Array.isArray(humanC2RValues) && humanC2RValues.length === 16 && humanC2RValues.every(Number.isFinite);
-      const humanRows = ep?.hand === "human" ? state.datasetCameraExtrinsics[ep.pathKey]?.[PREVIEW_CAMERA_ID] : null;
-      const robotReference = state.robotFloorReference;
-      if (ep?.hand === "human" && (!hasHumanC2R || !isDatasetExtrinsic(humanRows) || !robotReference)) {
-        grid.visible = false;
-        return;
-      }
-      // GridHelper starts as an XZ plane. Rotate it into the shared dataset XY plane at z = 0.
-      const humanFloorTransform = hasHumanC2R
-        ? matrixFromValues(humanC2RValues).invert()
-          .multiply(new THREE.Matrix4().set(...humanRows.flat(), 0, 0, 0, 1).invert())
-          .multiply(new THREE.Matrix4().set(...robotReference.worldToCamera))
-          .multiply(matrixFromValues(robotReference.c2r))
+      const humanFloorZ = Number.isFinite(viewer3d.humanFloorZ)
+        ? viewer3d.humanFloorZ
+        : HUMAN_FLOOR.position[2];
+      const humanFloorTransform = ep?.hand === "human"
+        ? new THREE.Matrix4().compose(
+          new THREE.Vector3(HUMAN_FLOOR.position[0], HUMAN_FLOOR.position[1], humanFloorZ),
+          new THREE.Quaternion().setFromEuler(new THREE.Euler(
+            ...HUMAN_FLOOR.rotationDegXYZ.map(THREE.MathUtils.degToRad),
+            "XYZ"
+          )),
+          new THREE.Vector3(1, 1, 1)
+        )
         : new THREE.Matrix4();
       const floorWorld = (coordinateFix?.matrixWorld || model.matrixWorld).clone()
         .multiply(humanFloorTransform)
@@ -2616,6 +2589,51 @@
       });
 
       return count ? center.multiplyScalar(1 / count) : null;
+    }
+
+    function sampleHumanFloorZ(object) {
+      const THREE = viewer3d.THREE;
+      if (!THREE || !object) return null;
+
+      const initialTime = currentAnimationTime();
+      const sampleDuration = Math.min(viewer3d.duration || 0, 4 / 30);
+      const sampleTimes = Array.from({ length: HUMAN_FLOOR_SAMPLE_COUNT }, (_, index) =>
+        HUMAN_FLOOR_SAMPLE_COUNT === 1 ? 0 : sampleDuration * index / (HUMAN_FLOOR_SAMPLE_COUNT - 1)
+      );
+      const floorRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(
+        ...HUMAN_FLOOR.rotationDegXYZ.map(THREE.MathUtils.degToRad),
+        "XYZ"
+      ));
+      // The Human GLB's floor-control z axis is opposite the mesh's z axis.
+      const floorNormal = new THREE.Vector3(0, 0, -1).applyQuaternion(floorRotation);
+      let minimumFloorProjection = Infinity;
+
+      sampleTimes.forEach(time => {
+        viewer3d.mixer?.setTime(time);
+        object.updateMatrixWorld(true);
+        const coordinateRoot = findDatasetCoordinateRoot(object);
+        const worldToCoordinate = (coordinateRoot?.matrixWorld || object.matrixWorld).clone().invert();
+        const vertex = new THREE.Vector3();
+
+        object.traverse(node => {
+          if (!isObjectMeshNode(node) || !node.geometry) return;
+          const position = node.geometry.getAttribute("position");
+          if (!position) return;
+
+          for (let index = 0; index < position.count; index += 1) {
+            vertex.fromBufferAttribute(position, index);
+            if (node.isSkinnedMesh && typeof node.boneTransform === "function") node.boneTransform(index, vertex);
+            vertex.applyMatrix4(node.matrixWorld).applyMatrix4(worldToCoordinate);
+            minimumFloorProjection = Math.min(minimumFloorProjection, floorNormal.dot(vertex));
+          }
+        });
+      });
+
+      viewer3d.mixer?.setTime(initialTime);
+      object.updateMatrixWorld(true);
+      if (!Number.isFinite(minimumFloorProjection) || Math.abs(floorNormal.z) < 1e-6) return null;
+      return (minimumFloorProjection - floorNormal.x * HUMAN_FLOOR.position[0] -
+        floorNormal.y * HUMAN_FLOOR.position[1]) / floorNormal.z;
     }
 
     function setAutoZoomFromObjectCenter(objectCenter) {
