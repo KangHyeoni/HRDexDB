@@ -1169,6 +1169,7 @@
     };
     const embodimentOrder = ["human", "allegro_v5", "inspire_f1", "inspire_dftp"];
     const robotEmbodiments = new Set(["allegro_v5", "inspire_f1", "inspire_dftp"]);
+    const HIDDEN_OBJECT_IDS = new Set(["apple"]);
 
     const state = {
       catalog: {},
@@ -1563,6 +1564,7 @@
       orderedEmbodiments(Object.keys(state.catalog)).forEach(hand => {
         const objects = state.catalog[hand] || {};
         Object.entries(objects).forEach(([objId, sequenceList]) => {
+          if (HIDDEN_OBJECT_IDS.has(objId)) return;
           const sequences = Array.isArray(sequenceList) ? sequenceList : Object.keys(sequenceList || {});
           sequences.forEach(rawEpisode => {
             const episode = String(rawEpisode);
