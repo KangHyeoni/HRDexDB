@@ -146,10 +146,24 @@
     }
 
     .gallery-title {
-      margin-top: 4px;
       font-size: clamp(2rem, 4vw, 4rem);
       line-height: 1;
       letter-spacing: 0;
+    }
+
+    .gallery-title-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .gallery-version {
+      color: var(--text-muted);
+      font-size: 1.72em;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
     }
 
     .summary-pills {
@@ -269,7 +283,10 @@
       border-bottom: 1px solid var(--line);
     }
 
-    .selected-title { min-width: 0; }
+    .selected-title {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
 
     .selected-title h2 {
       font-size: 1.08em;
@@ -283,6 +300,212 @@
       margin-top: 2px;
       color: var(--text-muted);
       font-size: .82em;
+    }
+
+    .viewer-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .download-menu,
+    .version-menu {
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .download-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: .82em;
+      font-weight: 850;
+      line-height: 1;
+      transition: background .16s, border-color .16s, opacity .16s;
+    }
+
+    .download-trigger:hover:not(:disabled),
+    .download-menu.is-open .download-trigger {
+      border-color: var(--accent-hover);
+      background: var(--accent-hover);
+    }
+
+    .download-trigger:disabled {
+      cursor: default;
+      opacity: .48;
+    }
+
+    .download-trigger-mark {
+      font-size: 1em;
+    }
+
+    .download-popover {
+      position: absolute;
+      z-index: 30;
+      top: calc(100% + 8px);
+      right: 0;
+      width: min(560px, calc(100vw - 40px));
+      padding: 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .download-tabs {
+      display: inline-flex;
+      margin-bottom: 10px;
+      padding: 3px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: var(--surface-2);
+    }
+
+    .download-tab {
+      min-height: 28px;
+      padding: 0 11px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: .78em;
+      font-weight: 850;
+      transition: background .16s, color .16s, box-shadow .16s;
+    }
+
+    .download-tab[aria-pressed="true"] {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .download-command {
+      display: flex;
+      min-height: 36px;
+      align-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--surface-2);
+    }
+
+    .download-command input {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 36px;
+      padding: 0 10px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: .74em;
+      font-weight: 750;
+    }
+
+    .copy-download-command {
+      flex: 0 0 auto;
+      height: 36px;
+      padding: 0 11px;
+      border: 0;
+      border-left: 1px solid var(--line-strong);
+      background: var(--surface);
+      color: var(--accent-hover);
+      font-size: .8em;
+      font-weight: 850;
+      white-space: nowrap;
+      transition: background .16s, color .16s;
+    }
+
+    .copy-download-command:hover {
+      background: var(--accent-soft);
+      color: var(--accent-hover);
+    }
+
+    .copy-download-command:disabled {
+      cursor: default;
+      opacity: .48;
+    }
+
+    .download-description {
+      margin-top: 7px;
+      color: var(--text-muted);
+      font-size: .75em;
+      font-weight: 800;
+    }
+
+    .version-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: .82em;
+      font-weight: 850;
+      line-height: 1;
+      transition: border-color .16s, background .16s;
+    }
+
+    .version-trigger:hover,
+    .version-menu.is-open .version-trigger {
+      border-color: rgba(226, 96, 59, .5);
+      background: var(--accent-soft);
+    }
+
+    .version-trigger-mark {
+      color: var(--text-muted);
+      font-size: 1em;
+    }
+
+    .version-popover {
+      position: absolute;
+      z-index: 30;
+      top: calc(100% + 8px);
+      right: 0;
+      width: min(300px, calc(100vw - 40px));
+      padding: 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .version-popover h3 {
+      font-size: .84em;
+      line-height: 1.25;
+    }
+
+    .version-entry {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .version-number {
+      flex: 0 0 auto;
+      color: var(--accent-hover);
+      font-size: .8em;
+      font-weight: 850;
+    }
+
+    .version-summary {
+      color: var(--text-muted);
+      font-size: .78em;
+      font-weight: 700;
     }
 
     .screen-wrap {
@@ -321,6 +544,48 @@
       text-transform: uppercase;
       backdrop-filter: blur(8px);
     }
+
+    .camera-view-menu {
+      position: absolute;
+      z-index: 4;
+      top: 10px;
+      right: 10px;
+      max-width: calc(100% - 136px);
+    }
+
+    .camera-view-menu[hidden] { display: none; }
+
+    .camera-view-menu::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      top: 50%;
+      right: 10px;
+      width: 6px;
+      height: 6px;
+      border-right: 2px solid rgba(255, 255, 255, .82);
+      border-bottom: 2px solid rgba(255, 255, 255, .82);
+      transform: translateY(-65%) rotate(45deg);
+    }
+
+    .camera-view-select {
+      display: block;
+      width: fit-content;
+      max-width: 100%;
+      min-height: 30px;
+      padding: 0 24px 0 9px;
+      border: 1px solid rgba(255, 255, 255, .28);
+      border-radius: 6px;
+      background: rgba(12, 12, 12, .58);
+      color: rgba(255, 255, 255, .92);
+      font-size: .74em;
+      font-weight: 850;
+      line-height: 1;
+      appearance: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .camera-view-select:disabled { opacity: .5; }
 
     .screen-wrap video,
     .interactive-3d-viewer,
@@ -709,6 +974,13 @@
       }
 
       .interactive-3d-controls select { display: none; }
+      .viewer-topbar { align-items: stretch; flex-direction: column; }
+      .viewer-actions { align-items: stretch; flex-direction: column; width: 100%; }
+      .download-menu, .version-menu { width: 100%; }
+      .download-trigger { width: 100%; justify-content: center; }
+      .version-trigger { width: 100%; justify-content: center; }
+      .download-popover { position: static; width: 100%; margin-top: 8px; }
+      .version-popover { position: static; width: 100%; margin-top: 8px; }
     }
   </style>
 </head>
@@ -731,7 +1003,10 @@
     <header class="gallery-head">
       <div>
         <div class="gallery-kicker">Dataset Gallery</div>
-        <h1 class="gallery-title">Sequence Viewer</h1>
+        <div class="gallery-title-row">
+          <h1 class="gallery-title">Sequence Viewer</h1>
+          <span class="gallery-version">v 1.0.0</span>
+        </div>
       </div>
       <div class="summary-pills" id="summary-pills"></div>
     </header>
@@ -753,6 +1028,36 @@
           <div class="selected-title">
             <h2 id="selected-title">Loading...</h2>
             <div class="sub" id="selected-subtitle"></div>
+          </div>
+          <div class="viewer-actions" id="viewer-actions">
+            <div class="version-menu" id="version-menu">
+              <button class="version-trigger" id="version-trigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="version-popover">
+                Version logs <span class="version-trigger-mark" aria-hidden="true">&#9662;</span>
+              </button>
+              <div class="version-popover" id="version-popover" role="dialog" aria-label="Version history" hidden>
+                <h3>Version history</h3>
+                <div class="version-entry">
+                  <span class="version-number">1.0.0</span>
+                  <span class="version-summary">Initial version</span>
+                </div>
+              </div>
+            </div>
+            <div class="download-menu" id="download-menu" aria-disabled="true">
+              <button class="download-trigger" id="download-trigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="download-popover" disabled>
+                Download <span class="download-trigger-mark" aria-hidden="true">&#9662;</span>
+              </button>
+              <div class="download-popover" id="download-popover" role="dialog" aria-label="Download episode" hidden>
+                <div class="download-tabs" role="group" aria-label="Download contents">
+                  <button class="download-tab" id="download-tab-full" type="button" aria-pressed="true" data-download-mode="full">Full</button>
+                  <button class="download-tab" id="download-tab-without-video" type="button" aria-pressed="false" data-download-mode="without-video">Lite</button>
+                </div>
+                <div class="download-command">
+                  <input id="download-command" type="text" value="" readonly aria-label="Terminal download command">
+                  <button class="copy-download-command" id="copy-download-command" type="button">Copy</button>
+                </div>
+                <p class="download-description" id="download-description"></p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -798,6 +1103,9 @@
 
           <section class="media-panel three-d-panel" aria-label="Selected sequence interactive 3D">
             <div class="media-panel-label">Interactive 3D</div>
+            <div class="camera-view-menu" id="camera-view-menu" hidden>
+              <select class="camera-view-select" id="camera-view-select" aria-label="3D camera view" disabled></select>
+            </div>
             <div class="screen-placeholder" id="pending-layer">
               <div class="placeholder-box">
                 <h3 id="pending-title">Asset pending</h3>
@@ -834,8 +1142,14 @@
     const CATALOG_URL = "https://huggingface.co/spaces/HRDexDB/HRDexDB-Visualizer/raw/main/assets/glb_catalog.json";
     const GLB_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-glb/resolve/main";
     const GLB_TREE_API_BASE = "https://huggingface.co/api/datasets/HRDexDB/HRDexDB-glb/tree/main";
+    const DATASET_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB/resolve/main";
     const PREVIEW_VIDEO_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-preview-video/resolve/main";
     const PREVIEW_CAMERA_ID = "23263780";
+    const HUMAN_FLOOR = {
+      position: [0, 0, 0.718],
+      rotationDegXYZ: [-14.4, -10.7, -8.1]
+    };
+    const HUMAN_FLOOR_SAMPLE_COUNT = 5;
     const THUMB_BASE = "static/gallery-object-thumbs";
     const THUMB_FALLBACK_BASE = "https://willi19.github.io/object_processing/objects";
     const THUMB_VERSION = "object-processing-24";
@@ -846,6 +1160,7 @@
     const ORBIT_CONTROLS_URL = "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
     const GLTF_LOADER_URL = "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
     const MESHOPT_DECODER_URL = "https://unpkg.com/three@0.160.0/examples/jsm/libs/meshopt_decoder.module.js";
+    const VISER_CITY_ENVIRONMENT_URL = "https://raw.githubusercontent.com/nerfstudio-project/viser/main/src/viser/client/src/assets/potsdamer_platz_1k.jpg";
     const ADDITIONAL_GLB_CATALOG_TREES = [
       {
         embodiment: "inspire_dftp",
@@ -853,8 +1168,6 @@
       }
     ];
 
-    const ROBOT_SPACE_GRAY_COLOR = 0xa8adb4;
-    const OBJECT_DEFAULT_BEIGE_COLOR = 0xd9c7aa;
     const CAMERA_PRESETS = {
       default: { focus: [-0.07, -0.10, -0.02], viewDirection: [0, 0.36, -1.04] },
       human: { focus: [0, 0.08, -0.17], viewDirection: [0, 0.52, -1.51] },
@@ -885,6 +1198,7 @@
     };
     const embodimentOrder = ["human", "allegro_v5", "inspire_f1", "inspire_dftp"];
     const robotEmbodiments = new Set(["allegro_v5", "inspire_f1", "inspire_dftp"]);
+    const HIDDEN_OBJECT_IDS = new Set(["apple"]);
 
     const state = {
       catalog: {},
@@ -894,7 +1208,18 @@
       episodes: [],
       currentKey: null,
       currentCamera: null,
+      currentViewCamera: null,
+      requestedViewCamera: null,
+      datasetCameraExtrinsics: {},
+      datasetCameraIntrinsics: {},
+      datasetCameraC2R: {},
+      datasetCameraLoads: {},
+      robotViewAlignments: {},
+      robotViewAlignmentLoads: {},
       mediaRequested: false,
+      downloadMenuOpen: false,
+      versionMenuOpen: false,
+      downloadMode: "full",
       openSelector: null,
       autoScrollRail: null,
       autoScrollFrame: null,
@@ -925,9 +1250,12 @@
       frame: null,
       resizeObserver: null,
       syncEventsBound: false,
+      grid: null,
+      cameraCalibration: null,
       zoomScale: DEFAULT_VIEW_ZOOM_SCALE,
       autoZoomScale: DEFAULT_VIEW_ZOOM_SCALE,
-      objectCenterY: null
+      objectCenterY: null,
+      humanFloorZ: null
     };
 
     const els = {};
@@ -943,6 +1271,18 @@
       "pose-value",
       "selected-title",
       "selected-subtitle",
+      "viewer-actions",
+      "download-menu",
+      "download-trigger",
+      "download-popover",
+      "download-tab-full",
+      "download-tab-without-video",
+      "download-command",
+      "copy-download-command",
+      "download-description",
+      "version-menu",
+      "version-trigger",
+      "version-popover",
       "main-video",
       "video-pending-layer",
       "video-pending-title",
@@ -957,6 +1297,8 @@
       "interactive-3d-scrub",
       "interactive-3d-readout",
       "interactive-3d-speed",
+      "camera-view-menu",
+      "camera-view-select",
       "object-strip",
       "object-count",
       "pose-strip",
@@ -1082,6 +1424,38 @@
     function bindEvents() {
       ["hand-filter", "outcome-filter"].forEach(id => {
         els[id].addEventListener("change", renderAll);
+      });
+
+      els["download-trigger"].addEventListener("click", toggleDownloadMenu);
+      els["version-trigger"].addEventListener("click", toggleVersionMenu);
+      ["download-tab-full", "download-tab-without-video"].forEach(id => {
+        els[id].addEventListener("click", () => {
+          state.downloadMode = els[id].dataset.downloadMode;
+          updateDownloadCommand(currentEpisode());
+        });
+      });
+      els["copy-download-command"].addEventListener("click", copyDownloadCommand);
+      els["camera-view-select"].addEventListener("change", () => {
+        const ep = currentEpisode();
+        const camera = els["camera-view-select"].value;
+        if (!ep || !camera) return;
+        state.currentViewCamera = camera;
+        applyDatasetCameraView(ep, camera);
+        writeStateUrl();
+      });
+      document.addEventListener("pointerdown", event => {
+        if ((state.downloadMenuOpen || state.versionMenuOpen) && !els["viewer-actions"].contains(event.target)) {
+          setDownloadMenuOpen(false);
+          setVersionMenuOpen(false);
+        }
+      });
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && (state.downloadMenuOpen || state.versionMenuOpen)) {
+          const focusTarget = state.versionMenuOpen ? els["version-trigger"] : els["download-trigger"];
+          setDownloadMenuOpen(false);
+          setVersionMenuOpen(false);
+          focusTarget.focus();
+        }
       });
 
       ["object", "pose"].forEach(name => {
@@ -1222,6 +1596,7 @@
       orderedEmbodiments(Object.keys(state.catalog)).forEach(hand => {
         const objects = state.catalog[hand] || {};
         Object.entries(objects).forEach(([objId, sequenceList]) => {
+          if (HIDDEN_OBJECT_IDS.has(objId)) return;
           const sequences = Array.isArray(sequenceList) ? sequenceList : Object.keys(sequenceList || {});
           sequences.forEach(rawEpisode => {
             const episode = String(rawEpisode);
@@ -1267,7 +1642,8 @@
       const requestedObject = params.get("object");
       const requestedHand = params.get("hand") || params.get("embodiment");
       const requestedEpisode = params.get("episode") || params.get("pose") || params.get("rank");
-      const requestedCamera = params.get("camera") || params.get("view");
+      const requestedCamera = params.get("camera");
+      state.requestedViewCamera = params.get("view");
       if (!requestedObject && !requestedHand && !requestedEpisode) return;
 
       const target = state.episodes.find(ep =>
@@ -1391,12 +1767,16 @@
       if (!ep) {
         els["selected-title"].textContent = "No matching sequence";
         els["selected-subtitle"].textContent = "";
+        updateDownloadCommand(null);
+        updateCameraViewSelect(null);
         clearMedia();
         return;
       }
 
       els["selected-title"].textContent = `${ep.objName} - ${shortLabels[ep.hand] || labelForHand(ep.hand)} - ${graspTitleLabel(ep)}`;
       els["selected-subtitle"].textContent = "";
+      updateDownloadCommand(ep);
+      updateCameraViewSelect(ep);
 
       if (state.mediaRequested && state.currentCamera) {
         showVideo(videoUrl(ep, state.currentCamera));
@@ -1405,6 +1785,113 @@
       }
 
       showModel(modelUrl(ep), ep);
+    }
+
+    function updateCameraViewSelect(ep) {
+      const select = els["camera-view-select"];
+      const menu = els["camera-view-menu"];
+      menu.hidden = true;
+      if (!ep) {
+        select.disabled = true;
+        select.innerHTML = "";
+        return;
+      }
+
+      const cacheKey = ep.pathKey;
+      if (!Object.prototype.hasOwnProperty.call(state.datasetCameraExtrinsics, cacheKey)) {
+        select.disabled = true;
+        select.innerHTML = "";
+        loadDatasetCameraViews(ep);
+        return;
+      }
+
+      const extrinsics = state.datasetCameraExtrinsics[cacheKey];
+      const cameras = Object.keys(extrinsics || {}).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      if (!cameras.length) {
+        select.disabled = true;
+        select.innerHTML = "";
+        return;
+      }
+
+      const preferred = state.currentViewCamera === null ? state.requestedViewCamera : state.currentViewCamera;
+      state.currentViewCamera = cameras.includes(preferred)
+        ? preferred
+        : (cameras.includes(PREVIEW_CAMERA_ID) ? PREVIEW_CAMERA_ID : cameras[0]);
+      state.requestedViewCamera = null;
+      select.disabled = false;
+      select.innerHTML = cameras.map(camera =>
+        `<option value="${escapeHtml(camera)}">View ${escapeHtml(camera)}</option>`
+      ).join("");
+      select.value = state.currentViewCamera;
+      menu.hidden = !isInteractive3DReady(ep);
+    }
+
+    function isInteractive3DReady(ep) {
+      return Boolean(ep && viewer3d.model && viewer3d.currentSrc === modelUrl(ep));
+    }
+
+    function datasetExtrinsicsUrl(ep) {
+      return datasetCameraParamUrl(ep, "extrinsics.json");
+    }
+
+    function datasetIntrinsicsUrl(ep) {
+      return datasetCameraParamUrl(ep, "intrinsics.json");
+    }
+
+    function datasetC2RUrl(ep) {
+      const path = [ep.hand, ep.objId, ep.episode, "C2R.npy"]
+        .map(part => encodeURIComponent(part))
+        .join("/");
+      return `${DATASET_BASE}/${path}`;
+    }
+
+    function datasetCameraParamUrl(ep, filename) {
+      const path = [ep.hand, ep.objId, ep.episode, "cam_param", filename]
+        .map(part => encodeURIComponent(part))
+        .join("/");
+      return `${DATASET_BASE}/${path}`;
+    }
+
+    async function loadDatasetCameraViews(ep) {
+      const cacheKey = ep.pathKey;
+      if (state.datasetCameraLoads[cacheKey]) return state.datasetCameraLoads[cacheKey];
+
+      const loadJson = (url, label) => fetch(url).then(response => {
+        if (!response.ok) throw new Error(`${label} request failed (${response.status})`);
+        return response.json();
+      });
+      state.datasetCameraLoads[cacheKey] = Promise.all([
+        loadJson(datasetExtrinsicsUrl(ep), "Camera extrinsics"),
+        loadJson(datasetIntrinsicsUrl(ep), "Camera intrinsics").catch(error => {
+          console.warn("Could not load dataset camera intrinsics", error);
+          return null;
+        }),
+        fetchNpyMatrix(datasetC2RUrl(ep), "C2R").catch(error => {
+          console.warn("Could not load C2R", error);
+          return null;
+        })
+      ])
+        .then(([extrinsics, intrinsics, c2r]) => {
+          state.datasetCameraExtrinsics[cacheKey] = extrinsics && typeof extrinsics === "object" ? extrinsics : null;
+          state.datasetCameraIntrinsics[cacheKey] = intrinsics && typeof intrinsics === "object" ? intrinsics : null;
+          state.datasetCameraC2R[cacheKey] = c2r;
+        })
+        .catch(error => {
+          console.warn("Could not load dataset camera metadata", error);
+          state.datasetCameraExtrinsics[cacheKey] = null;
+          state.datasetCameraIntrinsics[cacheKey] = null;
+          state.datasetCameraC2R[cacheKey] = null;
+        })
+        .finally(() => {
+          delete state.datasetCameraLoads[cacheKey];
+          const current = currentEpisode();
+          if (!current || current.pathKey !== cacheKey) return;
+          updateCameraViewSelect(current);
+          applyDatasetCameraView(current, state.currentViewCamera);
+          updateDatasetFloorGrid(viewer3d.model);
+          writeStateUrl();
+        });
+      return state.datasetCameraLoads[cacheKey];
     }
 
     function renderSelectorRows() {
@@ -1580,6 +2067,7 @@
     async function showInteractive3D(src, ep) {
       const token = ++viewer3d.loadToken;
       els["interactive-3d-viewer"].style.display = "block";
+      els["camera-view-menu"].hidden = true;
       setInteractive3DStatus("Loading interactive 3D...");
       try {
         await ensureInteractive3D();
@@ -1643,6 +2131,8 @@
         viewer3d.renderer.outputColorSpace = viewer3d.THREE.SRGBColorSpace;
         viewer3d.renderer.toneMapping = viewer3d.THREE.ACESFilmicToneMapping;
         viewer3d.renderer.toneMappingExposure = 0.95;
+        viewer3d.renderer.shadowMap.enabled = true;
+        viewer3d.renderer.shadowMap.type = viewer3d.THREE.PCFSoftShadowMap;
         els["interactive-3d-canvas"].appendChild(viewer3d.renderer.domElement);
 
         viewer3d.controls = new viewer3d.OrbitControls(viewer3d.camera, viewer3d.renderer.domElement);
@@ -1653,13 +2143,24 @@
         viewer3d.controls.enableZoom = true;
         viewer3d.controls.screenSpacePanning = true;
 
-        viewer3d.scene.add(new viewer3d.THREE.HemisphereLight(0xffffff, 0x7b8492, 2.4));
-        const keyLight = new viewer3d.THREE.DirectionalLight(0xffffff, 2.2);
-        keyLight.position.set(3, 5, 4);
+        const keyLight = new viewer3d.THREE.DirectionalLight(0xffffff, 3);
+        keyLight.position.set(-0.2, 1, -0.2);
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.set(1024, 1024);
+        keyLight.shadow.bias = -0.00001;
+        keyLight.shadow.camera.near = 0.0001;
+        keyLight.shadow.camera.far = 2000;
         viewer3d.scene.add(keyLight);
-        const fillLight = new viewer3d.THREE.DirectionalLight(0xffffff, 0.7);
-        fillLight.position.set(-2, -3, 2);
+        viewer3d.scene.add(keyLight.target);
+        const fillLight = new viewer3d.THREE.DirectionalLight(0xffffff, 0.4);
+        fillLight.position.set(0, -1, 0);
         viewer3d.scene.add(fillLight);
+        viewer3d.grid = new viewer3d.THREE.GridHelper(2, 20, 0x7a8795, 0xb2bac2);
+        viewer3d.grid.material.transparent = true;
+        viewer3d.grid.material.opacity = 0.58;
+        viewer3d.grid.visible = false;
+        viewer3d.scene.add(viewer3d.grid);
+        loadViserDefaultEnvironment();
 
         bindSynchronizedPlaybackEvents();
         els["interactive-3d-play"].addEventListener("click", toggleSynchronizedPlayback);
@@ -1690,16 +2191,52 @@
       const rect = els["interactive-3d-viewer"].getBoundingClientRect();
       if (!rect.width || !rect.height) return;
       viewer3d.camera.aspect = rect.width / rect.height;
-      viewer3d.camera.updateProjectionMatrix();
       viewer3d.renderer.setSize(rect.width, rect.height, false);
+      updateInteractiveCameraProjection();
+    }
+
+    function updateInteractiveCameraProjection() {
+      const camera = viewer3d.camera;
+      const calibration = viewer3d.cameraCalibration;
+      if (!camera) return;
+      if (!calibration) {
+        camera.updateProjectionMatrix();
+        return;
+      }
+
+      const { fx, fy, cx, cy, width, height } = calibration;
+      camera.aspect = width / height;
+      const near = camera.near;
+      const left = -near * cx / fx;
+      const right = near * (width - cx) / fx;
+      const top = near * cy / fy;
+      const bottom = -near * (height - cy) / fy;
+      camera.projectionMatrix.makePerspective(left, right, top, bottom, near, camera.far);
+      camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+    }
+
+    function loadViserDefaultEnvironment() {
+      const THREE = viewer3d.THREE;
+      const textureLoader = new THREE.TextureLoader();
+      textureLoader.setCrossOrigin("anonymous");
+      textureLoader.load(VISER_CITY_ENVIRONMENT_URL, texture => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        viewer3d.scene.environment = texture;
+        viewer3d.scene.environmentIntensity = 1;
+      }, undefined, error => {
+        console.warn("Could not load viser default environment", error);
+      });
     }
 
     async function loadInteractive3DModel(src, ep, token) {
       if (viewer3d.currentSrc === src && viewer3d.model) {
         viewer3d.currentHand = ep.hand;
+        applyDatasetCameraView(ep, state.currentViewCamera);
         viewer3d.playing = true;
         updateInteractivePlayButton();
         setInteractive3DStatus();
+        updateCameraViewSelect(ep);
         return;
       }
 
@@ -1726,17 +2263,26 @@
       }
 
       const loadedModel = gltf.scene;
-      applyViewerMaterialTone(loadedModel);
+      loadedModel.traverse(node => {
+        if (!node.isMesh) return;
+        node.castShadow = true;
+        node.receiveShadow = true;
+      });
       loadedModel.rotation.set(-Math.PI / 2, 0, 0);
       loadedModel.updateMatrixWorld(true);
       viewer3d.model = loadedModel;
       viewer3d.assetRoot.add(viewer3d.model);
       playAnimations(gltf, ep);
       setInteractive3DTime(0, { render: false });
+      viewer3d.humanFloorZ = ep.hand === "human"
+        ? sampleHumanFloorZ(loadedModel)
+        : null;
       frameInteractiveModel(loadedModel, ep.hand, { updateAutoZoom: true });
+      applyDatasetCameraView(ep, state.currentViewCamera);
       syncInteractive3DToVideo({ force: true, render: false });
       viewer3d.renderer.render(viewer3d.scene, viewer3d.camera);
       setInteractive3DStatus();
+      updateCameraViewSelect(ep);
     }
 
     async function fetchArrayBufferWithProgress(url, onProgress) {
@@ -1790,6 +2336,8 @@
       viewer3d.duration = 0;
       viewer3d.clipDuration = 0;
       viewer3d.currentSrc = "";
+      viewer3d.humanFloorZ = null;
+      els["camera-view-menu"].hidden = true;
       els["interactive-3d-scrub"].value = "0";
       els["interactive-3d-readout"].textContent = "0.00s";
     }
@@ -1831,6 +2379,7 @@
       if (!viewer3d.model || !viewer3d.controls || !viewer3d.camera) return;
       if (resetTime && viewer3d.mixer) setInteractive3DTime(0, { render: false });
       frameInteractiveModel(viewer3d.model, viewer3d.currentHand || "default");
+      applyDatasetCameraView(currentEpisode(), state.currentViewCamera);
       viewer3d.clock?.getDelta?.();
       viewer3d.renderer?.render(viewer3d.scene, viewer3d.camera);
     }
@@ -1845,6 +2394,7 @@
 
       const maxDim = Math.max(size.x, size.y, size.z) || 1;
       const preset = CAMERA_PRESETS[embodiment] || CAMERA_PRESETS.default;
+      viewer3d.cameraCalibration = null;
       viewer3d.camera.fov = CAMERA_FOV;
       const distance = maxDim / (2 * Math.tan(THREE.MathUtils.degToRad(viewer3d.camera.fov) / 2));
       const viewDirection = new THREE.Vector3(...preset.viewDirection).normalize();
@@ -1856,14 +2406,152 @@
       const focus = objectCenter ? objectCenter.clone().sub(center) : presetFocus;
 
       object.position.sub(center);
+      object.updateMatrixWorld(true);
+      updateDatasetFloorGrid(object);
       viewer3d.camera.up.set(0, 1, 0);
       viewer3d.controls.target.copy(focus);
       viewer3d.camera.near = Math.max(maxDim / 1000, 0.001);
       viewer3d.camera.far = Math.max(maxDim * 100, 100);
       viewer3d.camera.position.copy(focus).addScaledVector(viewDirection, distance * CAMERA_DISTANCE_SCALE * viewer3d.zoomScale);
-      viewer3d.camera.updateProjectionMatrix();
+      updateInteractiveCameraProjection();
       viewer3d.controls.update();
       resizeInteractive3D();
+    }
+
+    function applyDatasetCameraView(ep, cameraId) {
+      const THREE = viewer3d.THREE;
+      const rows = ep && cameraId ? state.datasetCameraExtrinsics[ep.pathKey]?.[cameraId] : null;
+      if (!THREE || !viewer3d.model || !viewer3d.camera || !viewer3d.controls || !isDatasetExtrinsic(rows)) {
+        return false;
+      }
+
+      const values = rows.flat();
+      const worldToCamera = new THREE.Matrix4().set(...values, 0, 0, 0, 1);
+      const cameraToWorld = worldToCamera.invert();
+      // Dataset cameras use x-right, y-down, z-forward; Three.js uses x-right, y-up, z-back.
+      const cvToThreeCamera = new THREE.Matrix4().makeRotationX(Math.PI);
+      viewer3d.model.updateMatrixWorld(true);
+      const coordinateFix = findDatasetCoordinateRoot(viewer3d.model);
+      const c2r = robotEmbodiments.has(ep.hand)
+        ? matrixFromValues(state.datasetCameraC2R[ep.pathKey])
+        : new THREE.Matrix4();
+      // C2R maps robot coordinates into the dataset/world frame. Convert the
+      // dataset camera pose back into robot coordinates before placing it in GLB space.
+      const cameraWorld = (coordinateFix?.matrixWorld || viewer3d.model.matrixWorld).clone()
+        .multiply(c2r.invert())
+        .multiply(cameraToWorld)
+        .multiply(cvToThreeCamera);
+      const cameraScale = new THREE.Vector3();
+      cameraWorld.decompose(viewer3d.camera.position, viewer3d.camera.quaternion, cameraScale);
+
+      setDatasetCameraCalibration(state.datasetCameraIntrinsics[ep.pathKey]?.[cameraId]);
+      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(viewer3d.camera.quaternion);
+      viewer3d.camera.up.set(0, 1, 0).applyQuaternion(viewer3d.camera.quaternion).normalize();
+      viewer3d.controls.target.copy(viewer3d.camera.position).add(forward);
+      updateInteractiveCameraProjection();
+      viewer3d.controls.update();
+      viewer3d.renderer?.render(viewer3d.scene, viewer3d.camera);
+      return true;
+    }
+
+    function findDatasetCoordinateRoot(model) {
+      let coordinateRoot = null;
+      model.traverse(node => {
+        if (!coordinateRoot && /^coordinate_fix_/i.test(node.name || "")) coordinateRoot = node;
+      });
+      return coordinateRoot;
+    }
+
+    function setDatasetCameraCalibration(cameraEntry) {
+      const matrix = cameraEntry?.original_intrinsics;
+      const width = Number(cameraEntry?.width);
+      const height = Number(cameraEntry?.height);
+      const fx = Number(matrix?.[0]?.[0]);
+      const fy = Number(matrix?.[1]?.[1]);
+      const cx = Number(matrix?.[0]?.[2]);
+      const cy = Number(matrix?.[1]?.[2]);
+      if (![width, height, fx, fy, cx, cy].every(Number.isFinite) || width <= 0 || height <= 0 || fx <= 0 || fy <= 0) {
+        viewer3d.cameraCalibration = null;
+        return;
+      }
+
+      viewer3d.cameraCalibration = { fx, fy, cx, cy, width, height };
+      viewer3d.camera.fov = viewer3d.THREE.MathUtils.radToDeg(2 * Math.atan(height / (2 * fy)));
+    }
+
+    function updateDatasetFloorGrid(model) {
+      const grid = viewer3d.grid;
+      const THREE = viewer3d.THREE;
+      if (!grid || !THREE || !model) return;
+      model.updateMatrixWorld(true);
+      const coordinateFix = findDatasetCoordinateRoot(model);
+      const ep = currentEpisode();
+      const humanFloorZ = Number.isFinite(viewer3d.humanFloorZ)
+        ? viewer3d.humanFloorZ
+        : HUMAN_FLOOR.position[2];
+      const humanFloorTransform = ep?.hand === "human"
+        ? new THREE.Matrix4().compose(
+          new THREE.Vector3(HUMAN_FLOOR.position[0], HUMAN_FLOOR.position[1], humanFloorZ),
+          new THREE.Quaternion().setFromEuler(new THREE.Euler(
+            ...HUMAN_FLOOR.rotationDegXYZ.map(THREE.MathUtils.degToRad),
+            "XYZ"
+          )),
+          new THREE.Vector3(1, 1, 1)
+        )
+        : new THREE.Matrix4();
+      const floorWorld = (coordinateFix?.matrixWorld || model.matrixWorld).clone()
+        .multiply(humanFloorTransform)
+        .multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+      const gridScale = new THREE.Vector3();
+      floorWorld.decompose(grid.position, grid.quaternion, gridScale);
+      grid.scale.copy(gridScale).multiplyScalar(1.5);
+      grid.visible = true;
+    }
+
+    async function fetchNpyMatrix(url, label) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`${label} request failed (${response.status})`);
+      const buffer = await response.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      if (String.fromCharCode(...bytes.slice(0, 6)) !== "\u0093NUMPY") {
+        throw new Error(`${label} is not a NumPy array`);
+      }
+      const majorVersion = bytes[6];
+      const headerLengthBytes = majorVersion === 1 ? 2 : 4;
+      const headerLengthView = new DataView(buffer, 8, headerLengthBytes);
+      const headerLength = majorVersion === 1
+        ? headerLengthView.getUint16(0, true)
+        : headerLengthView.getUint32(0, true);
+      const dataOffset = 8 + headerLengthBytes + headerLength;
+      const header = new TextDecoder("latin1").decode(bytes.slice(8 + headerLengthBytes, dataOffset));
+      const descriptor = header.match(/'descr':\s*'([^']+)'/)?.[1];
+      const shape = header.match(/'shape':\s*\(([^)]*)\)/)?.[1]
+        .split(",").map(value => Number(value.trim())).filter(Number.isFinite);
+      if (!descriptor || shape?.length !== 2 || shape[0] !== 4 || shape[1] !== 4) {
+        throw new Error(`${label} must be a 4x4 NumPy array`);
+      }
+      const littleEndian = !descriptor.startsWith(">");
+      const isFloat64 = /f8$/.test(descriptor);
+      const isFloat32 = /f4$/.test(descriptor);
+      if (!isFloat64 && !isFloat32) throw new Error(`${label} has unsupported dtype ${descriptor}`);
+      const view = new DataView(buffer, dataOffset);
+      const bytesPerValue = isFloat64 ? 8 : 4;
+      return Array.from({ length: 16 }, (_, index) => isFloat64
+        ? view.getFloat64(index * bytesPerValue, littleEndian)
+        : view.getFloat32(index * bytesPerValue, littleEndian));
+    }
+
+    function matrixFromValues(values) {
+      const THREE = viewer3d.THREE;
+      return Array.isArray(values) && values.length === 16 && values.every(Number.isFinite)
+        ? new THREE.Matrix4().set(...values)
+        : new THREE.Matrix4();
+    }
+
+    function isDatasetExtrinsic(rows) {
+      return Array.isArray(rows) && rows.length === 3 && rows.every(row =>
+        Array.isArray(row) && row.length === 4 && row.every(Number.isFinite)
+      );
     }
 
     function isObjectMeshNode(node) {
@@ -1903,6 +2591,51 @@
       return count ? center.multiplyScalar(1 / count) : null;
     }
 
+    function sampleHumanFloorZ(object) {
+      const THREE = viewer3d.THREE;
+      if (!THREE || !object) return null;
+
+      const initialTime = currentAnimationTime();
+      const sampleDuration = Math.min(viewer3d.duration || 0, 4 / 30);
+      const sampleTimes = Array.from({ length: HUMAN_FLOOR_SAMPLE_COUNT }, (_, index) =>
+        HUMAN_FLOOR_SAMPLE_COUNT === 1 ? 0 : sampleDuration * index / (HUMAN_FLOOR_SAMPLE_COUNT - 1)
+      );
+      const floorRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(
+        ...HUMAN_FLOOR.rotationDegXYZ.map(THREE.MathUtils.degToRad),
+        "XYZ"
+      ));
+      // The Human GLB's floor-control z axis is opposite the mesh's z axis.
+      const floorNormal = new THREE.Vector3(0, 0, -1).applyQuaternion(floorRotation);
+      let minimumFloorProjection = Infinity;
+
+      sampleTimes.forEach(time => {
+        viewer3d.mixer?.setTime(time);
+        object.updateMatrixWorld(true);
+        const coordinateRoot = findDatasetCoordinateRoot(object);
+        const worldToCoordinate = (coordinateRoot?.matrixWorld || object.matrixWorld).clone().invert();
+        const vertex = new THREE.Vector3();
+
+        object.traverse(node => {
+          if (!isObjectMeshNode(node) || !node.geometry) return;
+          const position = node.geometry.getAttribute("position");
+          if (!position) return;
+
+          for (let index = 0; index < position.count; index += 1) {
+            vertex.fromBufferAttribute(position, index);
+            if (node.isSkinnedMesh && typeof node.boneTransform === "function") node.boneTransform(index, vertex);
+            vertex.applyMatrix4(node.matrixWorld).applyMatrix4(worldToCoordinate);
+            minimumFloorProjection = Math.min(minimumFloorProjection, floorNormal.dot(vertex));
+          }
+        });
+      });
+
+      viewer3d.mixer?.setTime(initialTime);
+      object.updateMatrixWorld(true);
+      if (!Number.isFinite(minimumFloorProjection) || Math.abs(floorNormal.z) < 1e-6) return null;
+      return (minimumFloorProjection - floorNormal.x * HUMAN_FLOOR.position[0] -
+        floorNormal.y * HUMAN_FLOOR.position[1]) / floorNormal.z;
+    }
+
     function setAutoZoomFromObjectCenter(objectCenter) {
       viewer3d.objectCenterY = Number.isFinite(objectCenter?.y) ? objectCenter.y : null;
       viewer3d.autoZoomScale = zoomScaleForObjectCenterY(viewer3d.objectCenterY);
@@ -1921,50 +2654,6 @@
       const zoomSpan = VIEW_ZOOM_GREEN_CACTUS_VASE_SCALE - VIEW_ZOOM_MIN_SCALE;
       const scale = VIEW_ZOOM_MIN_SCALE + ((centerY - VIEW_ZOOM_APPLE_CENTER_Y) / referenceSpan) * zoomSpan;
       return Math.max(VIEW_ZOOM_MIN_SCALE, Math.min(VIEW_ZOOM_MAX_SCALE, scale));
-    }
-
-    function materialList(node) {
-      if (!node.material) return [];
-      return Array.isArray(node.material) ? node.material : [node.material];
-    }
-
-    function isDefaultObjectMaterial(material) {
-      if (!material?.color) return false;
-      const materialName = (material.name || "").toLowerCase();
-      const looksDefault = materialName.includes("default") || materialName.includes("object");
-      return looksDefault
-        && !material.vertexColors
-        && material.color.r > 0.94
-        && material.color.g > 0.94
-        && material.color.b > 0.94;
-    }
-
-    function applyViewerMaterialTone(loadedModel) {
-      const THREE = viewer3d.THREE;
-      const robotSpaceGray = new THREE.Color(ROBOT_SPACE_GRAY_COLOR);
-      const objectDefaultBeige = new THREE.Color(OBJECT_DEFAULT_BEIGE_COLOR);
-      loadedModel.traverse(node => {
-        if (!node.isMesh) return;
-        const nodeName = (node.name || "").toLowerCase();
-        const isRobotMesh = nodeName.includes("robot");
-        const isObjectMesh = isObjectMeshNode(node);
-
-        materialList(node).forEach(material => {
-          if (isRobotMesh && material?.color) {
-            material.color.copy(robotSpaceGray);
-            if ("metalness" in material) material.metalness = Math.max(material.metalness || 0, 0.08);
-            if ("roughness" in material) material.roughness = Math.min(material.roughness ?? 0.78, 0.72);
-            material.needsUpdate = true;
-            return;
-          }
-
-          if (isObjectMesh && isDefaultObjectMaterial(material)) {
-            material.color.copy(objectDefaultBeige);
-            if ("roughness" in material) material.roughness = Math.min(material.roughness ?? 0.78, 0.74);
-            material.needsUpdate = true;
-          }
-        });
-      });
     }
 
     function bindSynchronizedPlaybackEvents() {
@@ -2104,6 +2793,88 @@
 
     function sequenceKey(hand, objId, episode, sep = "/") {
       return [hand, objId, episode].join(sep);
+    }
+
+    function shellQuote(value) {
+      return `'${String(value).replace(/'/g, "'\\''")}'`;
+    }
+
+    function episodeDownloadCommand(ep, mode = state.downloadMode) {
+      if (!ep) return "";
+      const scriptUrl = new URL("static/download_episode.py", location.href).href;
+      const args = [
+        "--hand", shellQuote(ep.hand),
+        "--object", shellQuote(ep.objId),
+        "--episode", shellQuote(ep.episode)
+      ];
+      if (mode === "full") args.push("--full");
+      return `curl -fsSL ${scriptUrl} | python3 - ${args.join(" ")}`;
+    }
+
+    function updateDownloadCommand(ep) {
+      const menu = els["download-menu"];
+      const trigger = els["download-trigger"];
+      const input = els["download-command"];
+      const button = els["copy-download-command"];
+      const description = els["download-description"];
+      if (!menu || !trigger || !input || !button || !description) return;
+      const command = episodeDownloadCommand(ep);
+      input.value = command;
+      menu.setAttribute("aria-disabled", ep ? "false" : "true");
+      trigger.disabled = !ep;
+      input.title = ep ? command : "No sequence selected";
+      button.disabled = !ep;
+      description.textContent = state.downloadMode === "without-video"
+        ? "All files for this episode, without RGB videos"
+        : "All files for this episode";
+      ["full", "without-video"].forEach(mode => {
+        const tab = els[`download-tab-${mode === "full" ? "full" : "without-video"}`];
+        tab.setAttribute("aria-pressed", String(mode === state.downloadMode));
+      });
+      button.textContent = "Copy";
+      if (!ep) setDownloadMenuOpen(false);
+    }
+
+    function toggleDownloadMenu() {
+      if (!currentEpisode()) return;
+      setVersionMenuOpen(false);
+      setDownloadMenuOpen(!state.downloadMenuOpen);
+    }
+
+    function setDownloadMenuOpen(isOpen) {
+      state.downloadMenuOpen = isOpen;
+      els["download-menu"].classList.toggle("is-open", isOpen);
+      els["download-trigger"].setAttribute("aria-expanded", String(isOpen));
+      els["download-popover"].hidden = !isOpen;
+    }
+
+    function toggleVersionMenu() {
+      setDownloadMenuOpen(false);
+      setVersionMenuOpen(!state.versionMenuOpen);
+    }
+
+    function setVersionMenuOpen(isOpen) {
+      state.versionMenuOpen = isOpen;
+      els["version-menu"].classList.toggle("is-open", isOpen);
+      els["version-trigger"].setAttribute("aria-expanded", String(isOpen));
+      els["version-popover"].hidden = !isOpen;
+    }
+
+    async function copyDownloadCommand() {
+      const input = els["download-command"];
+      const button = els["copy-download-command"];
+      if (!input?.value) return;
+      try {
+        await navigator.clipboard.writeText(input.value);
+        button.textContent = "Copied";
+      } catch (error) {
+        input.select();
+        document.execCommand?.("copy");
+        button.textContent = "Copied";
+      }
+      window.setTimeout(() => {
+        if (button) button.textContent = "Copy";
+      }, 1200);
     }
 
     function glbUrl(ep) {
@@ -2258,7 +3029,7 @@
       params.set("object", ep.objId);
       params.set("embodiment", ep.hand);
       params.set("episode", ep.episode);
-      params.set("view", state.currentCamera || PREVIEW_CAMERA_ID);
+      params.set("view", state.currentViewCamera || PREVIEW_CAMERA_ID);
       history.replaceState(null, "", `#${params.toString()}`);
     }
 
