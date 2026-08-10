@@ -1144,6 +1144,12 @@
     const DATASET_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB/resolve/main";
     const PREVIEW_VIDEO_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-preview-video/resolve/main";
     const PREVIEW_CAMERA_ID = "23263780";
+    // Pepper Tuna's legacy GLBs use the original human capture rig, but its
+    // camera metadata is absent from the current dataset repository. This
+    // reference is from that same rig and supplies the missing calibration.
+    const LEGACY_CAMERA_METADATA_FALLBACKS = {
+      "human/pepper_tuna": { hand: "human", objId: "white_soap_dish", episode: 2 }
+    };
     const THUMB_BASE = "static/gallery-object-thumbs";
     const THUMB_FALLBACK_BASE = "https://willi19.github.io/object_processing/objects";
     const THUMB_VERSION = "object-processing-24";
@@ -1786,21 +1792,42 @@
     async function loadDatasetCameraViews(ep) {
       const cacheKey = ep.pathKey;
       if (state.datasetCameraLoads[cacheKey]) return state.datasetCameraLoads[cacheKey];
+      const fallback = LEGACY_CAMERA_METADATA_FALLBACKS[`${ep.hand}/${ep.objId}`] || null;
 
       const loadJson = (url, label) => fetch(url).then(response => {
         if (!response.ok) throw new Error(`${label} request failed (${response.status})`);
         return response.json();
       });
+      const withFallback = (loadPrimary, loadReference, label) => loadPrimary().catch(error => {
+        if (!fallback) throw error;
+        console.warn(`${label} is unavailable for ${cacheKey}; using legacy rig calibration.`, error);
+        return loadReference();
+      });
+      const extrinsics = withFallback(
+        () => loadJson(datasetExtrinsicsUrl(ep), "Camera extrinsics"),
+        () => loadJson(datasetExtrinsicsUrl(fallback), "Legacy camera extrinsics"),
+        "Camera extrinsics"
+      );
+      const intrinsics = withFallback(
+        () => loadJson(datasetIntrinsicsUrl(ep), "Camera intrinsics"),
+        () => loadJson(datasetIntrinsicsUrl(fallback), "Legacy camera intrinsics"),
+        "Camera intrinsics"
+      ).catch(error => {
+        console.warn("Could not load dataset camera intrinsics", error);
+        return null;
+      });
+      const c2r = withFallback(
+        () => fetchNpyMatrix(datasetC2RUrl(ep), "C2R"),
+        () => fetchNpyMatrix(datasetC2RUrl(fallback), "Legacy C2R"),
+        "C2R"
+      ).catch(error => {
+        console.warn("Could not load C2R", error);
+        return null;
+      });
       state.datasetCameraLoads[cacheKey] = Promise.all([
-        loadJson(datasetExtrinsicsUrl(ep), "Camera extrinsics"),
-        loadJson(datasetIntrinsicsUrl(ep), "Camera intrinsics").catch(error => {
-          console.warn("Could not load dataset camera intrinsics", error);
-          return null;
-        }),
-        fetchNpyMatrix(datasetC2RUrl(ep), "C2R").catch(error => {
-          console.warn("Could not load C2R", error);
-          return null;
-        })
+        extrinsics,
+        intrinsics,
+        c2r
       ])
         .then(([extrinsics, intrinsics, c2r]) => {
           state.datasetCameraExtrinsics[cacheKey] = extrinsics && typeof extrinsics === "object" ? extrinsics : null;
@@ -2376,12 +2403,15 @@
       const cvToThreeCamera = new THREE.Matrix4().makeRotationX(Math.PI);
       viewer3d.model.updateMatrixWorld(true);
       const coordinateFix = findDatasetCoordinateRoot(viewer3d.model);
-      // C2R is required for both robot and human recordings. Legacy human
-      // GLBs are stored before this transform, so omitting it puts the camera
-      // in the wrong coordinate frame (notably white_soap_dish/human/2).
-      const c2r = matrixFromValues(state.datasetCameraC2R[ep.pathKey]);
-      // Convert the dataset camera pose into the GLB's local coordinate frame
-      // before placing it in Three.js space.
+      // v2 human GLBs already contain the C2R conversion. Applying it again
+      // would shift every non-legacy human camera view. Legacy human GLBs do
+      // not have a coordinate_fix_* root, so only they need inverse(C2R).
+      // Robot GLBs retain the original camera conversion path.
+      const needsC2R = robotEmbodiments.has(ep.hand) || !coordinateFix;
+      const c2r = needsC2R
+        ? matrixFromValues(state.datasetCameraC2R[ep.pathKey])
+        : new THREE.Matrix4();
+      // Convert only coordinate frames which are not already baked into the GLB.
       const cameraWorld = (coordinateFix?.matrixWorld || viewer3d.model.matrixWorld).clone()
         .multiply(c2r.invert())
         .multiply(cameraToWorld)
