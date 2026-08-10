@@ -2085,8 +2085,7 @@
         viewer3d.renderer.outputColorSpace = viewer3d.THREE.SRGBColorSpace;
         viewer3d.renderer.toneMapping = viewer3d.THREE.ACESFilmicToneMapping;
         viewer3d.renderer.toneMappingExposure = 0.95;
-        viewer3d.renderer.shadowMap.enabled = true;
-        viewer3d.renderer.shadowMap.type = viewer3d.THREE.PCFSoftShadowMap;
+        viewer3d.renderer.shadowMap.enabled = false;
         els["interactive-3d-canvas"].appendChild(viewer3d.renderer.domElement);
 
         viewer3d.controls = new viewer3d.OrbitControls(viewer3d.camera, viewer3d.renderer.domElement);
@@ -2099,16 +2098,15 @@
 
         const keyLight = new viewer3d.THREE.DirectionalLight(0xffffff, 3);
         keyLight.position.set(-0.2, 1, -0.2);
-        keyLight.castShadow = true;
-        keyLight.shadow.mapSize.set(1024, 1024);
-        keyLight.shadow.bias = -0.00001;
-        keyLight.shadow.camera.near = 0.0001;
-        keyLight.shadow.camera.far = 2000;
+        keyLight.castShadow = false;
         viewer3d.scene.add(keyLight);
         viewer3d.scene.add(keyLight.target);
         const fillLight = new viewer3d.THREE.DirectionalLight(0xffffff, 0.4);
         fillLight.position.set(0, -1, 0);
         viewer3d.scene.add(fillLight);
+        // Match the Viser animation viewer's uniform ambient fill. This is
+        // direction-independent, so textured vertical surfaces stay visible.
+        viewer3d.scene.add(new viewer3d.THREE.AmbientLight(0xffffff, 0.5));
         viewer3d.grid = new viewer3d.THREE.GridHelper(2, 20, 0x7a8795, 0xb2bac2);
         viewer3d.grid.material.transparent = true;
         viewer3d.grid.material.opacity = 0.58;
@@ -2219,8 +2217,8 @@
       const loadedModel = gltf.scene;
       loadedModel.traverse(node => {
         if (!node.isMesh) return;
-        node.castShadow = true;
-        node.receiveShadow = true;
+        node.castShadow = false;
+        node.receiveShadow = false;
       });
       loadedModel.rotation.set(-Math.PI / 2, 0, 0);
       loadedModel.updateMatrixWorld(true);
