@@ -1670,6 +1670,7 @@
       const current = visible.find(ep => ep.key === state.currentKey);
       if (!current) {
         const next = defaultEpisodeFrom(visible);
+        resetViewForSequenceChange(next);
         state.currentKey = next.key;
         state.currentCamera = next.cameras[0] || null;
         state.mediaRequested = Boolean(state.currentCamera);
@@ -1680,6 +1681,12 @@
         state.currentCamera = current.cameras[0] || null;
       }
       state.mediaRequested = Boolean(state.currentCamera);
+    }
+
+    function resetViewForSequenceChange(next) {
+      if (!next || state.currentKey === next.key) return;
+      state.currentViewCamera = PREVIEW_CAMERA_ID;
+      state.requestedViewCamera = null;
     }
 
     function defaultEpisodeFrom(episodes) {
@@ -1888,6 +1895,7 @@
           const next = matchingObjectEpisode(btn.dataset.object) ||
             state.episodes.find(ep => ep.objId === btn.dataset.object);
           if (!next) return;
+          resetViewForSequenceChange(next);
           state.currentKey = next.key;
           state.currentCamera = next.cameras[0] || null;
           state.mediaRequested = true;
@@ -1929,8 +1937,10 @@
 
       els["pose-strip"].querySelectorAll(".pose-tile").forEach(btn => {
         bindTileActivation(btn, () => {
-          state.currentKey = btn.dataset.key;
-          const next = currentEpisode();
+          const next = state.episodes.find(ep => ep.key === btn.dataset.key);
+          if (!next) return;
+          resetViewForSequenceChange(next);
+          state.currentKey = next.key;
           state.currentCamera = next?.cameras?.[0] || null;
           state.mediaRequested = true;
           renderAll();
