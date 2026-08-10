@@ -1141,7 +1141,6 @@
   <script>
     const CATALOG_URL = "https://huggingface.co/spaces/HRDexDB/HRDexDB-Visualizer/raw/main/assets/glb_catalog.json";
     const GLB_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-glb/resolve/main";
-    const GLB_TREE_API_BASE = "https://huggingface.co/api/datasets/HRDexDB/HRDexDB-glb/tree/main";
     const DATASET_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB/resolve/main";
     const PREVIEW_VIDEO_BASE = "https://huggingface.co/datasets/HRDexDB/HRDexDB-preview-video/resolve/main";
     const PREVIEW_CAMERA_ID = "23263780";
@@ -1161,19 +1160,11 @@
     const GLTF_LOADER_URL = "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
     const MESHOPT_DECODER_URL = "https://unpkg.com/three@0.160.0/examples/jsm/libs/meshopt_decoder.module.js";
     const VISER_CITY_ENVIRONMENT_URL = "https://raw.githubusercontent.com/nerfstudio-project/viser/main/src/viser/client/src/assets/potsdamer_platz_1k.jpg";
-    const ADDITIONAL_GLB_CATALOG_TREES = [
-      {
-        embodiment: "inspire_dftp",
-        url: `${GLB_TREE_API_BASE}/inspire_dftp?recursive=true&expand=false`
-      }
-    ];
-
     const CAMERA_PRESETS = {
       default: { focus: [-0.07, -0.10, -0.02], viewDirection: [0, 0.36, -1.04] },
       human: { focus: [0, 0.08, -0.17], viewDirection: [0, 0.52, -1.51] },
       allegro_v5: { focus: [0.04, -0.15, -0.01], viewDirection: [0, 0.56, -1.37] },
-      inspire_f1: { focus: [0.05, -0.14, -0.07], viewDirection: [0, 0.36, -0.8] },
-      inspire_dftp: { focus: [0.05, -0.14, -0.07], viewDirection: [0, 0.36, -0.8] }
+      inspire_f1: { focus: [0.05, -0.14, -0.07], viewDirection: [0, 0.36, -0.8] }
     };
     const CAMERA_DISTANCE_SCALE = 0.3;
     const CAMERA_FOV = 45;
@@ -1187,17 +1178,16 @@
     const labels = {
       human: "Human",
       allegro_v5: "Allegro V5",
-      inspire_f1: "Inspire F1",
-      inspire_dftp: "Inspire DFTP"
+      inspire_f1: "Inspire F1"
     };
     const shortLabels = {
       human: "Human",
       allegro_v5: "Allegro",
-      inspire_f1: "Inspire",
-      inspire_dftp: "DFTP"
+      inspire_f1: "Inspire"
     };
-    const embodimentOrder = ["human", "allegro_v5", "inspire_f1", "inspire_dftp"];
-    const robotEmbodiments = new Set(["allegro_v5", "inspire_f1", "inspire_dftp"]);
+    const DATASET_EMBODIMENTS = new Set(["human", "allegro_v5", "inspire_f1"]);
+    const embodimentOrder = ["human", "allegro_v5", "inspire_f1"];
+    const robotEmbodiments = new Set(["allegro_v5", "inspire_f1"]);
     const HIDDEN_OBJECT_IDS = new Set(["apple"]);
 
     const state = {
@@ -1307,18 +1297,17 @@
 
     Promise.all([
       optionalJson(CATALOG_URL, null),
-      loadAdditionalGlbCatalogs(),
       optionalJson(EPISODE_THUMBNAILS_URL, { thumbnails: {} }),
       optionalJson(GRASP_RESULT_MANIFEST_URL, { results: {} }),
       optionalJson(INTERACTIVE_3D_VISIBILITY_URL, { interactive3D: {} })
-    ]).then(([catalog, additionalCatalogs, thumbnailManifest, resultManifest, visibilityManifest]) => {
+    ]).then(([catalog, thumbnailManifest, resultManifest, visibilityManifest]) => {
       state.episodeThumbnails = thumbnailManifest?.thumbnails || {};
       state.graspResults = resultManifest?.results || {};
       state.interactive3DVisibility = visibilityManifest?.interactive3D || {};
-      state.catalog = hasCatalogData(catalog)
+      const rawCatalog = hasCatalogData(catalog)
         ? catalog
         : catalogFromManifestKeys(state.episodeThumbnails, state.graspResults, state.interactive3DVisibility);
-      mergeCatalogs(state.catalog, additionalCatalogs);
+      state.catalog = datasetCatalogOnly(rawCatalog);
       state.episodes = flattenEpisodes();
       fillFilters();
       renderSummary();
@@ -1344,47 +1333,9 @@
       }
     }
 
-    async function loadAdditionalGlbCatalogs() {
-      const catalogPromises = ADDITIONAL_GLB_CATALOG_TREES.map(async source => {
-        try {
-          const response = await fetch(source.url, { cache: "no-cache" });
-          if (!response.ok) throw new Error(`Catalog tree request failed (${response.status})`);
-          return catalogFromTree(source.embodiment, await response.json());
-        } catch (error) {
-          console.warn(`Could not load ${source.embodiment} catalog tree`, error);
-          return null;
-        }
-      });
-      return Promise.all(catalogPromises);
-    }
-
-    function catalogFromTree(embodiment, treeItems) {
-      const catalog = {};
-      (Array.isArray(treeItems) ? treeItems : []).forEach(item => {
-        if (item?.type !== "file" || typeof item.path !== "string") return;
-        const parts = item.path.split("/");
-        if (parts.length !== 3 || parts[0] !== embodiment || !parts[2].endsWith(".glb")) return;
-        const objectId = parts[1];
-        const episode = parts[2].replace(/\.glb$/i, "");
-        addCatalogKey(catalog, sequenceKey(embodiment, objectId, episode));
-      });
-      return catalog;
-    }
-
-    function mergeCatalogs(target, catalogsToMerge) {
-      (catalogsToMerge || []).forEach(source => {
-        if (!source || typeof source !== "object") return;
-        Object.entries(source).forEach(([hand, objects]) => {
-          target[hand] ||= {};
-          Object.entries(objects || {}).forEach(([objectId, episodes]) => {
-            target[hand][objectId] ||= [];
-            target[hand][objectId] = [...new Set([
-              ...target[hand][objectId].map(String),
-              ...(Array.isArray(episodes) ? episodes : Object.keys(episodes || {})).map(String)
-            ])].sort(compareEpisodeIds);
-          });
-        });
-      });
+    function datasetCatalogOnly(catalog) {
+      return Object.fromEntries(Object.entries(catalog || {})
+        .filter(([hand]) => DATASET_EMBODIMENTS.has(hand)));
     }
 
     function compareEpisodeIds(a, b) {
