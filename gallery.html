@@ -2058,7 +2058,7 @@
     async function showInteractive3D(src, ep) {
       // Reuse the in-flight request when rendering the same selected target.
       if (viewer3d.currentSrc === src && viewer3d.fetchAbortController) return;
-      if (viewer3d.currentSrc && viewer3d.currentSrc !== src) {
+      if (viewer3d.fetchAbortController && viewer3d.currentSrc !== src) {
         viewer3d.fetchAbortController?.abort();
         viewer3d.fetchAbortController = null;
       }
@@ -2078,7 +2078,11 @@
     }
 
     function hideInteractive3D({ clear = false } = {}) {
-      if (clear) viewer3d.loadToken += 1;
+      if (clear) {
+        viewer3d.loadToken += 1;
+        viewer3d.fetchAbortController?.abort();
+        viewer3d.fetchAbortController = null;
+      }
       els["interactive-3d-viewer"].style.display = "none";
       viewer3d.playing = false;
       updateInteractivePlayButton();
