@@ -1184,12 +1184,13 @@
     const shortLabels = {
       human: "Human",
       allegro_v5: "Allegro",
-      inspire_f1: "Inspire"
+      inspire_f1: "Inspire F1",
+      inspire_dftp: "Inspire DFTP"
     };
-    const DATASET_EMBODIMENTS = new Set(["human", "allegro_v5", "inspire_f1"]);
-    const embodimentOrder = ["human", "allegro_v5", "inspire_f1"];
-    const robotEmbodiments = new Set(["allegro_v5", "inspire_f1"]);
-    const HIDDEN_OBJECT_IDS = new Set(["apple"]);
+    const DATASET_EMBODIMENTS = new Set(["human", "allegro_v5", "inspire_f1", "inspire_dftp"]);
+    const embodimentOrder = ["human", "allegro_v5", "inspire_f1", "inspire_dftp"];
+    const robotEmbodiments = new Set(["allegro_v5", "inspire_f1", "inspire_dftp"]);
+    const HIDDEN_OBJECT_IDS = new Set(["apple", "metal_measuring_flask"]);
 
     const state = {
       catalog: {},
@@ -1304,9 +1305,19 @@
       state.episodeThumbnails = thumbnailManifest?.thumbnails || {};
       state.graspResults = resultManifest?.results || {};
       state.interactive3DVisibility = visibilityManifest?.interactive3D || {};
+      const fallbackCatalog = catalogFromManifestKeys(
+        state.episodeThumbnails,
+        state.graspResults,
+        state.interactive3DVisibility
+      );
       const rawCatalog = hasCatalogData(catalog)
-        ? catalog
-        : catalogFromManifestKeys(state.episodeThumbnails, state.graspResults, state.interactive3DVisibility);
+        ? {
+          ...catalog,
+          // The remote catalog predates Inspire DFTP. Merge its episodes from
+          // the local result manifest without altering the other catalog rows.
+          inspire_dftp: mergeEmbodimentCatalogs(catalog.inspire_dftp, fallbackCatalog.inspire_dftp)
+        }
+        : fallbackCatalog;
       state.catalog = datasetCatalogOnly(rawCatalog);
       state.episodes = flattenEpisodes();
       fillFilters();
@@ -1336,6 +1347,21 @@
     function datasetCatalogOnly(catalog) {
       return Object.fromEntries(Object.entries(catalog || {})
         .filter(([hand]) => DATASET_EMBODIMENTS.has(hand)));
+    }
+
+    function mergeEmbodimentCatalogs(...catalogs) {
+      const merged = {};
+      catalogs.forEach(catalog => {
+        Object.entries(catalog || {}).forEach(([objId, sequences]) => {
+          const values = Array.isArray(sequences) ? sequences : Object.keys(sequences || {});
+          merged[objId] ||= [];
+          merged[objId].push(...values.map(String));
+        });
+      });
+      Object.keys(merged).forEach(objId => {
+        merged[objId] = [...new Set(merged[objId])].sort(compareEpisodeIds);
+      });
+      return merged;
     }
 
     function compareEpisodeIds(a, b) {
@@ -1528,7 +1554,10 @@
           sequences.forEach(rawEpisode => {
             const episode = String(rawEpisode);
             const result = graspResultFor(hand, objId, episode);
-            if (hand !== "human" && typeof result?.graspSuccess !== "boolean") return;
+            if (hand !== "human" && (
+              typeof result?.graspSuccess !== "boolean" ||
+              !hasHumanEpisode(objId)
+            )) return;
             const outcome = outcomeFor(hand, result);
             episodes.push({
               key: sequenceKey(hand, objId, episode, "|"),
@@ -2890,6 +2919,12 @@
 
     function graspResultFor(hand, objId, episode) {
       return state.graspResults[sequenceKey(hand, objId, episode)] || null;
+    }
+
+    function hasHumanEpisode(objId) {
+      const sequences = state.catalog.human?.[objId];
+      const values = Array.isArray(sequences) ? sequences : Object.keys(sequences || {});
+      return values.length > 0;
     }
 
     function poseLabel(hand, objId, episode) {
