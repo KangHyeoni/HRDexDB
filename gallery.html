@@ -1552,6 +1552,7 @@
           sequences.forEach(rawEpisode => {
             const episode = String(rawEpisode);
             const result = graspResultFor(hand, objId, episode);
+            if (hand !== "human" && typeof result?.graspSuccess !== "boolean") return;
             const outcome = outcomeFor(hand, result);
             episodes.push({
               key: sequenceKey(hand, objId, episode, "|"),
@@ -1634,11 +1635,12 @@
     }
 
     function renderSummary() {
-      const objects = new Set(state.episodes.map(ep => ep.objId)).size;
-      const humans = state.episodes.filter(ep => ep.hand === "human").length;
-      const robots = state.episodes.filter(ep => robotEmbodiments.has(ep.hand)).length;
+      const episodes = filteredEpisodes();
+      const objects = new Set(episodes.map(ep => ep.objId)).size;
+      const humans = episodes.filter(ep => ep.hand === "human").length;
+      const robots = episodes.filter(ep => robotEmbodiments.has(ep.hand)).length;
       els["summary-pills"].innerHTML = [
-        `<span class="chip accent">${state.episodes.length.toLocaleString()} sequences</span>`,
+        `<span class="chip accent">${episodes.length.toLocaleString()} sequences</span>`,
         `<span class="chip">${objects} objects</span>`,
         `<span class="chip info">${humans} human</span>`,
         `<span class="chip">${robots} robot</span>`
@@ -1655,6 +1657,7 @@
 
     function renderAll() {
       ensureCurrentEpisodeSelection();
+      renderSummary();
       renderMainPanel();
       renderSelectorRows();
       writeStateUrl();
