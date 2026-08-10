@@ -1210,7 +1210,7 @@
       downloadMenuOpen: false,
       versionMenuOpen: false,
       downloadMode: "full",
-      openSelector: null,
+      openSelectors: { object: false, pose: false },
       autoScrollRail: null,
       autoScrollFrame: null,
       autoScrollVelocity: 0
@@ -1410,37 +1410,13 @@
       });
 
       ["object", "pose"].forEach(name => {
-        const row = els[`${name}-selector`];
         const rail = els[`${name}-strip`];
         const header = els[`${name}-header`];
         attachRailAutoScroll(rail);
 
         header.addEventListener("click", () => {
-          state.openSelector = state.openSelector === name ? null : name;
+          state.openSelectors[name] = !state.openSelectors[name];
           updateSelectorOpenState();
-        });
-        row.addEventListener("pointerenter", () => {
-          state.openSelector = name;
-          updateSelectorOpenState();
-        });
-        row.addEventListener("pointerleave", () => {
-          stopRailAutoScroll();
-          state.openSelector = null;
-          updateSelectorOpenState();
-        });
-        row.addEventListener("focusin", () => {
-          state.openSelector = name;
-          updateSelectorOpenState();
-        });
-        row.addEventListener("focusout", () => {
-          requestAnimationFrame(() => {
-            if (row.matches(":hover") || row.contains(document.activeElement)) return;
-            stopRailAutoScroll();
-            if (state.openSelector === name) {
-              state.openSelector = null;
-              updateSelectorOpenState();
-            }
-          });
         });
       });
     }
@@ -1589,7 +1565,7 @@
       }
 
       const open = (params.get("selector") || params.get("open") || "").toLowerCase();
-      if (["object", "pose", "view"].includes(open)) state.openSelector = open;
+      if (["object", "pose"].includes(open)) state.openSelectors[open] = true;
 
       const requestedObject = params.get("object");
       const requestedHand = params.get("hand") || params.get("embodiment");
@@ -1857,7 +1833,7 @@
 
     function updateSelectorOpenState() {
       ["object", "pose"].forEach(name => {
-        const open = state.openSelector === name;
+        const open = state.openSelectors[name];
         els[`${name}-selector`].classList.toggle("open", open);
         els[`${name}-header`].setAttribute("aria-expanded", String(open));
       });
