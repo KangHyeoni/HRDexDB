@@ -1239,6 +1239,7 @@
       currentSrc: "",
       currentHand: "",
       loadToken: 0,
+      fetchAbortController: null,
       frame: null,
       resizeObserver: null,
       syncEventsBound: false,
@@ -2055,6 +2056,12 @@
     }
 
     async function showInteractive3D(src, ep) {
+      // Reuse the in-flight request when rendering the same selected target.
+      if (viewer3d.currentSrc === src && viewer3d.fetchAbortController) return;
+      if (viewer3d.currentSrc && viewer3d.currentSrc !== src) {
+        viewer3d.fetchAbortController?.abort();
+        viewer3d.fetchAbortController = null;
+      }
       const token = ++viewer3d.loadToken;
       els["interactive-3d-viewer"].style.display = "block";
       els["camera-view-menu"].hidden = true;
@@ -2238,9 +2245,19 @@
       loader.setCrossOrigin("anonymous");
       if (viewer3d.MeshoptDecoder) loader.setMeshoptDecoder(viewer3d.MeshoptDecoder);
 
-      const glbBuffer = await fetchArrayBufferWithProgress(src, progress => {
-        setInteractive3DStatus("Loading animated GLB...", `${progress.toFixed(0)}%`);
-      });
+      const fetchAbortController = new AbortController();
+      viewer3d.fetchAbortController = fetchAbortController;
+      let glbBuffer;
+      try {
+        glbBuffer = await fetchArrayBufferWithProgress(src, progress => {
+          if (token !== viewer3d.loadToken) return;
+          setInteractive3DStatus("Loading animated GLB...", `${progress.toFixed(0)}%`);
+        }, fetchAbortController.signal);
+      } finally {
+        if (viewer3d.fetchAbortController === fetchAbortController) {
+          viewer3d.fetchAbortController = null;
+        }
+      }
       const gltf = await new Promise((resolve, reject) => {
         loader.parse(glbBuffer, src.replace(/[^/]*$/, ""), resolve, reject);
       });
@@ -2272,8 +2289,8 @@
       updateCameraViewSelect(ep);
     }
 
-    async function fetchArrayBufferWithProgress(url, onProgress) {
-      const response = await fetch(url);
+    async function fetchArrayBufferWithProgress(url, onProgress, signal) {
+      const response = await fetch(url, { signal });
       if (!response.ok) throw new Error(`GLB request failed (${response.status})`);
 
       const total = Number(response.headers.get("content-length")) || 0;
